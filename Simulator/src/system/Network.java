@@ -7,7 +7,7 @@ public class Network {
 	public NetList<Node> nodes = new NetList<Node>();
 	public NetList<Link> links = new NetList<Link>();
 	public NetList<Flow> flows = new NetList<Flow>();
-	public Log log = new Log();
+	public Logger log = new Logger();
 	public Routing routing_alg;
 
 	public EventList event_List = new EventList();
