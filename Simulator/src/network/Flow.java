@@ -10,6 +10,7 @@ public class Flow {
 	private Node source;
 	private Node destination;
 	private int size;
+	private int packet_size;
 	private double arrival_time;
 	private double start_time;
 	private double end_time;
@@ -105,6 +106,18 @@ public class Flow {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public int getPacketSize() {
+		return this.packet_size;
+	}
+
+	public String getLabel() {
+		return this.label;
+	}
+
+	public void setLabel(String l) {
+		this.label = l;
 	}
 	/***********************************************************************/
 }

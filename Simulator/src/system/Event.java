@@ -1,7 +1,5 @@
 package system;
 
-import network.*;
-
 public class Event {
 	protected double time;
 	protected String type;
@@ -27,27 +25,44 @@ public class Event {
 		case "Arrival":
 			System.out.println("Arrival: Got it!");
 
-			/* Handling the node Queue State */
-			if (net.nodes.get(node_id).buffer.enQueue().equals("ENQ")) {
-
-			}
-
 			/* Checking the occupancy of the buffer upon packet arrival */
 			if (net.nodes.get(node_id).buffer.isFull()) {
 				/* Generating a Drop event */
-			} else {
-				
-				
-				
+				// There is no need for Drop event. We can update statistical counters
+
+			} else { // The buffer has available space
+
 				/* Check if the packet has arrived the destination */
 				if (net.flows.get(flow_id).hasArrived(net.nodes.get(node_id))) {
+
+					/*
+					 * Informing the flow agent that the packet has arrived - using listener()
+					 * method
+					 */
 					net = net.flows.get(flow_id).agent.listener(net, "recv");
-				} else {
-					// Updating next_node_id
+				} else {// The packet is ready for the departure
+
+					/* Generating next Arrival event */
+
+					// Getting next_node_id
 					next_node_id = net.flows.get(flow_id).nextNodeID(this.node_id);
 
-					// Calculate next_time
-					Link link = net.getLink(node_id, next_node_id);
+					/* Calculating all types of delays for the packet */
+					// 1- Queuing Delay
+					// Getting wait time from the buffer
+					Double queue_delay = net.nodes.get(node_id).buffer.getWaitTime();
+
+					// 2- Processing Delay
+					Double process_delay = 0.0; // Some constant that should be set by the simulator settings
+					net.nodes.get(node_id).buffer.updateDepartureTime(this.time + process_delay + queue_delay);
+					// 3-Propagation Delay 4- Transmission Delay
+					Double prob_delay = net.getLink(node_id, next_node_id).getPropagationDelay();
+					Double trans_delay = net.getLink(node_id, next_node_id)
+							.getTransmissionDelay(net.flows.get(flow_id).getPacketSize());
+
+					// Calculating next_time
+					next_time = this.time + queue_delay + process_delay + prob_delay + trans_delay;
+
 					// Generate next arrival event
 					net.event_List.generateEvent(next_time, next_type, flow_id, packet_id, next_node_id);
 				}
@@ -58,10 +73,11 @@ public class Event {
 			break;
 		case "Departure":
 			System.out.println("Departure: Got it!");
-
+			// Right now we do not need Departure event
 			break;
 		case "Drop":
 			System.out.println("Drop: Got it!");
+			// Right now we do not need Drop event
 			break;
 		default:
 			System.out.println("Error: Event.run() - Invalid event type (" + this.type + ")");

@@ -5,14 +5,19 @@ public class Link {
 	private double propagation_delay;
 	private Node source;
 	private Node destination;
-	String label;
+	private String label;
 
-	public Link(String lable, Node src, Node dest, Double prop_del, Double band) {
+	public Link(String label, Node src, Node dest, Double prop_del, Double band) {
 		this.label = label;
 		this.bandwidth = band;
 		this.propagation_delay = prop_del;
 		this.source = src;
 		this.destination = dest;
+	}
+
+	public double getTransmissionDelay(int packet_size) {
+		Double trans_delay = packet_size / (double) this.bandwidth;
+		return trans_delay;
 	}
 
 	public void setBandwidth(Double b) {
@@ -45,5 +50,13 @@ public class Link {
 
 	public Node getDst() {
 		return this.destination;
+	}
+
+	public String getLabel() {
+		return this.label;
+	}
+
+	public void setLabel(String l) {
+		this.label = l;
 	}
 }
