@@ -1,5 +1,6 @@
 package routings;
 
+import network.*;
 import system.*;
 
 public class Routing {
@@ -8,11 +9,15 @@ public class Routing {
 		// TODO Auto-generated constructor stub
 	}
 
-	/* Called in Class::Simulator. */
-	/* Initializes the path array of the flow */
-	public Network generatePaths(Network net) {
+	/* Called in Class::Network.initialized() */
+	/* Initializes the path array of the flows */
+	public NetList<Flow> generatePaths(NetList<Flow> flows) {
 		/* a routing algorithm should be implemented here */
-
-		return net;
+		for(Flow f:flows) {
+			//for() {
+			//f.path
+			//}
+		}
+		return flows;
 	}
 }

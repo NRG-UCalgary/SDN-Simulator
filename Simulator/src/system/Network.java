@@ -17,6 +17,9 @@ public class Network {
 
 	public void initialize() {
 
+		/* Generating traffic paths of flows */
+		this.flows = routing_alg.generatePaths(flows);
+
 	}
 
 	/* Called in Class::Event */

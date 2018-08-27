@@ -1,6 +1,7 @@
 package network;
 
 import protocols.*;
+import routings.Routing;
 
 import java.util.ArrayList;
 
@@ -21,7 +22,7 @@ public class Flow {
 
 	/* Stores the Node IDs of the path */
 	/* Initialized at the creation of the flow */
-	public ArrayList<Integer> path = new ArrayList<Integer>();
+	public ArrayList<Node> path = new ArrayList<Node>();
 
 	public Flow(String label, String type, Node src, Node dst, int size, Double arrv_time) {
 		this.label = label;
@@ -50,9 +51,9 @@ public class Flow {
 	}
 
 	/* Called in Class::Event */
-	/* Get current node ID and returns the next Node ID */
-	public int nextNodeID(int current) {
-		int next;
+	/* Get current node and returns the next Node in the path */
+	public Node nextNodeID(int current) {
+		Node next;
 		next = this.path.get(current + 1);
 		return next;
 	}

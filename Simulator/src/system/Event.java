@@ -27,25 +27,26 @@ public class Event {
 
 			/* Checking the occupancy of the buffer upon packet arrival */
 			if (net.nodes.get(node_id).buffer.isFull()) {
+				
 				/* Generating a Drop event */
 				// There is no need for Drop event. We can update statistical counters
 
 			} else { // The buffer has available space
+				
 
 				/* Check if the packet has arrived the destination */
 				if (net.flows.get(flow_id).hasArrived(net.nodes.get(node_id))) {
-
+					
 					/*
 					 * Informing the flow agent that the packet has arrived - using listener()
 					 * method
 					 */
 					net = net.flows.get(flow_id).agent.listener(net, "recv");
 				} else {// The packet is ready for the departure
-
 					/* Generating next Arrival event */
 
 					// Getting next_node_id
-					next_node_id = net.flows.get(flow_id).nextNodeID(this.node_id);
+				//	next_node_id = net.flows.get(flow_id).nextNodeID(this.node_id);
 
 					/* Calculating all types of delays for the packet */
 					// 1- Queuing Delay
