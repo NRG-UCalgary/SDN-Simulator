@@ -1,7 +1,6 @@
 package routings;
 
-import network.*;
-import system.*;
+import java.util.ArrayList;
 
 public class Routing {
 
@@ -11,15 +10,8 @@ public class Routing {
 
 	/* Called in Class::Network.initialized() */
 	/* Initializes the path array of the flows */
-	public NetList<Flow> generatePaths(NetList<Flow> flows) {
-		/* a routing algorithm should be implemented here */
-		for (Flow f : flows) {
-			System.out.println("Hi");
-			f.path.add(null);
-			// for() {
-			// f.path
-			// }
-		}
-		return flows;
+	public ArrayList<Integer> getPaths(ArrayList<Integer> arr1) {
+
+		return arr1;
 	}
 }

@@ -8,12 +8,13 @@ public class Simulator {
 	private Double time;
 
 	public Simulator() {
-		/* Default Settings */
+		/* Default Settings of the Simulator */
 		time = 0.0;
 	}
 
 	/********** Run **********/
 	public void run(Double start_time, Double end_time) {
+		/* Other Default settings of the Simulator */
 		/* Network object should be initialized here */
 		this.net.initialize();
 
