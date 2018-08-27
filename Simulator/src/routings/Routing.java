@@ -13,10 +13,12 @@ public class Routing {
 	/* Initializes the path array of the flows */
 	public NetList<Flow> generatePaths(NetList<Flow> flows) {
 		/* a routing algorithm should be implemented here */
-		for(Flow f:flows) {
-			//for() {
-			//f.path
-			//}
+		for (Flow f : flows) {
+			System.out.println("Hi");
+			f.path.add(null);
+			// for() {
+			// f.path
+			// }
 		}
 		return flows;
 	}
