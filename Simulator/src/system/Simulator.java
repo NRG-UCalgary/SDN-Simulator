@@ -1,6 +1,6 @@
 package system;
 
-import network.*;
+import entities.*;
 
 public class Simulator {
 

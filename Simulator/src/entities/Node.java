@@ -1,4 +1,4 @@
-package network;
+package entities;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,9 @@ public class Node {
 	ArrayList<Link> table = new ArrayList<Link>();
 	public Buffer buffer;
 	String label;
+
+	// For Dijkstra Algorithm Implementation
+	public boolean visited = false;
 
 	public Node(String label, int buffer_size) {
 		this.label = label;

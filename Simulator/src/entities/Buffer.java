@@ -1,4 +1,4 @@
-package network;
+package entities;
 
 public class Buffer {
 	private int capacity;

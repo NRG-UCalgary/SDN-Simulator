@@ -1,6 +1,6 @@
 package system;
 
-import network.*;
+import entities.*;
 import routings.*;
 
 public class Network {

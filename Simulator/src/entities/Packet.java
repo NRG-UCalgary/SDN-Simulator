@@ -1,4 +1,4 @@
-package network;
+package entities;
 
 public class Packet {
 	public String type;

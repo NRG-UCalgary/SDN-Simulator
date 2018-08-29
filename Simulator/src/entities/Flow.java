@@ -1,4 +1,4 @@
-package network;
+package entities;
 
 import protocols.*;
 
