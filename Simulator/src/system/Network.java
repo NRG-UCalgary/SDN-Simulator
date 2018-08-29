@@ -8,7 +8,6 @@ public class Network {
 	public NetList<Link> links = new NetList<Link>();
 	public NetList<Flow> flows = new NetList<Flow>();
 	public Logger log = new Logger();
-	public Routing routing_alg;
 
 	public EventList event_List = new EventList();
 
@@ -18,7 +17,7 @@ public class Network {
 	public void initialize() {
 
 		/* Generating traffic paths of flows */
-		//this.flows = routing_alg.getPaths(flows);
+		// this.flows = routing_alg.getPaths(flows);'
 
 	}
 

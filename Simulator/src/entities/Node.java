@@ -1,26 +1,50 @@
 package entities;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Node {
 
-	ArrayList<Link> table = new ArrayList<Link>();
-	public Buffer buffer;
-	String label;
-
-	// For Dijkstra Algorithm Implementation
-	public boolean visited = false;
+	private Map<Node, Link> table;
+	private Buffer buffer;
+	private String label;
 
 	public Node(String label, int buffer_size) {
 		this.label = label;
 		buffer = new Buffer(buffer_size, label);
+		table = new HashMap<Node, Link>();
 	}
 
+	/** Called in Class::Event.run() **/
+	/* Objective::Showing the egression Link for the desired destination Node */
 	public Link getNextLink(Node dst) {
-		Link link;
-		link = this.table.get(0);
-
-		return link;
+		return table.get(dst);
 	}
 
+	/*-------------------------- Getters and Setters -------------------------------------*/
+	public void setTable(HashMap<Node, Link> table) {
+		this.table = table;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public void setBuffer(Buffer buffer) {
+		this.buffer = buffer;
+	}
+
+	public Map<Node, Link> getTable() {
+		return this.table;
+	}
+
+	public String getLabel() {
+		return this.label;
+	}
+
+	public Buffer getBuffer() {
+		return this.buffer;
+	}
+
+	/*------------------------------------------------------------------------------------*/
 }

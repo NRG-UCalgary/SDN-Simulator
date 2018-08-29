@@ -20,6 +20,7 @@ public class Link {
 		return trans_delay;
 	}
 
+	/*------------------- Getters and Setters  ------------------------*/
 	public void setBandwidth(Double b) {
 		this.bandwidth = b;
 	}
@@ -59,4 +60,5 @@ public class Link {
 	public void setLabel(String l) {
 		this.label = l;
 	}
+	/*--------------------------------------------------------------*/
 }

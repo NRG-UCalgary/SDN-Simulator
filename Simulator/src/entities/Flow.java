@@ -49,6 +49,9 @@ public class Flow {
 		/* ----------------------------------------------------------------- */
 	}
 
+	/***************
+	 * Better to be implemented in Node as an entry of routing table
+	 ********************/
 	/* Called in Class::Event */
 	/* Get current node and returns the next Node in the path */
 	public Node nextNodeID(int current) {

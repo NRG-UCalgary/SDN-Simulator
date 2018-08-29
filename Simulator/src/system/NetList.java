@@ -22,7 +22,6 @@ public class NetList<E> extends ArrayList<E> {
 	}
 
 	public void addElement(String label, E e) {
-
 		mapping.put(label, this.size());
 		this.add(e);
 	}

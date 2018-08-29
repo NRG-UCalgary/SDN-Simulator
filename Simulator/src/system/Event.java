@@ -26,17 +26,16 @@ public class Event {
 			System.out.println("Arrival: Got it!");
 
 			/* Checking the occupancy of the buffer upon packet arrival */
-			if (net.nodes.get(node_id).buffer.isFull()) {
-				
+			if (net.nodes.get(node_id).getBuffer().isFull()) {
+
 				/* Generating a Drop event */
 				// There is no need for Drop event. We can update statistical counters
 
 			} else { // The buffer has available space
-				
 
 				/* Check if the packet has arrived the destination */
 				if (net.flows.get(flow_id).hasArrived(net.nodes.get(node_id))) {
-					
+
 					/*
 					 * Informing the flow agent that the packet has arrived - using listener()
 					 * method
@@ -46,16 +45,15 @@ public class Event {
 					/* Generating next Arrival event */
 
 					// Getting next_node_id
-				//	next_node_id = net.flows.get(flow_id).nextNodeID(this.node_id);
 
 					/* Calculating all types of delays for the packet */
 					// 1- Queuing Delay
 					// Getting wait time from the buffer
-					Double queue_delay = net.nodes.get(node_id).buffer.getWaitTime();
+					Double queue_delay = net.nodes.get(node_id).getBuffer().getWaitTime();
 
 					// 2- Processing Delay
 					Double process_delay = 0.0; // Some constant that should be set by the simulator settings
-					net.nodes.get(node_id).buffer.updateDepartureTime(this.time + process_delay + queue_delay);
+					net.nodes.get(node_id).getBuffer().updateDepartureTime(this.time + process_delay + queue_delay);
 					// 3-Propagation Delay 4- Transmission Delay
 					Double prob_delay = net.getLink(node_id, next_node_id).getPropagationDelay();
 					Double trans_delay = net.getLink(node_id, next_node_id)

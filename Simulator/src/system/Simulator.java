@@ -5,9 +5,14 @@ import entities.*;
 public class Simulator {
 
 	private Network net = new Network();
+	private Controller controller;
 	private Double time;
 
+	private String routing_policy;
+
 	public Simulator() {
+		routing_policy = "Dijkstra";
+		controller = new Controller(net, routing_policy); // Thte deafaul value of routing policy should be Dijkstra
 		/* Default Settings of the Simulator */
 		time = 0.0;
 	}
@@ -15,6 +20,8 @@ public class Simulator {
 	/********** Run **********/
 	public void run(Double start_time, Double end_time) {
 		/* Other Default settings of the Simulator */
+
+		/* Initializing Controller with Network Object */
 		/* Network object should be initialized here */
 		this.net.initialize();
 
