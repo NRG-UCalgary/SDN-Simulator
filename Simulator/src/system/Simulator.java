@@ -26,7 +26,8 @@ public class Simulator {
 		this.net.initialize();
 
 		print("Hello, I'm the simulator!");
-		/* Reading Most imminent Event from Network Event List */
+		
+		/* Reading the first Event from Network Event List */
 
 		/* Main Loop */
 		while (time <= end_time) {

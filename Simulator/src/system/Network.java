@@ -1,12 +1,12 @@
 package system;
 
 import entities.*;
-import routings.*;
 
 public class Network {
 	public NetList<Node> nodes = new NetList<Node>();
 	public NetList<Link> links = new NetList<Link>();
 	public NetList<Flow> flows = new NetList<Flow>();
+	//    public Controller controller = new Controller(this);
 	public Logger log = new Logger();
 
 	public EventList event_List = new EventList();

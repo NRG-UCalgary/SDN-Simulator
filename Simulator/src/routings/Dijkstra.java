@@ -70,7 +70,7 @@ public class Dijkstra extends Routing {
 	}
 
 	/** Called in Class::Dijkstra.run() **/
-	/* Objective::Gets a Node and returns a list of its neighbors */
+	/* Objective::Getting a Node and returns a list of its neighbors */
 	private List<Node> getNeighbors(Node n) {
 		List<Node> neighbors = new ArrayList<Node>();
 		for (Link l : links) {
@@ -84,7 +84,7 @@ public class Dijkstra extends Routing {
 	}
 
 	/** Called in Class::Dijkstra.run() **/
-	/* Objective::Returns the Propagation Delay of the Link between two Nodes */
+	/* Objective::Returning the Propagation Delay of the Link between two Nodes */
 	private Double getLength(Node src, Node dst) {
 		Double length = 0.0;
 		for (Link l : this.links) {
