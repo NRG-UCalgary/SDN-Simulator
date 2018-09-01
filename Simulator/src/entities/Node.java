@@ -12,12 +12,14 @@ public class Node {
 	public Node(String label, int buffer_size) {
 		this.label = label;
 		buffer = new Buffer(buffer_size, label);
+		
+		// The forwarding table is a Map<Flow,Link>
 		table = new HashMap<Node, Link>();
 	}
 
 	/** Called in Class::Event.run() **/
 	/* Objective::Showing the egression Link for the desired destination Node */
-	public Link getNextLink(Node dst) {
+	public Link getEgressLink(Node dst) {
 		return table.get(dst);
 	}
 

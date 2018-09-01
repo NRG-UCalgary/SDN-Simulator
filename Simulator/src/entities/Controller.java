@@ -18,4 +18,11 @@ public class Controller {
 		}
 	}
 
+	/** Called in Class::Event.run() **/
+	/* Objective::Updating flow_table of the Node */
+	public Network newFlow(Network net, Node curr_node, Flow curr_flow) {
+		
+		
+		return net;
+	}
 }

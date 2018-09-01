@@ -1,12 +1,15 @@
 package system;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import entities.*;
 
 public class Network {
-	public NetList<Node> nodes = new NetList<Node>();
-	public NetList<Link> links = new NetList<Link>();
-	public NetList<Flow> flows = new NetList<Flow>();
-	//    public Controller controller = new Controller(this);
+	public Map<String, Node> nodes = new HashMap<String, Node>();
+	public Map<String, Link> links = new HashMap<String, Link>();
+	public Map<String, Flow> flows = new HashMap<String, Flow>();
+	// public Controller controller = new Controller(this);
 	public Logger log = new Logger();
 
 	public EventList event_List = new EventList();
@@ -18,15 +21,16 @@ public class Network {
 
 		/* Generating traffic paths of flows */
 		// this.flows = routing_alg.getPaths(flows);'
-
 	}
 
 	/* Called in Class::Event */
 	/* Input: node1, node2 -- Output: corresponding Link */
-	public Link getLink(int node_id_1, int node_id_2) {
-		for (Link link : this.links) {
-			if (link.getSrc() == this.nodes.get(node_id_1) & link.getDst() == this.nodes.get(node_id_2)) {
-				return link;
+	public Link getLink(Node src, Node dst) {
+		for (Map.Entry<String, Link> entry : links.entrySet()) {
+			if (entry.getValue().getSrc().equals(src) && entry.getValue().getDst().equals(dst)) {
+				return entry.getValue();
+			} else if (entry.getValue().getSrc().equals(dst) && entry.getValue().getDst().equals(src)) {
+				return entry.getValue();
 			}
 		}
 		return null;

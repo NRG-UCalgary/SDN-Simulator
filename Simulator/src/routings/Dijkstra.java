@@ -8,18 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import entities.*;
-import system.*;
 
 public class Dijkstra extends Routing {
 
-	private NetList<Node> nodes;
-	private NetList<Link> links;
+	private Map<String, Node> nodes;
+	private Map<String, Link> links;
 	private List<Node> unvisited;
 	private Map<Node, Node> previous;
 	private Map<Node, Double> distance;
 
 	/* Constructor */
-	public Dijkstra(NetList<Node> nodes, NetList<Link> links) {
+	public Dijkstra(Map<String, Node> nodes, Map<String, Link> links) {
 		this.nodes = nodes;
 		this.links = links;
 		distance = new HashMap<Node, Double>();
@@ -30,10 +29,10 @@ public class Dijkstra extends Routing {
 
 	/** Called in Class::Controller.generatePaths() **/
 	/* Objective::Finding the optimal paths for each Node */
-	public Map<Node, Double> run(Node src) {
+	public Map<Node, Link> run(Node src) {
 
 		/* Initialization */
-		for (Node curr_node : nodes) {
+		for (Node curr_node : nodes.values()) {
 			distance.put(curr_node, Double.MAX_VALUE); // Unknown distance from source to v
 			previous.put(curr_node, src); // Previous node in optimal path from source
 			unvisited.add(curr_node); // All nodes initially in Q (unvisited nodes)
@@ -54,26 +53,21 @@ public class Dijkstra extends Routing {
 			unvisited.remove(minNode);
 
 			for (Node n : getNeighbors(minNode)) { // For each neighbor n of minNode
-				Double alt = distance.get(minNode) + getLength(minNode, n);
+				Double alt = distance.get(minNode) + getLink(minNode, n).getPropagationDelay();
 				if (alt < distance.get(n)) {
 					distance.put(n, alt);
 					previous.put(n, minNode);
 				}
 			}
 		}
-
-		/*
-		 * distance and previous have the answers for all routing with the source of src
-		 */
-
-		return distance;
+		return getResult(previous, src);
 	}
 
 	/** Called in Class::Dijkstra.run() **/
 	/* Objective::Getting a Node and returns a list of its neighbors */
 	private List<Node> getNeighbors(Node n) {
 		List<Node> neighbors = new ArrayList<Node>();
-		for (Link l : links) {
+		for (Link l : this.links.values()) {
 			if (l.getSrc().equals(n)) {
 				neighbors.add(l.getDst());
 			} else if (l.getDst().equals(n)) {
@@ -84,19 +78,35 @@ public class Dijkstra extends Routing {
 	}
 
 	/** Called in Class::Dijkstra.run() **/
-	/* Objective::Returning the Propagation Delay of the Link between two Nodes */
-	private Double getLength(Node src, Node dst) {
-		Double length = 0.0;
-		for (Link l : this.links) {
-			if (l.getSrc().equals(src) && l.getDst().equals(dst)) {
-				length = l.getPropagationDelay();
-				break;
-			} else if (l.getDst().equals(src) && l.getSrc().equals(dst)) {
-				length = l.getPropagationDelay();
-				break;
+	/* Objective::Returning the Link between two Nodes */
+	private Link getLink(Node src, Node dst) {
+		for (Link nxt_link : this.links.values()) {
+			if (nxt_link.getSrc().equals(src) && nxt_link.getDst().equals(dst)) {
+				return nxt_link;
+			} else if (nxt_link.getSrc().equals(dst) && nxt_link.getDst().equals(src)) {
+				return nxt_link;
 			}
 		}
-		return length;
+		return null;
+	}
+
+	/** Called in Class::Dijkstra.run() **/
+	/* Objective::Returning the routing table result<Node,Link> for Node src */
+	private Map<Node, Link> getResult(Map<Node, Node> prev, Node src_node) {
+		Map<Node, Link> result = new HashMap<Node, Link>();
+		Node temp = null;
+		for (Node dst_node : this.nodes.values()) {
+			if (dst_node.equals(src_node)) {
+				result.put(dst_node, null);
+				break;
+			} else {
+				while (!previous.get(dst_node).equals(src_node)) {
+					temp = previous.get(dst_node);
+				}
+				result.put(dst_node, getLink(src_node, temp));
+			}
+		}
+		return result;
 	}
 
 }

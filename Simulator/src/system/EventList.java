@@ -1,5 +1,6 @@
 package system;
 
+import entities.*;
 import java.util.ArrayList;
 
 public class EventList {
@@ -10,7 +11,7 @@ public class EventList {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void generateEvent(double start_t, String type, int f_id, int p_id, int node_id) {
+	public void generateEvent(double start_t, String type, Flow f, int p_id, Node node) {
 
 	}
 
