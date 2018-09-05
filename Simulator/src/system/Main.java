@@ -15,10 +15,10 @@ public class Main {
 		sim.createNode("h1", 1);
 		sim.createNode("h2", 1);
 
-		sim.createLink("l1", "h0", "s0", 10.0, 2.0);
-		sim.createLink("l2", "h1", "s0", 20.0, 2.0);
-		sim.createLink("l3", "s0", "s1", 20.0, 2.0);
-		sim.createLink("l4", "s1", "h2", 10.0, 2.0);
+		sim.createLink("l1", "h0", "s0", 10.0, 2.0, 3, null);
+		sim.createLink("l2", "h1", "s0", 20.0, 2.0, 3, null);
+		sim.createLink("l3", "s0", "s1", 20.0, 2.0, 3, null);
+		sim.createLink("l4", "s1", "h2", 10.0, 2.0, 3, null);
 
 		/** Defining Traffic **/
 		sim.generateFlow("f1", "TCP", "h0", "h2", 1000, 1.0);

@@ -12,15 +12,13 @@ import entities.*;
 public class Dijkstra extends Routing {
 
 	private Map<String, Node> nodes;
-	private Map<String, Link> links;
 	private List<Node> unvisited;
 	private Map<Node, Node> previous;
 	private Map<Node, Double> distance;
 
 	/* Constructor */
-	public Dijkstra(Map<String, Node> nodes, Map<String, Link> links) {
+	public Dijkstra(Map<String, Node> nodes) {
 		this.nodes = nodes;
-		this.links = links;
 		distance = new HashMap<Node, Double>();
 		previous = new HashMap<Node, Node>();
 		unvisited = new ArrayList<Node>();
@@ -52,8 +50,8 @@ public class Dijkstra extends Routing {
 
 			unvisited.remove(minNode);
 
-			for (Node n : getNeighbors(minNode)) { // For each neighbor n of minNode
-				Double alt = distance.get(minNode) + getLink(minNode, n).getPropagationDelay();
+			for (Node n : minNode.neighbors.keySet()) { // For each neighbor n of minNode
+				Double alt = distance.get(minNode) + minNode.neighbors.get(n).getPropagationDelay();
 				if (alt < distance.get(n)) {
 					distance.put(n, alt);
 					previous.put(n, minNode);
@@ -61,33 +59,6 @@ public class Dijkstra extends Routing {
 			}
 		}
 		return getResult(previous, src);
-	}
-
-	/** Called in Class::Dijkstra.run() **/
-	/* Objective::Getting a Node and returns a list of its neighbors */
-	private List<Node> getNeighbors(Node n) {
-		List<Node> neighbors = new ArrayList<Node>();
-		for (Link l : this.links.values()) {
-			if (l.getSrc().equals(n)) {
-				neighbors.add(l.getDst());
-			} else if (l.getDst().equals(n)) {
-				neighbors.add(l.getSrc());
-			}
-		}
-		return neighbors;
-	}
-
-	/** Called in Class::Dijkstra.run() **/
-	/* Objective::Returning the Link between two Nodes */
-	private Link getLink(Node src, Node dst) {
-		for (Link nxt_link : this.links.values()) {
-			if (nxt_link.getSrc().equals(src) && nxt_link.getDst().equals(dst)) {
-				return nxt_link;
-			} else if (nxt_link.getSrc().equals(dst) && nxt_link.getDst().equals(src)) {
-				return nxt_link;
-			}
-		}
-		return null;
 	}
 
 	/** Called in Class::Dijkstra.run() **/
@@ -103,7 +74,7 @@ public class Dijkstra extends Routing {
 				while (!previous.get(dst_node).equals(src_node)) {
 					temp = previous.get(dst_node);
 				}
-				result.put(dst_node, getLink(src_node, temp));
+				result.put(dst_node, src_node.neighbors.get(temp));
 			}
 		}
 		return result;

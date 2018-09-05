@@ -50,9 +50,13 @@ public class Simulator {
 	}
 
 	/* Link Creation Method */
-	public void createLink(String label, String src, String dst, Double d_prop, Double BndWdt) {
-		Link link = new Link(label, net.nodes.get(src), net.nodes.get(dst), d_prop, BndWdt);
-		net.links.put(label, link);
+	public void createLink(String label, String src, String dst, Double d_prop, Double BndWdt, int buffer_size,
+			String buffer_policy) {
+
+		Link link = new Link(label, net.nodes.get(src), net.nodes.get(dst), d_prop, BndWdt, buffer_size, buffer_policy);
+		net.nodes.get(src).neighbors.put(net.nodes.get(dst), link);
+		link = new Link(label, net.nodes.get(dst), net.nodes.get(src), d_prop, BndWdt, buffer_size, buffer_policy);
+		net.nodes.get(dst).neighbors.put(net.nodes.get(src), link);
 
 	}
 

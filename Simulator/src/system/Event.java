@@ -5,9 +5,11 @@ import entities.*;
 public class Event {
 	protected double time;
 	protected String type;
-	protected Flow flow;
+	protected Flow flow;// This Flow does not preserve the STATE Variables. Be careful to use it as only
+						// it is an ID!
 	protected int packet_id;
-	protected Node node;
+	protected Node node; // This Node does not possess any STATE Variable. Be careful to use it as only
+							// it is an ID!
 
 	/*------------  Constant Values for different types of delays -----------*/
 	protected final double CONTROLLER_RTT_DELAY = 0.0;
@@ -29,6 +31,7 @@ public class Event {
 	public Network execute(Network net) {
 
 		switch (this.type) {
+		/* ################## First-Packet event ################### */
 		case "First-Packet":
 			System.out.println("First-Packet: Got it!");
 
@@ -55,13 +58,20 @@ public class Event {
 
 			/* Updating next_type */
 			// The type of the next event is generic Arrival
-			next_type = "Arrival";
+			next_type = "First-Packet";
 
 			/* Updating flow, packet_id and next_node(or Link?) */
-			
+			next_node = node.getEgressLink(flow.getDst()).getDst(); // There is a possibility that the Dst node of the
+																	// desired Link to be the same as the Current Node
+																	// that we have called its getEgressLink(). One way
+																	// to solve this issue is to give the Current Node
+																	// to the Link.getDst() method and complete the
+																	// checking in that method.
 
 			// Generate next arrival event
 			net.event_List.generateEvent(next_time, next_type, flow, packet_id, next_node);
+
+			/* ################## Arrival event ######################## */
 		case "Arrival":
 			System.out.println("Arrival: Got it!");
 
@@ -70,17 +80,19 @@ public class Event {
 
 				/* Generating a Drop event */
 				// There is no need for Drop event. We can update statistical counters
+				// Also, there should be a mechanism to manage timers and time-outs of the
+				// Transport layer protocols. But it's not here (I suppose).
 
 			} else { // The buffer has available space
 
-				/* Check if the packet has arrived the destination */
+				/* Check if the packet has arrived to the destination */
 				if (net.flows.get(flow.getLabel()).hasArrived(net.nodes.get(node.getLabel()))) {
 
 					/*
 					 * Informing the flow agent that the packet has arrived - using listener()
 					 * method
 					 */
-					net = net.flows.get(flow.getLabel()).agent.listener(net, "recv");
+					net = net.flows.get(flow.getLabel()).dst_agent.listener(net, "recv");
 				} else {// The packet is ready for the departure
 					/* Generating next Arrival event */
 
@@ -96,10 +108,8 @@ public class Event {
 					net.nodes.get(node.getLabel()).getBuffer()
 							.updateDepartureTime(this.time + process_delay + queue_delay);
 					// 3-Propagation Delay 4- Transmission Delay
-					Double prob_delay = net.getLink(net.nodes.get(node.getLabel()), net.nodes.get(next_node.getLabel()))
-							.getPropagationDelay();
-					Double trans_delay = net
-							.getLink(net.nodes.get(node.getLabel()), net.nodes.get(next_node.getLabel()))
+					Double prob_delay = net.nodes.get(node.getLabel()).neighbors.get(next_node).getPropagationDelay();
+					Double trans_delay = net.nodes.get(node.getLabel()).neighbors.get(next_node)
 							.getTransmissionDelay(net.flows.get(flow.getLabel()).getPacketSize());
 
 					// Calculating next_time

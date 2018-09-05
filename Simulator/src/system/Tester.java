@@ -46,17 +46,17 @@ public class Tester {
 
 		Map<String, Link> links = new HashMap<String, Link>();
 
-		Link l1 = new Link("l1", nodes.get("n1"), nodes.get("n2"), 1.0, 1.0);
+		Link l1 = new Link("l1", nodes.get("n1"), nodes.get("n2"), 1.0, 1.0, 3, null);
 		links.put(l1.getLabel(), l1);
-		Link l2 = new Link("l2", nodes.get("n1"), nodes.get("n3"), 3.0, 1.0);
+		Link l2 = new Link("l2", nodes.get("n1"), nodes.get("n3"), 3.0, 1.0, 3, null);
 		links.put(l2.getLabel(), l2);
-		Link l3 = new Link("l3", nodes.get("n2"), nodes.get("n3"), 1.0, 1.0);
+		Link l3 = new Link("l3", nodes.get("n2"), nodes.get("n3"), 1.0, 1.0, 3, null);
 		links.put(l3.getLabel(), l3);
-		Link l4 = new Link("l4", nodes.get("n2"), nodes.get("n4"), 5.0, 1.0);
+		Link l4 = new Link("l4", nodes.get("n2"), nodes.get("n4"), 5.0, 1.0, 3, null);
 		links.put(l4.getLabel(), l4);
-		Link l5 = new Link("l5", nodes.get("n3"), nodes.get("n5"), 4.0, 1.0);
+		Link l5 = new Link("l5", nodes.get("n3"), nodes.get("n5"), 4.0, 1.0, 3, null);
 		links.put(l5.getLabel(), l5);
-		Link l6 = new Link("l6", nodes.get("n3"), nodes.get("n4"), 2.0, 1.0);
+		Link l6 = new Link("l6", nodes.get("n3"), nodes.get("n4"), 2.0, 1.0, 3, null);
 		links.put(l6.getLabel(), l6);
 
 		/**

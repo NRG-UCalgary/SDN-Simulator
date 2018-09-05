@@ -14,7 +14,10 @@ public class Flow {
 	private double arrival_time;
 	private double start_time;
 	private double end_time;
-	public Agent agent;
+
+	/* Each Flow has 2 Agents (at least for TCP-based ones) */
+	public Agent src_agent;
+	public Agent dst_agent;
 
 	/** Is it needed? **/
 	public ArrayList<Packet> packets = new ArrayList<Packet>();
@@ -34,13 +37,14 @@ public class Flow {
 		/* --------------- New Protocols Must Be Added Here ---------------- */
 		switch (type) {
 		case "TCP":
-			agent = new TCP();
+			src_agent = new TCP();
+			dst_agent = new TCP();
 			break;
 		case "RBTCP":
-			agent = new RBTCP();
+			src_agent = new RBTCP();
 			break;
 		case "Dummy":
-			agent = new Agent();
+			src_agent = new Agent();
 			break;
 		default:
 			System.out.println("Error.Flow.Constructor().Invalid Flow Type - " + type);
