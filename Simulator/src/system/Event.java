@@ -58,6 +58,7 @@ public class Event {
 			next_type = "Arrival";
 
 			/* Updating flow, packet_id and next_node(or Link?) */
+			
 
 			// Generate next arrival event
 			net.event_List.generateEvent(next_time, next_type, flow, packet_id, next_node);
