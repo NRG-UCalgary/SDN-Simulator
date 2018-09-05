@@ -9,6 +9,11 @@ public class Event {
 	protected int packet_id;
 	protected Node node;
 
+	/*------------  Constant Values for different types of delays -----------*/
+	protected final double CONTROLLER_RTT_DELAY = 0.0;
+	protected final double CONTROLLER_PROCESS_DELAY = 0.0;
+	/*-----------------------------------------------------------------------*/
+
 	private double next_time;
 	private String next_type;
 	private Node next_node;
@@ -31,7 +36,7 @@ public class Event {
 			// The Node Sends a Request packet to the controller to get the forwarding rule
 			// for the flow
 			// This should be implemented as a public method in controller
-			// net = controller.newFlow(Node current_node, Flow current_flow, Network net);
+			net = net.controller.newFlow(net, node, flow);
 			// This communication means the next arrival event should be created with at the
 			// time after this one. this should be considered somehow.
 			//
@@ -42,11 +47,15 @@ public class Event {
 			/* Updating next_time */
 			// 1- There should be control_delay that represents the Ropund_trip travel of
 			// control packet to the Controller
+			next_time = next_time + CONTROLLER_RTT_DELAY;
+
 			// 2- There should be a process_delay that represents the process time need for
 			// the controller to decide what order to give to the requesting Node
+			next_time = next_time + CONTROLLER_PROCESS_DELAY;
 
 			/* Updating next_type */
 			// The type of the next event is generic Arrival
+			next_type = "Arrival";
 
 			/* Updating flow, packet_id and next_node(or Link?) */
 

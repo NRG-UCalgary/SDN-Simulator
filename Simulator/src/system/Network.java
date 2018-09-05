@@ -9,7 +9,7 @@ public class Network {
 	public Map<String, Node> nodes = new HashMap<String, Node>();
 	public Map<String, Link> links = new HashMap<String, Link>();
 	public Map<String, Flow> flows = new HashMap<String, Flow>();
-	// public Controller controller = new Controller(this);
+	public Controller controller = new Controller(this, "Dijkstra");
 	public Logger log = new Logger();
 
 	public EventList event_List = new EventList();
