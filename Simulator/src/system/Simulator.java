@@ -6,7 +6,6 @@ public class Simulator {
 
 	private Network net = new Network();
 	private Controller controller;
-	private Double time;
 
 	private String routing_policy;
 
@@ -14,7 +13,6 @@ public class Simulator {
 		routing_policy = "Dijkstra";
 		controller = new Controller(net, routing_policy); // Thte deafaul value of routing policy should be Dijkstra
 		/* Default Settings of the Simulator */
-		time = 0.0;
 	}
 
 	/********** Run **********/
@@ -23,7 +21,11 @@ public class Simulator {
 
 		/* Initializing Controller with Network Object */
 		/* Network object should be initialized here */
-		this.net.initialize();
+
+		// Initial packet arrivals can be created here by calling Agents method
+		for (Flow flow : net.flows.values()) {
+			net = flow.src_agent.send(net);
+		}
 
 		// Dummy line
 		controller.router.equals(null);
@@ -33,19 +35,17 @@ public class Simulator {
 		/* Reading the first Event from Network Event List */
 
 		/* Main Loop */
-		while (time <= end_time) {
+		while (net.time <= end_time) {
 			/* Running the Current Event and Updating the net */
 			net = net.event_List.getEvent().execute(net);
-
 		}
-
 	}
 
-	/********** Topology Creation methods **********/
+	/********** Topology Creation methods ***********/
 
 	/* Node Creation Method */
-	public void createNode(String label, int buffer) {
-		Node node = new Node(label, buffer);
+	public void createNode(String label) {
+		Node node = new Node(label);
 		net.nodes.put(label, node);
 	}
 
@@ -65,18 +65,14 @@ public class Simulator {
 
 	}
 
-	/********** Flow Generation Methods **********/
+	/********* Flow Generation Methods **************/
 
 	public void generateFlow(String label, String type, String src, String dst, int size, double arrival_time) {
 		Flow flow = new Flow(label, type, net.nodes.get(src), net.nodes.get(dst), size, arrival_time);
 		net.flows.put(label, flow);
-
-		/* Creating Initial Events */
-		// First-Packet to the first switch Node
-		net.event_List.generateEvent(arrival_time, "First-Packet", flow, 0, net.nodes.get(src));
 	}
 
-	/********** General Programming Methods **********/
+	/********* General Programming Methods **********/
 	public static void print(Object o) {
 		System.out.println(o);
 	}

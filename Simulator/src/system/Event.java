@@ -76,7 +76,7 @@ public class Event {
 			System.out.println("Arrival: Got it!");
 
 			/* Checking the occupancy of the buffer upon packet arrival */
-			if (net.nodes.get(node.getLabel()).getBuffer().isFull()) {
+			if (net.nodes.get(node.getLabel()).getEgressLink(flow.getDst()).buffer.isFull()) {
 
 				/* Generating a Drop event */
 				// There is no need for Drop event. We can update statistical counters
@@ -89,10 +89,9 @@ public class Event {
 				if (net.flows.get(flow.getLabel()).hasArrived(net.nodes.get(node.getLabel()))) {
 
 					/*
-					 * Informing the flow agent that the packet has arrived - using listener()
-					 * method
+					 * Informing the flow agent that the packet has arrived - using recv() method
 					 */
-					net = net.flows.get(flow.getLabel()).dst_agent.listener(net, "recv");
+					net = net.flows.get(flow.getLabel()).dst_agent.recv(net);
 				} else {// The packet is ready for the departure
 					/* Generating next Arrival event */
 
@@ -101,11 +100,12 @@ public class Event {
 					/* Calculating all types of delays for the packet */
 					// 1- Queuing Delay
 					// Getting wait time from the buffer
-					Double queue_delay = net.nodes.get(node.getLabel()).getBuffer().getWaitTime();
+					Double queue_delay = net.nodes.get(node.getLabel()).getEgressLink(flow.getDst()).buffer
+							.getWaitTime();
 
 					// 2- Processing Delay
 					Double process_delay = 0.0; // Some constant that should be set by the simulator settings
-					net.nodes.get(node.getLabel()).getBuffer()
+					net.nodes.get(node.getLabel()).getEgressLink(flow.getDst()).buffer
 							.updateDepartureTime(this.time + process_delay + queue_delay);
 					// 3-Propagation Delay 4- Transmission Delay
 					Double prob_delay = net.nodes.get(node.getLabel()).neighbors.get(next_node).getPropagationDelay();

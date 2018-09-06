@@ -9,14 +9,14 @@ public class Link {
 	private Node destination;
 	private String label;
 
-	public Link(String label, Node src, Node dest, Double prop_del, Double band, int buffer_cap, String buffer_policy) {
+	public Link(String label, Node src, Node dest, Double prop_del, Double band, int buffer_size, String buffer_policy) {
 		this.label = label;
 		this.bandwidth = band;
 		this.propagation_delay = prop_del;
 		this.source = src;
 		this.destination = dest;
 
-		buffer = new Buffer(buffer_cap, buffer_policy);
+		buffer = new Buffer(buffer_size, buffer_policy);
 	}
 
 	public double getTransmissionDelay(int packet_size) {

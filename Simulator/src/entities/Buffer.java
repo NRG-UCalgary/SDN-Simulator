@@ -35,6 +35,8 @@ public class Buffer {
 	/* Call in Class::Event */
 	/* Returns queue time for the packet */
 	public double getWaitTime() {
+		// the wait time for new arrival packet to the queue is equal to
+		// transmission_delay * number_of_packets in the queue
 
 		wait_time = 0.0; ///// ###################### Must be completed
 

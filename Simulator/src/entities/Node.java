@@ -8,10 +8,10 @@ public class Node {
 	public Map<Node, Link> neighbors;
 
 	private Map<Node, Link> forwarding_table;
-	private Buffer buffer;
 	private String label;
 
-	public Node(String label, int buffer_size) {
+	/* Constructor */
+	public Node(String label) {
 		this.label = label;
 		neighbors = new HashMap<Node, Link>();
 		// The forwarding table is a Map<Flow,Link>
@@ -33,10 +33,6 @@ public class Node {
 		this.label = label;
 	}
 
-	public void setBuffer(Buffer buffer) {
-		this.buffer = buffer;
-	}
-
 	public Map<Node, Link> getTable() {
 		return this.forwarding_table;
 	}
@@ -44,10 +40,5 @@ public class Node {
 	public String getLabel() {
 		return this.label;
 	}
-
-	public Buffer getBuffer() {
-		return this.buffer;
-	}
-
 	/*------------------------------------------------------------------------------------*/
 }

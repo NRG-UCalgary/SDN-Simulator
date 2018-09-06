@@ -8,21 +8,27 @@ public class Main {
 		Simulator sim = new Simulator();
 
 		/** Defining Topology **/
-		sim.createNode("s0", 10);
-		sim.createNode("s1", 10);
+		/* createNode: 1.String label */
+		sim.createNode("s0");
+		sim.createNode("s1");
+		sim.createNode("h0");
+		sim.createNode("h1");
 
-		sim.createNode("h0", 1);
-		sim.createNode("h1", 1);
-		sim.createNode("h2", 1);
-
-		sim.createLink("l1", "h0", "s0", 10.0, 2.0, 3, null);
-		sim.createLink("l2", "h1", "s0", 20.0, 2.0, 3, null);
-		sim.createLink("l3", "s0", "s1", 20.0, 2.0, 3, null);
-		sim.createLink("l4", "s1", "h2", 10.0, 2.0, 3, null);
+		/*
+		 * createLink: 1.String src_label 2.String dst_label 3.Double delay_prob
+		 * 4.Double bandwidth 5.Integer buffer_size 6.String buffer_policy)
+		 */
+		sim.createLink("l1", "h0", "s0", 1.0, 1.0, 10, null);
+		sim.createLink("l2", "s0", "s1", 1.0, 1.0, 10, null);
+		sim.createLink("l3", "s1", "h1", 1.0, 1.0, 10, null);
+		sim.createLink("l4", "s0", "h1", 3.0, 1.0, 10, null);
 
 		/** Defining Traffic **/
-		sim.generateFlow("f1", "TCP", "h0", "h2", 1000, 1.0);
-		sim.generateFlow("f2", "TCP", "h1", "h2", 1000, 1.0);
+		/*
+		 * generateFlow: 1.String label 2.String type 3.String src_label 4.String
+		 * dst_label 5.Integer number_packets 6.Double arrival_time
+		 */
+		sim.generateFlow("f1", "TCP", "h0", "h2", 1, 1.0);
 
 		/** Running Simulation **/
 		sim.run(0.0, 10.0);
