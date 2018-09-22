@@ -1,16 +1,19 @@
 package protocols;
 
+import entities.Flow;
+import entities.Node;
 import system.Network;
 
 public class RBTCP extends Agent {
 
-	public RBTCP() {
+	public RBTCP(Flow flow) {
+		super(flow);
 		// TODO Auto-generated constructor stub
 	}
 
-	// @overriding
-	public Network listener(Network net, String type) {
-		
-		return net;
+	@Override
+	public Network recv(Network net) {
+		// TODO Auto-generated method stub
+		return super.recv(net);
 	}
 }

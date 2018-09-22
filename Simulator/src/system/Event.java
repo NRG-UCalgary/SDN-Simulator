@@ -3,11 +3,11 @@ package system;
 import entities.*;
 
 public class Event {
+	private Logger log = new Logger();
+
 	protected double time;
-	protected String type;
-	protected Flow flow;// This Flow does not preserve the STATE Variables. Be careful to use it as only
-						// it is an ID!
-	protected int packet_id;
+	protected String event_type;
+	protected Packet packet;
 	protected Node node; // This Node does not possess any STATE Variable. Be careful to use it as only
 							// it is an ID!
 
@@ -20,26 +20,34 @@ public class Event {
 	private String next_type;
 	private Node next_node;
 
-	public Event(double start_t, String type, Flow f, int p_id, Node node) {
+	public Event(double start_t, String event_type, Packet p, Node node) {
 		this.time = start_t;
-		this.type = type;
-		this.flow = f;
-		this.packet_id = p_id;
+		this.event_type = event_type;
+		this.packet = p;
 		this.node = node;
+
+		this.next_time = 0;
+		this.next_type = null;
+		this.next_node = null;
 	}
 
 	public Network execute(Network net) {
+		log.generalLog("Entered Event.execute().");
 
-		switch (this.type) {
+		/* Fetching most recent flow and node from the Network object */
+		Flow updated_flow = net.flows.get(this.packet.getFlow_label());
+		Node updated_node = net.nodes.get(this.node.getLabel());
+
+		switch (this.event_type) {
 		/* ################## First-Packet event ################### */
 		case "First-Packet":
-			System.out.println("First-Packet: Got it!");
+			log.generalLog("Event.execute()::Captured First-Packet case.");
 
 			/* The first packet of the flow arrives to the first switch node */
 			// The Node Sends a Request packet to the controller to get the forwarding rule
 			// for the flow
 			// This should be implemented as a public method in controller
-			net = net.controller.newFlow(net, node, flow);
+			net = net.controller.newFlow(net, node, updated_flow);
 			// This communication means the next arrival event should be created with at the
 			// time after this one. this should be considered somehow.
 			//
@@ -61,22 +69,23 @@ public class Event {
 			next_type = "First-Packet";
 
 			/* Updating flow, packet_id and next_node(or Link?) */
-			next_node = node.getEgressLink(flow.getDst()).getDst(); // There is a possibility that the Dst node of the
-																	// desired Link to be the same as the Current Node
-																	// that we have called its getEgressLink(). One way
-																	// to solve this issue is to give the Current Node
-																	// to the Link.getDst() method and complete the
-																	// checking in that method.
+			next_node = node.getEgressLink(updated_flow.getDst()).getDst(); // There is a possibility that the Dst node
+																			// of the
+			// desired Link to be the same as the Current Node
+			// that we have called its getEgressLink(). One way
+			// to solve this issue is to give the Current Node
+			// to the Link.getDst() method and complete the
+			// checking in that method.
 
 			// Generate next arrival event
-			net.event_List.generateEvent(next_time, next_type, flow, packet_id, next_node);
+			net.event_List.generateEvent(next_time, next_type, this.packet, next_node);
 
 			/* ################## Arrival event ######################## */
 		case "Arrival":
-			System.out.println("Arrival: Got it!");
+			log.generalLog("Event.execute()::Captured Arrival case.");
 
 			/* Checking the occupancy of the buffer upon packet arrival */
-			if (net.nodes.get(node.getLabel()).getEgressLink(flow.getDst()).buffer.isFull()) {
+			if (updated_node.getEgressLink(updated_flow.getDst()).buffer.isFull()) {
 
 				/* Generating a Drop event */
 				// There is no need for Drop event. We can update statistical counters
@@ -86,12 +95,13 @@ public class Event {
 			} else { // The buffer has available space
 
 				/* Check if the packet has arrived to the destination */
-				if (net.flows.get(flow.getLabel()).hasArrived(net.nodes.get(node.getLabel()))) {
+				if (packet.hasArrived(updated_node)) {
+					// if (updated_flow.hasArrived(updated_node)) {
 
 					/*
 					 * Informing the flow agent that the packet has arrived - using recv() method
 					 */
-					net = net.flows.get(flow.getLabel()).dst_agent.recv(net);
+					// net = updated_flow.dst_agent.recv(net);
 				} else {// The packet is ready for the departure
 					/* Generating next Arrival event */
 
@@ -100,23 +110,22 @@ public class Event {
 					/* Calculating all types of delays for the packet */
 					// 1- Queuing Delay
 					// Getting wait time from the buffer
-					Double queue_delay = net.nodes.get(node.getLabel()).getEgressLink(flow.getDst()).buffer
-							.getWaitTime();
+					Double queue_delay = updated_node.getEgressLink(updated_flow.getDst()).buffer.getWaitTime();
 
 					// 2- Processing Delay
 					Double process_delay = 0.0; // Some constant that should be set by the simulator settings
-					net.nodes.get(node.getLabel()).getEgressLink(flow.getDst()).buffer
+					updated_node.getEgressLink(updated_flow.getDst()).buffer
 							.updateDepartureTime(this.time + process_delay + queue_delay);
 					// 3-Propagation Delay 4- Transmission Delay
-					Double prob_delay = net.nodes.get(node.getLabel()).neighbors.get(next_node).getPropagationDelay();
-					Double trans_delay = net.nodes.get(node.getLabel()).neighbors.get(next_node)
-							.getTransmissionDelay(net.flows.get(flow.getLabel()).getPacketSize());
+					Double prob_delay = updated_node.neighbors.get(next_node).getPropagationDelay();
+					Double trans_delay = updated_node.neighbors.get(next_node)
+							.getTransmissionDelay(updated_flow.getPacketSize());
 
 					// Calculating next_time
 					next_time = this.time + queue_delay + process_delay + prob_delay + trans_delay;
 
 					// Generate next arrival event
-					net.event_List.generateEvent(next_time, next_type, flow, packet_id, next_node);
+					net.event_List.generateEvent(next_time, next_type, packet, next_node);
 				}
 
 			}
@@ -132,10 +141,16 @@ public class Event {
 			// Right now we do not need Drop event
 			break;
 		default:
-			System.out.println("Error: Event.run() - Invalid event type (" + this.type + ")");
+			System.out.println("Error: Event.run() - Invalid event type (" + this.event_type + ")");
 			break;
 		}
+
+		/* Updating nodes and flows of Network object */
+		net.flows.put(updated_flow.getLabel(), updated_flow);
+		net.nodes.put(updated_node.getLabel(), updated_node);
+
 		return net;
 
 	}
+
 }

@@ -1,0 +1,48 @@
+Entered Simulator.createNode().
+Entered Simulator.createNode().
+Entered Simulator.createNode().
+Entered Simulator.createNode().
+Entered Simulator.createLink().
+Entered Simulator.createLink().
+Entered Simulator.createLink().
+Entered Simulator.createLink().
+Entered Simulator.generateFlow().
+Entered Simulator.run().
+Entered TCP.start().
+Entered TCP.createSYN().
+Entered EventList.generateEvent().
+Entered EventList.getEvent().
+Entered Event.execute().
+Event.execute()::Captured First-Packet case.
+Entered Controller.newFlow().
+Entered Dijkstra.run().
+s0, h1
+h1, h1
+s1, h1
+h0, h1
+------------------------------------------------
+s0, h1
+h1, h1
+s1, h1
+h0, h1
+------------------------------------------------
+s0, h1
+h1, h1
+s1, h1
+h0, h1
+------------------------------------------------
+s0, s1
+h1, h1
+s1, h1
+h0, h1
+------------------------------------------------
+s0, s1
+h1, h1
+s1, h1
+h0, s0
+------------------------------------------------
+Entered Dijkstra.getResult().
+s0, s1
+h1, h1
+s1, h1
+h0, s0

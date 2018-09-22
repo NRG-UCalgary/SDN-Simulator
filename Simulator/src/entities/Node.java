@@ -1,9 +1,11 @@
 package entities;
 
+import system.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Node {
+	private Logger log = new Logger();
 
 	public Map<Node, Link> neighbors;
 
@@ -21,6 +23,8 @@ public class Node {
 	/** Called in Class::Event.run() **/
 	/* Objective::Showing the egression Link for the desired destination Node */
 	public Link getEgressLink(Node dst) {
+		log.generalLog("Entered Node.getEgressLink().");
+
 		return forwarding_table.get(dst);
 	}
 

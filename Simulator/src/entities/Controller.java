@@ -4,6 +4,8 @@ import system.*;
 import routings.*;
 
 public class Controller {
+	private Logger log = new Logger();
+
 	public Dijkstra router;
 
 	public Controller(Network net, String routing_type) {
@@ -21,6 +23,8 @@ public class Controller {
 	/** Called in Class::Event.run() **/
 	/* Objective::Updating flow_table of the Node */
 	public Network newFlow(Network net, Node curr_node, Flow curr_flow) {
+		log.generalLog("Entered Controller.newFlow().");
+
 		net.nodes.get(curr_node.getLabel()).setTable(router.run(curr_flow.getDst()));
 		return net;
 	}

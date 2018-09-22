@@ -1,10 +1,12 @@
 package entities;
 
-import protocols.*;
+import system.Logger;
 
 import java.util.ArrayList;
 
 public class Flow {
+	private Logger log = new Logger();
+
 	private String label;
 	private String type;
 	private Node source;
@@ -14,10 +16,6 @@ public class Flow {
 	private double arrival_time;
 	private double start_time;
 	private double end_time;
-
-	/* Each Flow has 2 Agents (at least for TCP-based ones) */
-	public Agent src_agent;
-	public Agent dst_agent;
 
 	/** Is it needed? **/
 	public ArrayList<Packet> packets = new ArrayList<Packet>();
@@ -34,47 +32,11 @@ public class Flow {
 		this.size = size;
 		this.arrival_time = arrv_time;
 
-		/* --------------- New Protocols Must Be Added Here ---------------- */
-		switch (type) {
-		case "TCP":
-			src_agent = new TCP();
-			dst_agent = new TCP();
-			break;
-		case "RBTCP":
-			src_agent = new RBTCP();
-			break;
-		case "Dummy":
-			src_agent = new Agent();
-			break;
-		default:
-			System.out.println("Error.Flow.Constructor().Invalid Flow Type - " + type);
-			break;
-		}
-		/* ----------------------------------------------------------------- */
 	}
 
-	/***************
-	 * Better to be implemented in Node as an entry of routing table
-	 ********************/
-	/* Called in Class::Event */
-	/* Get current node and returns the next Node in the path */
-	public Node nextNodeID(int current) {
-		Node next;
-		next = this.path.get(current + 1);
-		return next;
-	}
-
-	/* Called in Class::Event */
-	/* Gets current node and returns true if it is the flow destination */
-	public boolean hasArrived(Node current_node) {
-		if (current_node == this.destination) {
-			System.out.println("The Packet has arrived.");
-			return true;
-		}
-		return false;
-	}
-
+	/**********************************************************************/
 	/********************** Getters and Setters ***************************/
+	/**********************************************************************/
 	public Node getSrc() {
 		return source;
 	}

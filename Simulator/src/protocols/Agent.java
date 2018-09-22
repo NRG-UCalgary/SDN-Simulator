@@ -1,25 +1,47 @@
 package protocols;
 
 import system.*;
+import entities.*;
 
-public class Agent {
+public abstract class Agent {
+	protected Logger log = new Logger();
 
-	public Agent() {
-		// TODO Auto-generated constructor stub
+	protected Node src;
+	protected Node dst;
+	protected int size;
+
+	protected Flow flow;
+
+	/* Constructor */
+	public Agent(Flow flow) {
+		this.flow = flow;
 	}
 
-	public Network listener(Network net, String type) {
-
-		return net;
-	}
-
-	public Network send(Network net) {
-		
-		return net;
-	}
-
+	// This function may be overridden in transport protocol implementations
 	public Network recv(Network net) {
+		log.generalLog("Entered to Agent.recv().");
+		// if the received packet is a Data-Packet, an ACK packet should be created
+
+		// if the received packet is an Ack-Packet, the next Data-Packet should be sent.
 
 		return net;
 	}
+
+	// This method shall be overridden in any implementation of the class Agent
+	public Network start(Network net) {
+
+		return net;
+	}
+
+	/**********************************************************************/
+	/********************** Getters and Setters ***************************/
+	/**********************************************************************/
+	public Flow getFlow() {
+		return this.flow;
+	}
+
+	public void setFlow(Flow flow) {
+		this.flow = flow;
+	}
+	/***********************************************************************/
 }

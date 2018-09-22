@@ -1,8 +1,11 @@
 package system;
 
 public class Main {
+	private static Logger log;
 
 	public static void main(String[] args) {
+		log = new Logger();
+		log.cleanLogFile();
 
 		/** Creating a Simulator **/
 		Simulator sim = new Simulator();
@@ -28,7 +31,7 @@ public class Main {
 		 * generateFlow: 1.String label 2.String type 3.String src_label 4.String
 		 * dst_label 5.Integer number_packets 6.Double arrival_time
 		 */
-		sim.generateFlow("f1", "TCP", "h0", "h2", 1, 1.0);
+		sim.generateFlow("f1", "TCP", "h0", "h1", 1, 1.0);
 
 		/** Running Simulation **/
 		sim.run(0.0, 10.0);
