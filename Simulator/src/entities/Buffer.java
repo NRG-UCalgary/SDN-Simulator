@@ -13,7 +13,6 @@ public class Buffer {
 		this.capacity = cap;
 		// this.policy = policy;
 		occupancy = 0;
-		// TODO Auto-generated constructor stub
 	}
 
 	public String enQueue() {

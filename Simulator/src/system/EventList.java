@@ -11,11 +11,11 @@ public class EventList {
 	public ArrayList<Event> events = new ArrayList<Event>();
 
 	public EventList() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public void generateEvent(double start_t, String type, Packet packet, Node node) {
 		log.generalLog("Entered EventList.generateEvent().");
+
 		Event event = new Event(start_t, type, packet, node);
 		// Some considerations may be added here about the place of the new event among
 		// the events on the events

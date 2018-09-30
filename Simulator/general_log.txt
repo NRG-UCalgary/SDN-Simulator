@@ -13,36 +13,27 @@ Entered TCP.createSYN().
 Entered EventList.generateEvent().
 Entered EventList.getEvent().
 Entered Event.execute().
-Event.execute()::Captured First-Packet case.
+Event.execute()::Captured Arrival case.
+Entered Node.hasFlowEntry().
 Entered Controller.newFlow().
 Entered Dijkstra.run().
-s0, h1
-h1, h1
-s1, h1
-h0, h1
-------------------------------------------------
-s0, h1
-h1, h1
-s1, h1
-h0, h1
-------------------------------------------------
-s0, h1
-h1, h1
-s1, h1
-h0, h1
-------------------------------------------------
-s0, s1
-h1, h1
-s1, h1
-h0, h1
-------------------------------------------------
-s0, s1
-h1, h1
-s1, h1
-h0, s0
-------------------------------------------------
-Entered Dijkstra.getResult().
-s0, s1
-h1, h1
-s1, h1
-h0, s0
+Entered Dijkstra.generateResult().
+Entered Dijkstra.generateResult().
+Entered Node.uppdateFlowTable().
+Entered Node.uppdateFlowTable().
+Entered Node.uppdateFlowTable().
+Entered Node.getEgressLink().
+Link is: l1
+Entered EventList.generateEvent().
+************************************
+Entered EventList.getEvent().
+Entered Event.execute().
+Event.execute()::Captured Arrival case.
+Entered Node.hasFlowEntry().
+Entered Node.getEgressLink().
+Link is: l2
+Entered Packet.hasArrived().
+Entered Node.getEgressLink().
+Link is: l2
+Entered Node.getEgressLink().
+Link is: l2

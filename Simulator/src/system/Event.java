@@ -11,9 +11,10 @@ public class Event {
 	protected Node node; // This Node does not possess any STATE Variable. Be careful to use it as only
 							// it is an ID!
 
+	// TODO Must be set through simulator by user
 	/*------------  Constant Values for different types of delays -----------*/
-	protected final double CONTROLLER_RTT_DELAY = 0.0;
-	protected final double CONTROLLER_PROCESS_DELAY = 0.0;
+	protected final double CONTROLLER_RTT_DELAY = 1.0;
+	protected final double CONTROLLER_PROCESS_DELAY = 1.0;
 	/*-----------------------------------------------------------------------*/
 
 	private double next_time;
@@ -35,99 +36,107 @@ public class Event {
 		log.generalLog("Entered Event.execute().");
 
 		/* Fetching most recent flow and node from the Network object */
-		Flow updated_flow = net.flows.get(this.packet.getFlow_label());
+		Flow updated_flow = net.agents.get(this.packet.getFlowLabel()).getFlow();
 		Node updated_node = net.nodes.get(this.node.getLabel());
 
 		switch (this.event_type) {
-		/* ################## First-Packet event ################### */
-		case "First-Packet":
-			log.generalLog("Event.execute()::Captured First-Packet case.");
-
-			/* The first packet of the flow arrives to the first switch node */
-			// The Node Sends a Request packet to the controller to get the forwarding rule
-			// for the flow
-			// This should be implemented as a public method in controller
-			net = net.controller.newFlow(net, node, updated_flow);
-			// This communication means the next arrival event should be created with at the
-			// time after this one. this should be considered somehow.
-			//
-			/* An Arrival event should be created */
-			// It can be assumed that the switch has contacted the controller and the
-			// timings have been considered.
-
-			/* Updating next_time */
-			// 1- There should be control_delay that represents the Ropund_trip travel of
-			// control packet to the Controller
-			next_time = next_time + CONTROLLER_RTT_DELAY;
-
-			// 2- There should be a process_delay that represents the process time need for
-			// the controller to decide what order to give to the requesting Node
-			next_time = next_time + CONTROLLER_PROCESS_DELAY;
-
-			/* Updating next_type */
-			// The type of the next event is generic Arrival
-			next_type = "First-Packet";
-
-			/* Updating flow, packet_id and next_node(or Link?) */
-			next_node = node.getEgressLink(updated_flow.getDst()).getDst(); // There is a possibility that the Dst node
-																			// of the
-			// desired Link to be the same as the Current Node
-			// that we have called its getEgressLink(). One way
-			// to solve this issue is to give the Current Node
-			// to the Link.getDst() method and complete the
-			// checking in that method.
-
-			// Generate next arrival event
-			net.event_List.generateEvent(next_time, next_type, this.packet, next_node);
-
-			/* ################## Arrival event ######################## */
+		/* ################## Arrival event ######################## */
 		case "Arrival":
 			log.generalLog("Event.execute()::Captured Arrival case.");
 
-			/* Checking the occupancy of the buffer upon packet arrival */
-			if (updated_node.getEgressLink(updated_flow.getDst()).buffer.isFull()) {
+			/* Check if the flow entry exists in node's flow table */
+			if (!node.hasFlowEntry(packet.getFlowLabel())) {
+				/******************************************************************/
+				/********** Flow Entry dose not exists in the Flow Table **********/
+				/******************************************************************/
+				// newFlow() of controller should be called so that the flow table get updated
+				/* The first packet of the flow arrives to the first switch node */
+				// The Node Sends a Request packet to the controller to get the forwarding rule
+				// for the flow
+				// This should be implemented as a public method in controller
+				net = net.controller.newFlow(net, node, updated_flow);
+				// This communication means the next arrival event should be created with at the
+				// time after this one. this should be considered somehow.
+				//
+				/* An Arrival event should be created */
+				// It can be assumed that the switch has contacted the controller and the
+				// timings have been considered.
 
-				/* Generating a Drop event */
-				// There is no need for Drop event. We can update statistical counters
-				// Also, there should be a mechanism to manage timers and time-outs of the
-				// Transport layer protocols. But it's not here (I suppose).
+				/* Updating next_time */
+				// 1- There should be control_delay that represents the Ropund_trip travel of
+				// control packet to the Controller
+				next_time = next_time + CONTROLLER_RTT_DELAY;
 
-			} else { // The buffer has available space
+				// 2- There should be a process_delay that represents the process time need for
+				// the controller to decide what order to give to the requesting Node
+				next_time = next_time + CONTROLLER_PROCESS_DELAY;
 
-				/* Check if the packet has arrived to the destination */
-				if (packet.hasArrived(updated_node)) {
-					// if (updated_flow.hasArrived(updated_node)) {
+				/* Updating next_type */
+				// The type of the next event is generic Arrival
+				next_type = "Arrival";
 
-					/*
-					 * Informing the flow agent that the packet has arrived - using recv() method
-					 */
-					// net = updated_flow.dst_agent.recv(net);
-				} else {// The packet is ready for the departure
-					/* Generating next Arrival event */
+				/* Updating flow, packet_id and next_node(or Link?) */
+				next_node = node.getEgressLink(updated_flow.getLabel()).getDst(); // There is a possibility that the Dst
+																					// node
+																					// of the
+				// desired Link to be the same as the Current Node
+				// that we have called its getEgressLink(). One way
+				// to solve this issue is to give the Current Node
+				// to the Link.getDst() method and complete the
+				// checking in that method.
 
-					// Getting next_node_id
+				// Generate next arrival event
+				net.event_List.generateEvent(next_time, next_type, this.packet, next_node);
 
-					/* Calculating all types of delays for the packet */
-					// 1- Queuing Delay
-					// Getting wait time from the buffer
-					Double queue_delay = updated_node.getEgressLink(updated_flow.getDst()).buffer.getWaitTime();
+			} else {
+				/*********************************************************/
+				/********** Flow Entry Exists in the Flow Table **********/
+				/*********************************************************/
+				/* Checking the occupancy of the buffer upon packet arrival */
+				if (updated_node.getEgressLink(updated_flow.getLabel()).buffer.isFull()) {
 
-					// 2- Processing Delay
-					Double process_delay = 0.0; // Some constant that should be set by the simulator settings
-					updated_node.getEgressLink(updated_flow.getDst()).buffer
-							.updateDepartureTime(this.time + process_delay + queue_delay);
-					// 3-Propagation Delay 4- Transmission Delay
-					Double prob_delay = updated_node.neighbors.get(next_node).getPropagationDelay();
-					Double trans_delay = updated_node.neighbors.get(next_node)
-							.getTransmissionDelay(updated_flow.getPacketSize());
+					/* Generating a Drop event */
+					// There is no need for Drop event. We can update statistical counters
+					// Also, there should be a mechanism to manage timers and time-outs of the
+					// Transport layer protocols. But it's not here (I suppose).
 
-					// Calculating next_time
-					next_time = this.time + queue_delay + process_delay + prob_delay + trans_delay;
+				} else { // The buffer has available space
 
-					// Generate next arrival event
-					net.event_List.generateEvent(next_time, next_type, packet, next_node);
+					/* Check if the packet has arrived to the destination */
+					if (packet.hasArrived(updated_node)) {
+						// if (updated_flow.hasArrived(updated_node)) {
+
+						/*
+						 * Informing the flow agent that the packet has arrived - using recv() method
+						 */
+						// net = updated_flow.dst_agent.recv(net);
+					} else {// The packet is ready for the departure
+						/* Generating next Arrival event */
+
+						// Getting next_node_id
+
+						/* Calculating all types of delays for the packet */
+						// 1- Queuing Delay
+						// Getting wait time from the buffer
+						Double queue_delay = updated_node.getEgressLink(updated_flow.getLabel()).buffer.getWaitTime();
+
+						// 2- Processing Delay
+						Double process_delay = 0.0; // Some constant that should be set by the simulator settings
+						updated_node.getEgressLink(updated_flow.getLabel()).buffer
+								.updateDepartureTime(this.time + process_delay + queue_delay);
+						// 3-Propagation Delay 4- Transmission Delay
+						Double prob_delay = updated_node.neighbors.get(next_node).getPropagationDelay();
+						Double trans_delay = updated_node.neighbors.get(next_node)
+								.getTransmissionDelay(updated_flow.getPacketSize());
+
+						// Calculating next_time
+						next_time = this.time + queue_delay + process_delay + prob_delay + trans_delay;
+
+						// Generate next arrival event
+						net.event_List.generateEvent(next_time, next_type, packet, next_node);
+					}
+
 				}
-
 			}
 			/* Update the Log */
 
@@ -146,7 +155,7 @@ public class Event {
 		}
 
 		/* Updating nodes and flows of Network object */
-		net.flows.put(updated_flow.getLabel(), updated_flow);
+		net.agents.get(updated_flow.getLabel()).setFlow(updated_flow);
 		net.nodes.put(updated_node.getLabel(), updated_node);
 
 		return net;

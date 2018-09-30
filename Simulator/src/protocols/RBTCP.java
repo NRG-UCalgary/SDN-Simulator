@@ -8,7 +8,6 @@ public class RBTCP extends Agent {
 
 	public RBTCP(Flow flow) {
 		super(flow);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

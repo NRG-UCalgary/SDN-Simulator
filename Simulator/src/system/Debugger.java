@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class Debugger {
 
 	public Debugger() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public void arrayCheck(ArrayList<Object> arr) {

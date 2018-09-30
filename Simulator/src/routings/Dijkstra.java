@@ -15,6 +15,7 @@ public class Dijkstra extends Routing {
 	private List<Node> unvisited;
 	private Map<Node, Node> previous;
 	private Map<Node, Double> distance;
+	private Map<Node, Link> result;
 
 	/* Constructor */
 	public Dijkstra(Map<String, Node> nodes) {
@@ -22,27 +23,51 @@ public class Dijkstra extends Routing {
 		distance = new HashMap<Node, Double>();
 		previous = new HashMap<Node, Node>();
 		unvisited = new ArrayList<Node>();
+		result = new HashMap<Node, Link>();
 	}
 
 	/** Called in Class::Controller.generatePaths() **/
+
 	/* Objective::Finding the optimal paths for each Node */
-	public Map<Node, Link> run(Node src) {
+	public Map<Node, Link> run(Node src, Node target) {
+		log.generalLog("Entered Dijkstra.run().");
+
+		for (Node nod : nodes.values()) {
+			System.out.println(nod.getLabel() + ":");
+			for (Link l : nod.neighbors.values()) {
+				System.out.println(" " + l.getLabel() + " to " + l.getDst().getLabel());
+			}
+			System.out.println("*******************************");
+		}
+		System.out.println("Network Graph is fine.");
+		System.out.println("####################################");
+
 		distance = new HashMap<Node, Double>();
 		previous = new HashMap<Node, Node>();
 		unvisited = new ArrayList<Node>();
 
-		log.generalLog("Entered Dijkstra.run().");
+		System.out.println("distance = " + distance.size() + " - previous = " + previous.size() + " - unvisited = "
+				+ unvisited.size());
+		System.out.println("####################################");
+
 		/* Initialization */
 		for (Node curr_node : nodes.values()) {
 			distance.put(curr_node, Double.MAX_VALUE); // Unknown distance from source to v
 			previous.put(curr_node, src); // Previous node in optimal path from source
 			unvisited.add(curr_node); // All nodes initially in Q (unvisited nodes)
 		}
-
-		for (Node n : previous.keySet()) {
-			log.generalLog(n.getLabel() + ", " + previous.get(n).getLabel());
+		System.out.println("distance = " + distance.size() + " - previous = " + previous.size() + " - unvisited = "
+				+ unvisited.size());
+		System.out.println("####################################");
+		for (Node n : distance.keySet()) {
+			System.out.println(src.getLabel() + " distance to Node " + n.getLabel() + " is " + distance.get(n));
 		}
-		log.generalLog("------------------------------------------------");
+		System.out.println("####################################");
+		System.out.println("Unvisited: ");
+		for (Node n : unvisited) {
+			System.out.println(n.getLabel());
+		}
+		System.out.println("####################################");
 
 		distance.put(src, 0.0); // Distance from source to source
 
@@ -63,41 +88,33 @@ public class Dijkstra extends Routing {
 					distance.put(n, alt);
 					previous.put(n, minNode);
 
-					for (Node n1 : previous.keySet()) {
-						log.generalLog(n1.getLabel() + ", " + previous.get(n1).getLabel());
-					}
-					log.generalLog("------------------------------------------------");
-
 				}
 			}
 		}
 
-		return getResult(src);
+		System.out.println("previous: ");
+		for (Node n1 : previous.keySet()) {
+			System.out.println(n1.getLabel() + ", " + previous.get(n1).getLabel());
+		}
+		System.out.println("####################################");
+		this.result = new HashMap<Node, Link>();
+		generateResult(src, target);
+		return this.result;
 	}
 
 	/** Called in Class::Dijkstra.run() **/
 	/* Objective::Returning the routing table result<Node,Link> for Node src */
-	private Map<Node, Link> getResult(Node src_node) {
-		log.generalLog("Entered Dijkstra.getResult().");
+	private Node generateResult(Node src, Node dst) {
+		log.generalLog("Entered Dijkstra.generateResult().");
 
-		for (Node n : previous.keySet()) {
-			log.generalLog(n.getLabel() + ", " + previous.get(n).getLabel());
+		Node neighbor = previous.get(dst);
+		this.result.put(neighbor, neighbor.neighbors.get(dst));
+		// Check if the neighbor is connected to the src
+		if (previous.get(neighbor).equals(src)) {
+			this.result.put(src, src.neighbors.get(neighbor));
+			return null;
+		} else {
+			return generateResult(src, neighbor);
 		}
-
-		Map<Node, Link> result = new HashMap<Node, Link>();
-		Node temp = null;
-		for (Node dst_node : this.nodes.values()) {
-			if (dst_node.equals(src_node)) {
-				result.put(dst_node, null);
-				break;
-			} else {
-				while (!(previous.get(dst_node).equals(src_node))) {
-					temp = previous.get(dst_node);
-				}
-				result.put(dst_node, src_node.neighbors.get(temp));
-			}
-		}
-		return result;
 	}
-
 }

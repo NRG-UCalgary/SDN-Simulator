@@ -11,11 +11,12 @@ public class TCP extends Agent {
 
 	/* TCP state variables */
 	private int seq_num_;
+	private int ack_seq_num_;
 	private int packets_to_send_;
+	private boolean connection_established_;
 
 	public TCP(Flow flow) {
 		super(flow);
-		// TODO Auto-generated constructor stub
 
 		/* Initializing state variables */
 		seq_num_ = 0;
@@ -36,7 +37,7 @@ public class TCP extends Agent {
 		Packet syn_packet = createSYN();
 		// Create the First-Packet Event for the SYN message
 		double start_time = this.flow.getStartTime();
-		String type = "First-Packet";
+		String type = "Arrival";
 		Node src_node = this.flow.getSrc();
 		net.event_List.generateEvent(start_time, type, syn_packet, src_node);
 

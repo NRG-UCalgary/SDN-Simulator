@@ -54,7 +54,7 @@ public class Packet {
 		this.packet_id = packet_id;
 	}
 
-	public String getFlow_label() {
+	public String getFlowLabel() {
 		return flow_label;
 	}
 

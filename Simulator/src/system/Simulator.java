@@ -91,7 +91,6 @@ public class Simulator {
 		log.generalLog("Entered Simulator.generateFlow().");
 
 		Flow flow = new Flow(label, type, net.nodes.get(src), net.nodes.get(dst), size, arrival_time);
-		net.flows.put(label, flow);
 		Agent agent = null;
 
 		/* All transport layer protocols must be added to this switch case */

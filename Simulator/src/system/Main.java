@@ -24,7 +24,7 @@ public class Main {
 		sim.createLink("l1", "h0", "s0", 1.0, 1.0, 10, null);
 		sim.createLink("l2", "s0", "s1", 1.0, 1.0, 10, null);
 		sim.createLink("l3", "s1", "h1", 1.0, 1.0, 10, null);
-		sim.createLink("l4", "s0", "h1", 3.0, 1.0, 10, null);
+		sim.createLink("l4", "s0", "h1", 4.0, 1.0, 10, null);
 
 		/** Defining Traffic **/
 		/*

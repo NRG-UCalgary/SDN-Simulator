@@ -48,7 +48,6 @@ public class Logger {
 			buffered_writer.close();
 			file_writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (print_writer != null) {
@@ -82,7 +81,6 @@ public class Logger {
 			buffered_writer.close();
 			file_writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (print_writer != null) {
