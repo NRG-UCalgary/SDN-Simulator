@@ -1,5 +1,7 @@
 package system;
 
+import javax.swing.table.TableColumn;
+
 import entities.*;
 import protocols.*;
 
@@ -13,7 +15,7 @@ public class Simulator {
 
 	public Simulator() {
 		routing_policy = "Dijkstra";
-		controller = new Controller(net, routing_policy); // Thte deafaul value of routing policy should be Dijkstra
+		controller = new Controller(net, routing_policy); // The deafaul value of routing policy should be Dijkstra
 		/* Default Settings of the Simulator */
 	}
 
@@ -29,19 +31,23 @@ public class Simulator {
 		// packet) for each flow.
 		// This Initialization can be done through src_agent of each flow so their state
 		// variables can be updated.
-		initialize();
+		// initialize();
 
 		// Dummy line
 		controller.router.equals(null);
 
 		/* Reading the first Event from Network Event List */
 
+		log.endOfPhase("Initialization done.");
+		int main_count = 0;
 		/* Main Loop */
 		while (net.time <= end_time) {
+			log.generalLog("%%%%%%%%%%%%% Main Loop (#" + main_count + ") %%%%%%%%%%%%%");
 			/* Running the Current Event and Updating the net */
 			net = net.event_List.getEvent().execute(net);
 
-			log.generalLog("************************************");
+			main_count++;
+
 		}
 	}
 
@@ -91,15 +97,23 @@ public class Simulator {
 		log.generalLog("Entered Simulator.generateFlow().");
 
 		Flow flow = new Flow(label, type, net.nodes.get(src), net.nodes.get(dst), size, arrival_time);
-		Agent agent = null;
+		Agent src_agent = null;
+		Agent dst_agent = null;
 
+		// TODO Agents can be assigned in nodes? In this case each agent in each node
+		// (Host) can be found by the flow_label and each node has only one agent with a
+		// specific flow_label in this scenario.
 		/* All transport layer protocols must be added to this switch case */
+		/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
+
 		switch (type) {
 		case "TCP":
-			agent = new TCP(flow);
+			src_agent = new TCP(flow);
+			dst_agent = new TCP(flow);
 			break;
 		case "RBTCP":
-			agent = new RBTCP(flow);
+			src_agent = new RBTCP(flow);
+			dst_agent = new RBTCP(flow);
 		case "UDP":
 			UDP udp = new UDP();
 		default:
@@ -107,8 +121,14 @@ public class Simulator {
 			break;
 		}
 
+		// Initialization
+		src_agent.start(net);
+
+		// Net update
+		net.nodes.get(src).agents.put(label, src_agent);
+		net.nodes.get(dst).agents.put(label, dst_agent);
 		// Agents are stored with their flow's label in a Map <String,Agent> in Network
-		net.agents.put(label, agent);
+		/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
 
 	}
 

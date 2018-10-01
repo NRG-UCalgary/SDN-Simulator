@@ -4,19 +4,26 @@ import system.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import protocols.Agent;
+
 public class Node {
 	private Logger log = new Logger();
 
 	public Map<Node, Link> neighbors;
-
 	private Map<String, Link> flow_table;
 	private String label;
+
+	/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
+	// Agents become a property of Nodes -- Map<Flow_label, Agent>
+	public Map<String, Agent> agents;
+	/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
 
 	/* Constructor */
 	public Node(String label) {
 		this.label = label;
 		neighbors = new HashMap<Node, Link>();
 		flow_table = new HashMap<String, Link>();
+		agents = new HashMap<String, Agent>();
 	}
 
 	/** Called in Class::Event.run() **/

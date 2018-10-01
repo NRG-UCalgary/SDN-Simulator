@@ -70,6 +70,18 @@ public class Logger {
 		}
 	}
 
+	public void endOfPhase(String s) {
+		int PRELOAD = 10;
+		String TEN_DASH = "----------";
+		String dash_line = "";
+		for (int i = 0; i <= (s.length() + PRELOAD * 2) + 1; i++) {
+			dash_line = dash_line + "-";
+		}
+
+		generalLog(dash_line + "\n" + TEN_DASH + " " + s + " " + TEN_DASH + "\n" + dash_line);
+
+	}
+
 	public void networkLog(String s) {
 		try {
 			file_writer = new FileWriter(this.NETWORK_LOG, true);

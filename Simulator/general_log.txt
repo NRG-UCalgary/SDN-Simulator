@@ -7,13 +7,20 @@ Entered Simulator.createLink().
 Entered Simulator.createLink().
 Entered Simulator.createLink().
 Entered Simulator.generateFlow().
-Entered Simulator.run().
 Entered TCP.start().
 Entered TCP.createSYN().
 Entered EventList.generateEvent().
+Entered Simulator.run().
+------------------------------------------
+---------- Initialization done. ----------
+------------------------------------------
+%%%%%%%%%%%%% Main Loop (#0) %%%%%%%%%%%%%
 Entered EventList.getEvent().
 Entered Event.execute().
+Time of net is: 0.0
+This node is: h0
 Event.execute()::Captured Arrival case.
+Entered Packet.hasArrived().
 Entered Node.hasFlowEntry().
 Entered Controller.newFlow().
 Entered Dijkstra.run().
@@ -23,17 +30,44 @@ Entered Node.uppdateFlowTable().
 Entered Node.uppdateFlowTable().
 Entered Node.uppdateFlowTable().
 Entered Node.getEgressLink().
-Link is: l1
 Entered EventList.generateEvent().
-************************************
+%%%%%%%%%%%%% Main Loop (#1) %%%%%%%%%%%%%
 Entered EventList.getEvent().
 Entered Event.execute().
+Time of net is: 2.0
+This node is: s0
 Event.execute()::Captured Arrival case.
+Entered Packet.hasArrived().
 Entered Node.hasFlowEntry().
 Entered Node.getEgressLink().
-Link is: l2
+Entered Node.getEgressLink().
+Entered Node.getEgressLink().
+Entered Node.getEgressLink().
+Entered Node.getEgressLink().
+Entered Node.getEgressLink().
+Entered EventList.generateEvent().
+%%%%%%%%%%%%% Main Loop (#2) %%%%%%%%%%%%%
+Entered EventList.getEvent().
+Entered Event.execute().
+Time of net is: 43.0
+This node is: s1
+Event.execute()::Captured Arrival case.
 Entered Packet.hasArrived().
+Entered Node.hasFlowEntry().
 Entered Node.getEgressLink().
-Link is: l2
 Entered Node.getEgressLink().
-Link is: l2
+Entered Node.getEgressLink().
+Entered Node.getEgressLink().
+Entered Node.getEgressLink().
+Entered Node.getEgressLink().
+Entered EventList.generateEvent().
+%%%%%%%%%%%%% Main Loop (#3) %%%%%%%%%%%%%
+Entered EventList.getEvent().
+Entered Event.execute().
+Time of net is: 84.0
+This node is: h1
+Event.execute()::Captured Arrival case.
+Entered Packet.hasArrived().
+Pacetk has arrived to node: h1
+%%%%%%%%%%%%% Main Loop (#4) %%%%%%%%%%%%%
+Entered EventList.getEvent().

@@ -34,7 +34,7 @@ public class Main {
 		sim.generateFlow("f1", "TCP", "h0", "h1", 1, 1.0);
 
 		/** Running Simulation **/
-		sim.run(0.0, 10.0);
+		sim.run(0.0, 100000.0);
 
 		/** Getting Results **/
 

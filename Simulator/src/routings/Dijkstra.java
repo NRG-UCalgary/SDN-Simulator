@@ -32,23 +32,9 @@ public class Dijkstra extends Routing {
 	public Map<Node, Link> run(Node src, Node target) {
 		log.generalLog("Entered Dijkstra.run().");
 
-		for (Node nod : nodes.values()) {
-			System.out.println(nod.getLabel() + ":");
-			for (Link l : nod.neighbors.values()) {
-				System.out.println(" " + l.getLabel() + " to " + l.getDst().getLabel());
-			}
-			System.out.println("*******************************");
-		}
-		System.out.println("Network Graph is fine.");
-		System.out.println("####################################");
-
 		distance = new HashMap<Node, Double>();
 		previous = new HashMap<Node, Node>();
 		unvisited = new ArrayList<Node>();
-
-		System.out.println("distance = " + distance.size() + " - previous = " + previous.size() + " - unvisited = "
-				+ unvisited.size());
-		System.out.println("####################################");
 
 		/* Initialization */
 		for (Node curr_node : nodes.values()) {
@@ -56,18 +42,6 @@ public class Dijkstra extends Routing {
 			previous.put(curr_node, src); // Previous node in optimal path from source
 			unvisited.add(curr_node); // All nodes initially in Q (unvisited nodes)
 		}
-		System.out.println("distance = " + distance.size() + " - previous = " + previous.size() + " - unvisited = "
-				+ unvisited.size());
-		System.out.println("####################################");
-		for (Node n : distance.keySet()) {
-			System.out.println(src.getLabel() + " distance to Node " + n.getLabel() + " is " + distance.get(n));
-		}
-		System.out.println("####################################");
-		System.out.println("Unvisited: ");
-		for (Node n : unvisited) {
-			System.out.println(n.getLabel());
-		}
-		System.out.println("####################################");
 
 		distance.put(src, 0.0); // Distance from source to source
 
@@ -92,11 +66,6 @@ public class Dijkstra extends Routing {
 			}
 		}
 
-		System.out.println("previous: ");
-		for (Node n1 : previous.keySet()) {
-			System.out.println(n1.getLabel() + ", " + previous.get(n1).getLabel());
-		}
-		System.out.println("####################################");
 		this.result = new HashMap<Node, Link>();
 		generateResult(src, target);
 		return this.result;
