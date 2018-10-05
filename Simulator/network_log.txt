@@ -1,2 +1,4 @@
 Packet num:0 from flowf1 arrived to Node h1
-****************************************
+####################
+Packet num:0 from flowf1 arrived to Node h0
+####################

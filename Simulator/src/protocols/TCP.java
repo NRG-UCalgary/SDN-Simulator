@@ -26,21 +26,36 @@ public class TCP extends Agent {
 		packets_to_send_ = flow.getSize();
 	}
 
+	/**************************************************************************/
+	/************ Transport Protocol Methods **********************************/
+	/**************************************************************************/
 	@Override
-	public Network recv(Network net) {
+	public Network recv(Network net, String packet_type) {
+		log.entranceToMethod("TCP", "recv");
 		// TODO Auto-generated method stub
-		Packet ack_packet = createACK();
-		double start_time = net.time;
-		String type = "Arrival";
-		Node src_node = this.flow.getDst();
-		net.event_List.generateEvent(start_time, type, ack_packet, src_node);
-		// Set the ack timer
-		return super.recv(net);
+		switch (packet_type) {
+		case "SYN":
+			Packet ack_packet = createACK();
+			double start_time = net.time;
+			String type = "Arrival";
+			Node src_node = this.flow.getDst();
+			net.event_List.generateEvent(start_time, type, ack_packet, src_node);
+			// Set the ack timer
+			break;
+		case "ACK":
+			net = send(net);
+			break;
+		case "Data":
+			break;
+		default:
+			break;
+		}
+		return super.recv(net, packet_type);
 	}
 
 	@Override
 	public Network start(Network net) {
-		log.generalLog("Entered TCP.start().");
+		log.entranceToMethod("TCP", "start");
 		// In TCP, the start method, creates the SYN packet and its corresponding events
 		// Create a SYN message
 		Packet syn_packet = createSYN();
@@ -56,26 +71,42 @@ public class TCP extends Agent {
 		return super.start(net);
 	}
 
+	/** #################################################################### **/
+
+	/**************************************************************************/
+	/************ Transport Protocol Methods **********************************/
+	/**************************************************************************/
+
+	private Network send(Network net) {
+		log.entranceToMethod("TCP", "send");
+
+		return net;
+	}
+
 	private Packet createSYN() {
-		log.generalLog("Entered TCP.createSYN().");
+		log.entranceToMethod("TCP", "createSYN");
 		Packet syn_packet = new Packet(flow.getLabel(), SYN_PACKET_NUMBER, SYN_PACKET_SIZE, flow.getSrc(),
 				flow.getDst());
+		syn_packet.setType("SYN");
 		return syn_packet;
 	}
 
 	private Packet createPacket() {
-		log.generalLog("Entered TCP.createPacket().");
+		log.entranceToMethod("TCP", "createPacket");
 		Packet packet = new Packet(flow.getLabel(), seq_num_, DATA_PACKET_SIZE, flow.getSrc(), flow.getDst());
+		packet.setType("Data");
 		return packet;
 	}
 
 	private Packet createACK() {
-		log.generalLog("Entered TCP.createACK().");
+		log.entranceToMethod("TCP", "createACK");
 		Packet packet = new Packet(flow.getLabel(), seq_num_, ACK_PACKET_SIZE, flow.getDst(), flow.getSrc());
+		packet.setType("ACK");
 		return packet;
 	}
 
 	private void setTimer() {
+		log.entranceToMethod("TCP", "setTimer");
 
 	}
 }

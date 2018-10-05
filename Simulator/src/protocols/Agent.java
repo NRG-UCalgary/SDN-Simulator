@@ -18,8 +18,7 @@ public abstract class Agent {
 	}
 
 	// This function may be overridden in transport protocol implementations
-	public Network recv(Network net) {
-		log.generalLog("Entered to Agent.recv().");
+	public Network recv(Network net, String packet_type) {
 		// if the received packet is a Data-Packet, an ACK packet should be created
 
 		// if the received packet is an Ack-Packet, the next Data-Packet should be sent.
@@ -44,4 +43,5 @@ public abstract class Agent {
 		this.flow = flow;
 	}
 	/***********************************************************************/
+
 }

@@ -26,6 +26,9 @@ public class Main {
 		sim.createLink("l3", "s1", "h1", 1.0, 1.0, 10, null);
 		sim.createLink("l4", "s0", "h1", 4.0, 1.0, 10, null);
 
+		/* Controller must be defined after the topology is complete */
+		sim.createController();
+
 		/** Defining Traffic **/
 		/*
 		 * generateFlow: 1.String label 2.String type 3.String src_label 4.String
@@ -34,7 +37,7 @@ public class Main {
 		sim.generateFlow("f1", "TCP", "h0", "h1", 1, 1.0);
 
 		/** Running Simulation **/
-		sim.run(0.0, 100000.0);
+		sim.run(0.0, 1000.0);
 
 		/** Getting Results **/
 

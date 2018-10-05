@@ -11,8 +11,8 @@ public class RBTCP extends Agent {
 	}
 
 	@Override
-	public Network recv(Network net) {
+	public Network recv(Network net, String packet_type) {
 		// TODO Auto-generated method stub
-		return super.recv(net);
+		return super.recv(net, packet_type);
 	}
 }

@@ -29,7 +29,7 @@ public class Node {
 	/** Called in Class::Event.run() **/
 	/* Objective::Checking to find the flow label in the node flow table */
 	public boolean hasFlowEntry(String flow_label) {
-		log.generalLog("Entered Node.hasFlowEntry().");
+		log.entranceToMethod("Node", "hasFlowEntry");
 
 		if (flow_table.containsKey(flow_label)) {
 			return true;
@@ -41,14 +41,14 @@ public class Node {
 	/** Called in Class::Event.run() **/
 	/* Objective::Showing the egress-link for the desired destination Node */
 	public Link getEgressLink(String flow_label) {
-		log.generalLog("Entered Node.getEgressLink().");
+		log.entranceToMethod("Node", "getEgressLink");
 		return flow_table.get(flow_label);
 	}
 
 	/** Called in Class::Controller.newFlow() **/
 	/* Objective::Updating the forwarding table */
 	public void updateFlowTable(String flow_label, Link egress_link) {
-		log.generalLog("Entered Node.uppdateFlowTable().");
+		log.entranceToMethod("Node", "UpdateFlowTable");
 		this.flow_table.put(flow_label, egress_link);
 	}
 

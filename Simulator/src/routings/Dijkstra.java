@@ -30,7 +30,7 @@ public class Dijkstra extends Routing {
 
 	/* Objective::Finding the optimal paths for each Node */
 	public Map<Node, Link> run(Node src, Node target) {
-		log.generalLog("Entered Dijkstra.run().");
+		log.entranceToMethod("Dijkstra", "run");
 
 		distance = new HashMap<Node, Double>();
 		previous = new HashMap<Node, Node>();
@@ -74,7 +74,7 @@ public class Dijkstra extends Routing {
 	/** Called in Class::Dijkstra.run() **/
 	/* Objective::Returning the routing table result<Node,Link> for Node src */
 	private Node generateResult(Node src, Node dst) {
-		log.generalLog("Entered Dijkstra.generateResult().");
+		log.entranceToMethod("Dijkstra", "generateResult");
 
 		Node neighbor = previous.get(dst);
 		this.result.put(neighbor, neighbor.neighbors.get(dst));

@@ -26,7 +26,7 @@ public class Packet {
 	/* Called in Class::Event */
 	/* Gets current node and returns true if it is the flow destination */
 	public boolean hasArrived(Node current_node) {
-		log.generalLog("Entered Packet.hasArrived().");
+		log.entranceToMethod("Packet", "hasArrived");
 		if (current_node == this.destination) {
 			log.networkLog("Packet num:" + packet_id + " from flow" + flow_label + " arrived to Node "
 					+ destination.getLabel());

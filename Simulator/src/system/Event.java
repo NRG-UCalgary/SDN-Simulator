@@ -1,7 +1,6 @@
 package system;
 
 import entities.*;
-import protocols.Agent;
 
 public class Event {
 	private Logger log = new Logger();
@@ -34,31 +33,27 @@ public class Event {
 	}
 
 	public Network execute(Network net) {
-		log.generalLog("Entered Event.execute().");
+		log.entranceToMethod("Event", "execute");
 
 		/* Update net time to the event time */
 		net.time = this.time;
-		log.generalLog("Time of net is: " + net.time);
-		/* Fetching most recent flow and node from the Network object */
-
-		log.generalLog("This node is: " + this.node.getLabel());
+		log.eventInfo(this.packet.getFlowLabel(), this.node.getLabel(), Double.toString(this.time));
+		/* Updating the node for new state */
 		Node updated_node = net.nodes.get(this.node.getLabel());
-		// Agent updated_agent =
-		// net.nodes.get(updated_node.getLabel()).agents.get(this.packet.getFlowLabel());
-		// Flow updated_flow = updated_agent.getFlow();
 
 		switch (this.event_type) {
 		/* ################## Arrival event ######################## */
 		case "Arrival":
 			log.generalLog("Event.execute()::Captured Arrival case.");
+			log.captureCase("Event", "execute", "Arrival");
 
 			if (packet.hasArrived(updated_node)) {
-				log.generalLog("Pacetk has arrived to node: " + this.node.getLabel());
+				log.generalLog("Packet has arrived to node: " + this.node.getLabel());
 
 				/*
 				 * Informing the flow agent that the packet has arrived - using recv() method
 				 */
-				updated_node.agents.get(packet.getFlowLabel()).recv(net);
+				updated_node.agents.get(packet.getFlowLabel()).recv(net, packet.getType());
 			} else {
 				/* Check if the flow entry exists in node's flow table */
 				if (!node.hasFlowEntry(packet.getFlowLabel())) {
@@ -170,7 +165,5 @@ public class Event {
 		net.nodes.put(updated_node.getLabel(), updated_node);
 
 		return net;
-
 	}
-
 }

@@ -14,7 +14,7 @@ public class EventList {
 	}
 
 	public void generateEvent(double start_t, String type, Packet packet, Node node) {
-		log.generalLog("Entered EventList.generateEvent().");
+		log.entranceToMethod("EventList", "generateEvent");
 
 		Event event = new Event(start_t, type, packet, node);
 		// Some considerations may be added here about the place of the new event among
@@ -41,7 +41,7 @@ public class EventList {
 	/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 	public Event getEvent() {
-		log.generalLog("Entered EventList.getEvent().");
+		log.entranceToMethod("EventList", "getEvent");
 		Event event = this.events.get(0);
 		this.events.remove(0);
 		return event;
