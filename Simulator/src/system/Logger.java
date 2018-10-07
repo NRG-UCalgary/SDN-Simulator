@@ -10,6 +10,7 @@ public class Logger {
 	private final String LOOP_START = "-";
 	private final String CASE_CAPTURE = "=";
 	private final String BOX = "+";
+	private final String ARRIVED = "*";
 
 	/** ######## Number of characters before and after the content ######## **/
 	private final int PRELOAD = 10;
@@ -41,29 +42,51 @@ public class Logger {
 	}
 
 	public void captureCase(String class_name, String method_name, String cap_case) {
-		generalLog(lineWithContent(CASE_CAPTURE, class_name + "." + method_name + "(): " + cap_case));
+		String content = class_name + "." + method_name + "(): " + cap_case;
+		generalLog(lineWithContent(CASE_CAPTURE, content));
 	}
 
-	public void eventInfo(String flow_label, String node_label, String event_time) {
-		String[] content = new String[3];
+	public void eventInfo(String flow_label, String packet_type, String node_label, String event_time) {
+		String[] content = new String[4];
 		content[0] = "Flow: " + flow_label;
-		content[1] = "Node: " + node_label;
-		content[2] = "Time: " + event_time;
+		content[1] = "Type: " + packet_type;
+		content[2] = "Node: " + node_label;
+		content[3] = "Time: " + event_time;
 		generalLog(box(BOX, content));
+	}
+
+	public void arrivalOfPaket(int packet_seq_num, String node_label) {
+		// generalLog(lineWithContent(ARRIVED, "Packet #" + packet_seq_num + " delivered
+		// to node " + node_label));
+		String content = "Packet #" + packet_seq_num + " delivered to node " + node_label;
+		generalLog(box(ARRIVED, content));
 	}
 
 	/*********************************************/
 	/* Generates a box for information */
 	private String box(String character, String[] content) {
-		String result = simpleLine(character, PRELOAD * 2) + "\n";
+		int max = 0;
+		for (int i = 0; i < content.length; i++) {
+			if (content[i].length() >= max) {
+				max = content[i].length();
+			}
+		}
+		String result = simpleLine(character, PRELOAD + max) + "\n";
 
 		for (int i = 0; i < content.length; i++) {
 			result = result + character + simpleLine(" ", PRELOAD / 2) + content[i]
-					+ simpleLine(" ", (PRELOAD * 2) - ((PRELOAD / 2) + 2 + content[i].length())) + character + "\n";
+					+ simpleLine(" ", (PRELOAD + max) - ((PRELOAD / 2) + 2 + content[i].length())) + character + "\n";
 		}
 
-		result = result + simpleLine(character, PRELOAD * 2);
+		result = result + simpleLine(character, PRELOAD + max);
 		return result;
+	}
+
+	// Overload
+	private String box(String character, String content) {
+		String[] content_array = new String[1];
+		content_array[0] = content;
+		return box(character, content_array);
 	}
 
 	/* Generates a banner with desired character and content in it */

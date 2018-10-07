@@ -9,9 +9,10 @@ public class Link {
 	private Node destination;
 	private String label;
 
-	public Link(String label, Node src, Node dest, Double prop_del, Double band, int buffer_size, String buffer_policy) {
+	public Link(String label, Node src, Node dest, Double prop_del, Double band, int buffer_size,
+			String buffer_policy) {
 		this.label = label;
-		this.bandwidth = band;
+		this.bandwidth = band * (10 ^ 6); // The bandwidth unit is Mbps
 		this.propagation_delay = prop_del;
 		this.source = src;
 		this.destination = dest;

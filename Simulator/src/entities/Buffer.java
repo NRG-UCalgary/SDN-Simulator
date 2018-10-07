@@ -2,21 +2,34 @@ package entities;
 
 public class Buffer {
 	private int capacity;
-	// private String policy;
+	private String policy;
+
+	private final double NO_WAIT_TIME = 0.0;
+
+	// State variables of Buffer
 	public int occupancy;
+	private Double most_recent_packet_departure;
 
-	/* Shows the waiting time for the upcoming packet to be sent */
-	/* Must be updated each time a packet is Enqueued */
-	private double wait_time;
-
+	// Constructor
 	public Buffer(int cap, String policy) {
 		this.capacity = cap;
-		// this.policy = policy;
 		occupancy = 0;
+		this.policy = policy;
+		most_recent_packet_departure = 0.0;
 	}
 
-	public String enQueue() {
-		return null;
+	/* Call in Class::Event */
+	/* Returns queue time for the packet */
+	public double getWaitTime(Double trans_delay, Double current_time) {
+		if (most_recent_packet_departure <= current_time) {
+			most_recent_packet_departure = trans_delay;
+			return NO_WAIT_TIME;
+
+		} else {
+			Double wait_time = most_recent_packet_departure - current_time;
+			most_recent_packet_departure = most_recent_packet_departure + trans_delay;
+			return wait_time;
+		}
 	}
 
 	/* Called in Class::Event */
@@ -29,21 +42,5 @@ public class Buffer {
 		}
 		System.out.println("Error Class::Buffer--Invalid buffer occupancy(" + occupancy + ").");
 		return false;
-	}
-
-	/* Call in Class::Event */
-	/* Returns queue time for the packet */
-	public double getWaitTime() {
-		// the wait time for new arrival packet to the queue is equal to
-		// transmission_delay * number_of_packets in the queue
-
-		wait_time = 0.0; ///// ###################### Must be completed
-
-		return this.wait_time;
-	}
-
-	/* Call in Class::Event */
-	public void updateDepartureTime(Double t) {
-		this.wait_time = this.wait_time + t;
 	}
 }

@@ -19,12 +19,12 @@ Entered Simulator.run()
 -----------------------------------------------
 Entered EventList.getEvent()
 Entered Event.execute()
-++++++++++++++++++++
-+     Flow: f1     +
-+     Node: h0     +
-+     Time: 0.0    +
-++++++++++++++++++++
-Event.execute()::Captured Arrival case.
++++++++++++++++++++
++     Flow: f1    +
++     Type: SYN   +
++     Node: h0    +
++     Time: 0.0   +
++++++++++++++++++++
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
 Entered Node.hasFlowEntry()
@@ -36,22 +36,25 @@ Entered Node.UpdateFlowTable()
 Entered Node.UpdateFlowTable()
 Entered Node.UpdateFlowTable()
 Entered Node.getEgressLink()
+Entered Node.getEgressLink()
+Entered Node.getEgressLink()
+Entered Node.getEgressLink()
+Entered Node.getEgressLink()
 Entered EventList.generateEvent()
 -----------------------------------------------
 ---------- Simulator::Main Loop (#1) ----------
 -----------------------------------------------
 Entered EventList.getEvent()
 Entered Event.execute()
-++++++++++++++++++++
-+     Flow: f1     +
-+     Node: s0     +
-+     Time: 2.0    +
-++++++++++++++++++++
-Event.execute()::Captured Arrival case.
++++++++++++++++++++++++++++++++++
++     Flow: f1                  +
++     Type: SYN                 +
++     Node: s0                  +
++     Time: 7.333333333333334   +
++++++++++++++++++++++++++++++++++
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
 Entered Node.hasFlowEntry()
-Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
@@ -63,16 +66,15 @@ Entered EventList.generateEvent()
 -----------------------------------------------
 Entered EventList.getEvent()
 Entered Event.execute()
-++++++++++++++++++++
-+     Flow: f1     +
-+     Node: s1     +
-+     Time: 43.0   +
-++++++++++++++++++++
-Event.execute()::Captured Arrival case.
+++++++++++++++++++++++++++++++++++
++     Flow: f1                   +
++     Type: SYN                  +
++     Node: s1                   +
++     Time: 12.666666666666668   +
+++++++++++++++++++++++++++++++++++
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
 Entered Node.hasFlowEntry()
-Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
@@ -86,13 +88,15 @@ Entered EventList.getEvent()
 Entered Event.execute()
 ++++++++++++++++++++
 +     Flow: f1     +
++     Type: SYN    +
 +     Node: h1     +
-+     Time: 84.0   +
++     Time: 18.0   +
 ++++++++++++++++++++
-Event.execute()::Captured Arrival case.
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
-Packet has arrived to node: h1
+****************************************
+*     Packet #0 delivered to node h1   *
+****************************************
 Entered TCP.recv()
 Entered TCP.createACK()
 Entered EventList.generateEvent()
@@ -103,10 +107,10 @@ Entered EventList.getEvent()
 Entered Event.execute()
 ++++++++++++++++++++
 +     Flow: f1     +
++     Type: ACK    +
 +     Node: h1     +
-+     Time: 84.0   +
++     Time: 18.0   +
 ++++++++++++++++++++
-Event.execute()::Captured Arrival case.
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
 Entered Node.hasFlowEntry()
@@ -118,22 +122,25 @@ Entered Node.UpdateFlowTable()
 Entered Node.UpdateFlowTable()
 Entered Node.UpdateFlowTable()
 Entered Node.getEgressLink()
+Entered Node.getEgressLink()
+Entered Node.getEgressLink()
+Entered Node.getEgressLink()
+Entered Node.getEgressLink()
 Entered EventList.generateEvent()
 -----------------------------------------------
 ---------- Simulator::Main Loop (#5) ----------
 -----------------------------------------------
 Entered EventList.getEvent()
 Entered Event.execute()
-++++++++++++++++++++
-+     Flow: f1     +
-+     Node: s1     +
-+     Time: 2.0    +
-++++++++++++++++++++
-Event.execute()::Captured Arrival case.
+++++++++++++++++++++++++++++++++++
++     Flow: f1                   +
++     Type: ACK                  +
++     Node: s1                   +
++     Time: 25.333333333333332   +
+++++++++++++++++++++++++++++++++++
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
 Entered Node.hasFlowEntry()
-Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
@@ -145,16 +152,15 @@ Entered EventList.generateEvent()
 -----------------------------------------------
 Entered EventList.getEvent()
 Entered Event.execute()
-++++++++++++++++++++
-+     Flow: f1     +
-+     Node: s0     +
-+     Time: 43.0   +
-++++++++++++++++++++
-Event.execute()::Captured Arrival case.
+++++++++++++++++++++++++++++++++++
++     Flow: f1                   +
++     Type: ACK                  +
++     Node: s0                   +
++     Time: 30.666666666666664   +
+++++++++++++++++++++++++++++++++++
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
 Entered Node.hasFlowEntry()
-Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
 Entered Node.getEgressLink()
@@ -168,13 +174,15 @@ Entered EventList.getEvent()
 Entered Event.execute()
 ++++++++++++++++++++
 +     Flow: f1     +
++     Type: ACK    +
 +     Node: h0     +
-+     Time: 84.0   +
++     Time: 36.0   +
 ++++++++++++++++++++
-Event.execute()::Captured Arrival case.
 ========== Event.execute(): Arrival ==========
 Entered Packet.hasArrived()
-Packet has arrived to node: h0
+****************************************
+*     Packet #0 delivered to node h0   *
+****************************************
 Entered TCP.recv()
 Entered TCP.send()
 -----------------------------------------------
