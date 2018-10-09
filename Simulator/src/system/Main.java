@@ -34,10 +34,10 @@ public class Main {
 		 * generateFlow: 1.String label 2.String type 3.String src_label 4.String
 		 * dst_label 5.Integer number_packets 6.Double arrival_time
 		 */
-		sim.generateFlow("f1", "TCP", "h0", "h1", 1, 1.0);
+		sim.generateFlow("f1", "TCP", "h0", "h1", 50, 1.0);
 
 		/** Running Simulation **/
-		sim.run(0.0, 1000.0);
+		sim.run(0.0, 2000.0);
 
 		/** Getting Results **/
 

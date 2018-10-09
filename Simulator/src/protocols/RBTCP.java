@@ -2,6 +2,7 @@ package protocols;
 
 import entities.Flow;
 import entities.Node;
+import entities.Packet;
 import system.Network;
 
 public class RBTCP extends Agent {
@@ -11,8 +12,8 @@ public class RBTCP extends Agent {
 	}
 
 	@Override
-	public Network recv(Network net, String packet_type) {
+	public Network recv(Network net, Packet packet) {
 		// TODO Auto-generated method stub
-		return super.recv(net, packet_type);
+		return super.recv(net, packet);
 	}
 }

@@ -35,6 +35,7 @@ public class Event {
 
 	public Network execute(Network net) {
 		log.entranceToMethod("Event", "execute");
+		log.generalLog("Event type: " + this.event_type);
 
 		/* Initializing next_variables for the new event */
 		this.next_time = 0;
@@ -55,12 +56,12 @@ public class Event {
 			log.captureCase("Event", "execute", "Arrival");
 
 			if (packet.hasArrived(updated_node)) {
-				log.arrivalOfPaket(this.packet.getPacket_id(), this.node.getLabel());
+				log.arrivalOfPaket(this.packet.getSeqNum(), this.node.getLabel());
 
 				/*
 				 * Informing the flow agent that the packet has arrived - using recv() method
 				 */
-				updated_node.agents.get(packet.getFlowLabel()).recv(net, packet.getType());
+				updated_node.agents.get(packet.getFlowLabel()).recv(net, packet);
 			} else {
 				/* Check if the flow entry exists in node's flow table */
 				if (!node.hasFlowEntry(packet.getFlowLabel())) {
@@ -82,9 +83,6 @@ public class Event {
 
 						/* Generating next Arrival event */
 
-						// Propagation Delay
-						Double prop_delay = updated_node.getEgressLink(packet.getFlowLabel()).getPropagationDelay();
-
 						// Transmission Delay
 						Double trans_delay = updated_node.getEgressLink(packet.getFlowLabel())
 								.getTransmissionDelay(packet.getSize());
@@ -93,20 +91,20 @@ public class Event {
 						Double queue_delay = updated_node.getEgressLink(packet.getFlowLabel()).buffer
 								.getWaitTime(trans_delay, this.time);
 
-						// 2- Processing Delay
+						// Processing Delay
 						Double process_delay = NODE_PROCESS_DELAY + CONTROLLER_RTT_DELAY + CONTROLLER_PROCESS_DELAY;
 
 						// Calculating next_time
-						next_time = this.time + queue_delay + process_delay + trans_delay + prop_delay;
+						next_time = this.time + queue_delay + process_delay + trans_delay;
 
 						/* Updating next_type */
-						next_type = "Arrival";
+						next_type = "Departure";
 
 						/* Updating next_node */
-						next_node = node.getEgressLink(packet.getFlowLabel()).getDst();
+						next_node = node;
 
 						// Generate next arrival event
-						net.event_List.generateEvent(next_time, next_type, this.packet, next_node);
+						net.event_List.generateEvent(next_time, next_type, packet, next_node);
 					}
 
 				} else {
@@ -125,9 +123,6 @@ public class Event {
 
 						/* Generating next Arrival event */
 
-						// Propagation Delay
-						Double prop_delay = updated_node.getEgressLink(packet.getFlowLabel()).getPropagationDelay();
-
 						// Transmission Delay
 						Double trans_delay = updated_node.getEgressLink(packet.getFlowLabel())
 								.getTransmissionDelay(packet.getSize());
@@ -140,13 +135,13 @@ public class Event {
 						Double process_delay = NODE_PROCESS_DELAY;
 
 						// Calculating next_time
-						next_time = this.time + queue_delay + process_delay + trans_delay + prop_delay;
+						next_time = this.time + queue_delay + process_delay + trans_delay;
 
 						// Getting next_node
-						next_node = node.getEgressLink(packet.getFlowLabel()).getDst();
+						next_node = node;
 
 						// Updating next_type
-						next_type = "Arrival";
+						next_type = "Departure";
 
 						// Generate next arrival event
 						net.event_List.generateEvent(next_time, next_type, packet, next_node);
@@ -158,12 +153,40 @@ public class Event {
 
 			break;
 		case "Departure":
-			System.out.println("Departure: Got it!");
+			log.captureCase("Event", "execute", "Departure");
+			// The departure case is for updating the state of the buffers (occupancy). Now
+			// that we have departures, creating of new arrivals can come to this part too.
+			// This means the arrival event checks for delivery to destination node or
+			// updating the buffer occupancy of buffer and newFlow entry.
+
+			/* Updating the corresponding buffer occupancy state */
+			updated_node.getEgressLink(packet.getFlowLabel()).buffer.deQueue();
+
+			/* Creating the next Arrival event */
+			/* Generating next Arrival event */
+
+			// Propagation Delay
+			Double prop_delay = updated_node.getEgressLink(packet.getFlowLabel()).getPropagationDelay();
+
+			// Updating next_time
+			next_time = this.time + prop_delay;
+
+			// Getting next_node
+			next_node = node.getEgressLink(packet.getFlowLabel()).getDst();
+
+			// Updating next_type
+			next_type = "Arrival";
+
+			// Generate next arrival event
+			net.event_List.generateEvent(next_time, next_type, packet, next_node);
+
 			// Right now we do not need Departure event
 			break;
-		case "Drop":
-			System.out.println("Drop: Got it!");
-			// Right now we do not need Drop event
+		case "TCP-TimeOut":
+			log.captureCase("Event", "run", "TCP-TimeOut");
+
+			/* Calling TimeOut method of the corresponding agent */
+
 			break;
 		default:
 			System.out.println("Error: Event.run() - Invalid event type (" + this.event_type + ")");

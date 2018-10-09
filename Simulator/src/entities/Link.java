@@ -1,6 +1,10 @@
 package entities;
 
+import system.Logger;
+
 public class Link {
+	private Logger log = new Logger();
+
 	public Buffer buffer;
 
 	private double bandwidth;
@@ -12,6 +16,8 @@ public class Link {
 	public Link(String label, Node src, Node dest, Double prop_del, Double band, int buffer_size,
 			String buffer_policy) {
 		this.label = label;
+		// TODO The bandwidth unit should be determined by user from Simulator. The
+		// default is Mbps
 		this.bandwidth = band * (10 ^ 6); // The bandwidth unit is Mbps
 		this.propagation_delay = prop_del;
 		this.source = src;
@@ -21,7 +27,9 @@ public class Link {
 	}
 
 	public double getTransmissionDelay(int packet_size) {
+		log.entranceToMethod("Link", "getTransmissionDelay");
 		Double trans_delay = packet_size / (double) this.bandwidth;
+		log.generalLog("Transmision is: " + trans_delay);
 		return trans_delay;
 	}
 

@@ -12,7 +12,7 @@ public class Simulator {
 	private final String CONTROLLER_ROUTING_ALG = "Dijkstra";
 
 	/* Buffer Algorithm */
-	private final String BUFFER_ALG = "FCFS";
+	//private final String BUFFER_ALG = "FCFS";
 
 	/** ################################################# **/
 
@@ -133,7 +133,7 @@ public class Simulator {
 		src_agent.start(net);
 
 		// Net update
-		net.nodes.get(src).agents.put(label, src_agent);
+		net.nodes.get(src).agents.put(label+".ACK", src_agent);
 		net.nodes.get(dst).agents.put(label, dst_agent);
 		// Agents are stored with their flow's label in a Map <String,Agent> in Network
 		/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */

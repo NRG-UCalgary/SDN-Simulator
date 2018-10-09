@@ -1,4 +1,262 @@
-Packet num:0 from flowf1 arrived to Node h1
+Packet num:0 from flow f1 arrived to Node h1
 ####################
-Packet num:0 from flowf1 arrived to Node h0
+Packet num:0 from flow f1.ACK arrived to Node h0
+####################
+Packet num:1 from flow f1 arrived to Node h1
+####################
+Packet num:1 from flow f1.ACK arrived to Node h0
+####################
+Packet num:2 from flow f1 arrived to Node h1
+####################
+Packet num:3 from flow f1 arrived to Node h1
+####################
+Packet num:2 from flow f1.ACK arrived to Node h0
+####################
+Packet num:3 from flow f1.ACK arrived to Node h0
+####################
+Packet num:4 from flow f1 arrived to Node h1
+####################
+Packet num:5 from flow f1 arrived to Node h1
+####################
+Packet num:6 from flow f1 arrived to Node h1
+####################
+Packet num:7 from flow f1 arrived to Node h1
+####################
+Packet num:4 from flow f1.ACK arrived to Node h0
+####################
+Packet num:5 from flow f1.ACK arrived to Node h0
+####################
+Packet num:6 from flow f1.ACK arrived to Node h0
+####################
+Packet num:7 from flow f1.ACK arrived to Node h0
+####################
+Packet num:8 from flow f1 arrived to Node h1
+####################
+Packet num:9 from flow f1 arrived to Node h1
+####################
+Packet num:10 from flow f1 arrived to Node h1
+####################
+Packet num:11 from flow f1 arrived to Node h1
+####################
+Packet num:12 from flow f1 arrived to Node h1
+####################
+Packet num:8 from flow f1.ACK arrived to Node h0
+####################
+Packet num:13 from flow f1 arrived to Node h1
+####################
+Packet num:9 from flow f1.ACK arrived to Node h0
+####################
+Packet num:14 from flow f1 arrived to Node h1
+####################
+Packet num:10 from flow f1.ACK arrived to Node h0
+####################
+Packet num:15 from flow f1 arrived to Node h1
+####################
+Packet num:11 from flow f1.ACK arrived to Node h0
+####################
+Packet num:12 from flow f1.ACK arrived to Node h0
+####################
+Packet num:13 from flow f1.ACK arrived to Node h0
+####################
+Packet num:14 from flow f1.ACK arrived to Node h0
+####################
+Packet num:15 from flow f1.ACK arrived to Node h0
+####################
+Packet num:16 from flow f1 arrived to Node h1
+####################
+Packet num:17 from flow f1 arrived to Node h1
+####################
+Packet num:18 from flow f1 arrived to Node h1
+####################
+Packet num:19 from flow f1 arrived to Node h1
+####################
+Packet num:20 from flow f1 arrived to Node h1
+####################
+Packet num:16 from flow f1.ACK arrived to Node h0
+####################
+Packet num:21 from flow f1 arrived to Node h1
+####################
+Packet num:17 from flow f1.ACK arrived to Node h0
+####################
+Packet num:22 from flow f1 arrived to Node h1
+####################
+Packet num:18 from flow f1.ACK arrived to Node h0
+####################
+Packet num:23 from flow f1 arrived to Node h1
+####################
+Packet num:19 from flow f1.ACK arrived to Node h0
+####################
+Packet num:24 from flow f1 arrived to Node h1
+####################
+Packet num:20 from flow f1.ACK arrived to Node h0
+####################
+Packet num:25 from flow f1 arrived to Node h1
+####################
+Packet num:21 from flow f1.ACK arrived to Node h0
+####################
+Packet num:22 from flow f1.ACK arrived to Node h0
+####################
+Packet num:27 from flow f1 arrived to Node h1
+####################
+Packet num:23 from flow f1.ACK arrived to Node h0
+####################
+Packet num:28 from flow f1 arrived to Node h1
+####################
+Packet num:24 from flow f1.ACK arrived to Node h0
+####################
+Packet num:29 from flow f1 arrived to Node h1
+####################
+Packet num:25 from flow f1.ACK arrived to Node h0
+####################
+Packet num:30 from flow f1 arrived to Node h1
+####################
+Packet num:31 from flow f1 arrived to Node h1
+####################
+Packet num:27 from flow f1.ACK arrived to Node h0
+####################
+Packet num:28 from flow f1.ACK arrived to Node h0
+####################
+Packet num:29 from flow f1.ACK arrived to Node h0
+####################
+Packet num:30 from flow f1.ACK arrived to Node h0
+####################
+Packet num:31 from flow f1.ACK arrived to Node h0
+####################
+Packet num:32 from flow f1 arrived to Node h1
+####################
+Packet num:33 from flow f1 arrived to Node h1
+####################
+Packet num:34 from flow f1 arrived to Node h1
+####################
+Packet num:35 from flow f1 arrived to Node h1
+####################
+Packet num:36 from flow f1 arrived to Node h1
+####################
+Packet num:32 from flow f1.ACK arrived to Node h0
+####################
+Packet num:37 from flow f1 arrived to Node h1
+####################
+Packet num:33 from flow f1.ACK arrived to Node h0
+####################
+Packet num:38 from flow f1 arrived to Node h1
+####################
+Packet num:34 from flow f1.ACK arrived to Node h0
+####################
+Packet num:39 from flow f1 arrived to Node h1
+####################
+Packet num:35 from flow f1.ACK arrived to Node h0
+####################
+Packet num:40 from flow f1 arrived to Node h1
+####################
+Packet num:36 from flow f1.ACK arrived to Node h0
+####################
+Packet num:41 from flow f1 arrived to Node h1
+####################
+Packet num:37 from flow f1.ACK arrived to Node h0
+####################
+Packet num:38 from flow f1.ACK arrived to Node h0
+####################
+Packet num:43 from flow f1 arrived to Node h1
+####################
+Packet num:39 from flow f1.ACK arrived to Node h0
+####################
+Packet num:44 from flow f1 arrived to Node h1
+####################
+Packet num:40 from flow f1.ACK arrived to Node h0
+####################
+Packet num:45 from flow f1 arrived to Node h1
+####################
+Packet num:41 from flow f1.ACK arrived to Node h0
+####################
+Packet num:46 from flow f1 arrived to Node h1
+####################
+Packet num:47 from flow f1 arrived to Node h1
+####################
+Packet num:43 from flow f1.ACK arrived to Node h0
+####################
+Packet num:48 from flow f1 arrived to Node h1
+####################
+Packet num:44 from flow f1.ACK arrived to Node h0
+####################
+Packet num:49 from flow f1 arrived to Node h1
+####################
+Packet num:45 from flow f1.ACK arrived to Node h0
+####################
+Packet num:50 from flow f1 arrived to Node h1
+####################
+Packet num:46 from flow f1.ACK arrived to Node h0
+####################
+Packet num:51 from flow f1 arrived to Node h1
+####################
+Packet num:47 from flow f1.ACK arrived to Node h0
+####################
+Packet num:52 from flow f1 arrived to Node h1
+####################
+Packet num:48 from flow f1.ACK arrived to Node h0
+####################
+Packet num:49 from flow f1.ACK arrived to Node h0
+####################
+Packet num:54 from flow f1 arrived to Node h1
+####################
+Packet num:50 from flow f1.ACK arrived to Node h0
+####################
+Packet num:55 from flow f1 arrived to Node h1
+####################
+Packet num:51 from flow f1.ACK arrived to Node h0
+####################
+Packet num:56 from flow f1 arrived to Node h1
+####################
+Packet num:52 from flow f1.ACK arrived to Node h0
+####################
+Packet num:57 from flow f1 arrived to Node h1
+####################
+Packet num:58 from flow f1 arrived to Node h1
+####################
+Packet num:54 from flow f1.ACK arrived to Node h0
+####################
+Packet num:59 from flow f1 arrived to Node h1
+####################
+Packet num:55 from flow f1.ACK arrived to Node h0
+####################
+Packet num:60 from flow f1 arrived to Node h1
+####################
+Packet num:56 from flow f1.ACK arrived to Node h0
+####################
+Packet num:61 from flow f1 arrived to Node h1
+####################
+Packet num:57 from flow f1.ACK arrived to Node h0
+####################
+Packet num:62 from flow f1 arrived to Node h1
+####################
+Packet num:58 from flow f1.ACK arrived to Node h0
+####################
+Packet num:63 from flow f1 arrived to Node h1
+####################
+Packet num:59 from flow f1.ACK arrived to Node h0
+####################
+Packet num:60 from flow f1.ACK arrived to Node h0
+####################
+Packet num:61 from flow f1.ACK arrived to Node h0
+####################
+Packet num:62 from flow f1.ACK arrived to Node h0
+####################
+Packet num:63 from flow f1.ACK arrived to Node h0
+####################
+Packet num:64 from flow f1 arrived to Node h1
+####################
+Packet num:65 from flow f1 arrived to Node h1
+####################
+Packet num:66 from flow f1 arrived to Node h1
+####################
+Packet num:67 from flow f1 arrived to Node h1
+####################
+Packet num:68 from flow f1 arrived to Node h1
+####################
+Packet num:64 from flow f1.ACK arrived to Node h0
+####################
+Packet num:69 from flow f1 arrived to Node h1
+####################
+Packet num:65 from flow f1.ACK arrived to Node h0
+####################
+Packet num:70 from flow f1 arrived to Node h1
 ####################

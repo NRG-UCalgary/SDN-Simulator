@@ -18,11 +18,15 @@ public abstract class Agent {
 	}
 
 	// This function may be overridden in transport protocol implementations
-	public Network recv(Network net, String packet_type) {
+	public Network recv(Network net, Packet packet) {
 		// if the received packet is a Data-Packet, an ACK packet should be created
 
 		// if the received packet is an Ack-Packet, the next Data-Packet should be sent.
 
+		return net;
+	}
+	
+	public Network timeOut(Network net, Packet packet) {
 		return net;
 	}
 
@@ -42,6 +46,7 @@ public abstract class Agent {
 	public void setFlow(Flow flow) {
 		this.flow = flow;
 	}
+
 	/***********************************************************************/
 
 }

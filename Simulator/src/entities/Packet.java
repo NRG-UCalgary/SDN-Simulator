@@ -5,7 +5,7 @@ import system.*;
 public class Packet {
 	private Logger log;
 
-	private int packet_id;
+	private int seq_num;
 	private String flow_label;
 	private String type;
 	private int size;
@@ -13,9 +13,9 @@ public class Packet {
 	private Node source;
 	private Node destination;
 
-	public Packet(String flow_label, int packet_id, int size, Node source, Node destination) {
+	public Packet(String flow_label, int seq_num, int size, Node source, Node destination) {
 		this.flow_label = flow_label;
-		this.packet_id = packet_id;
+		this.seq_num = seq_num;
 		this.size = size;
 		this.source = source;
 		this.destination = destination;
@@ -28,7 +28,7 @@ public class Packet {
 	public boolean hasArrived(Node current_node) {
 		log.entranceToMethod("Packet", "hasArrived");
 		if (current_node == this.destination) {
-			log.networkLog("Packet num:" + packet_id + " from flow" + flow_label + " arrived to Node "
+			log.networkLog("Packet num:" + seq_num + " from flow " + flow_label + " arrived to Node "
 					+ destination.getLabel());
 			return true;
 		}
@@ -46,12 +46,12 @@ public class Packet {
 		this.log = log;
 	}
 
-	public int getPacket_id() {
-		return packet_id;
+	public int getSeqNum() {
+		return seq_num;
 	}
 
-	public void setPacket_id(int packet_id) {
-		this.packet_id = packet_id;
+	public void setSeqNum(int seq_num) {
+		this.seq_num = seq_num;
 	}
 
 	public String getFlowLabel() {

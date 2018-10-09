@@ -1,0 +1,24 @@
+1. EventList management :: When there are multiple arrival events with the exact same time at the same node,
+there should be a mechanism to decide which event goes in. Also, in the first place, there should be a mechanism
+to find the Arrival events with those property in the EventList. 
+One possible solution is to handle this in at the time of putting events in the EventList. This can be implemented
+by having separate data structures for different kind of events. For instance, one for arrival events and one for 
+departures and one for TCP-time-outs.
+
+2. Queues and departure event :: Implementing queues without departure event is not logical. One could say we can create a mechanism in each queue
+which updates the occupancy with every put in it. But I'm afraid such a system will impose more time complexity on the
+program compared to having departure events.
+
+3. Packet Drop :: when do packet drops happen?
+a1- When multiple packets arrive at the same time to the same node.
+a2- When one packet arrives before the transmission time the previous packet to the node is finished.
+a3- When the occupancy of the corrsponding link's buffer is full. (This case is certain.)
+-- In general we can say the packet drop happens at two levels. First, upon arrival at the node. Second, inside the node at the links buffer.
+
+4. The strucure of buffer can be updated. Right now packets do not actualy stay in the buffer queue. The wait-Time of each packet is determined by 
+the buffer based on the wait_time of previous packets. This means at events, departure events are created upon arriavl as oppsed to be created upon
+departure of earlier packets in the buffer.
+
+5. ** There is an issue with the ACK flow label. In the current design, ACKs have the same lable of the flow.
+-- Solution: The src agent is called by flow.label+".ACK" and the ACK flow is called by the same new name. In this condiion, there qould no problem
+ACK flow and Data flow.
