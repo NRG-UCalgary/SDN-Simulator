@@ -3,8 +3,6 @@ package protocols;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEPerspectiveTransformPeer;
-
 import entities.*;
 import system.*;
 
@@ -96,9 +94,12 @@ public class TCP extends Agent {
 			net = send(net);
 			// TODO TCP slow start must be implemented here and in the send() function
 			break;
+		/* ######################################### */
+		/* ########## ACK arrival ################## */
+		/* ######################################### */
 		case "ACK":
-			// Check if time-out has already happened
 			if (send_timer_.get(packet.getSeqNum()) == true) {
+				// ACK has arrived before the time-out
 				send_timer_.put(packet.getSeqNum(), false);
 
 				boolean isDupACK = false;
@@ -108,8 +109,10 @@ public class TCP extends Agent {
 					isDupACK = false;
 				}
 				/* Congestion Control Implementation */
-				if (slow_start_ && !congestion_avoidance_ && !fast_recovery_) {
-					// Slow Start
+				if (slow_start_) {
+					/*-------------------------------------*/
+					/*---------- Slow Start ---------------*/
+					/*-------------------------------------*/
 					// Checking the ACK Seq Number
 					if (isDupACK) {
 						dupACKcount_++;
@@ -139,8 +142,10 @@ public class TCP extends Agent {
 							fast_recovery_ = false;
 						}
 					}
-				} else if (congestion_avoidance_ && !slow_start_ && !fast_recovery_) {
-					// Congestion Avoidance
+				} else if (congestion_avoidance_) {
+					/*-----------------------------------------*/
+					/*---------- Congestion Avoidance ---------*/
+					/*-----------------------------------------*/
 					// Checking the ACK Seq Number
 					if (isDupACK) {
 						dupACKcount_++;
@@ -164,8 +169,10 @@ public class TCP extends Agent {
 						dupACKcount_ = 0;
 						net = transmit(net, packet);
 					}
-				} else if (fast_recovery_ && !slow_start_ && !congestion_avoidance_) {
-					// Fast Recovery
+				} else if (fast_recovery_) {
+					/*--------------------------------------*/
+					/*---------- Fast Recovery -------------*/
+					/*--------------------------------------*/
 					// Checking the ACK Seq Number
 					if (isDupACK) {
 
@@ -189,6 +196,7 @@ public class TCP extends Agent {
 					log.generalLog("Invalid state for TCP Congestion-Control FSM.");
 				}
 			} else {
+				// Time-out has happened before arrival of ACK
 				send_timer_.remove(packet.getSeqNum());
 			}
 			break;
@@ -204,6 +212,9 @@ public class TCP extends Agent {
 			connection_established_ = true;
 
 			break;
+		/* ######################################### */
+		/* ########## Data segment arrival ######### */
+		/* ######################################### */
 		case "Data":
 			// Updating TCP states
 			seq_num_ = packet.getSeqNum();
@@ -227,7 +238,10 @@ public class TCP extends Agent {
 			send_timer_.put(packet.getSeqNum(), false);
 
 			/* TCP Congestion Control */
-			if (slow_start_ && !congestion_avoidance_ && !fast_recovery_) {
+			if (slow_start_) {
+				/*-------------------------------------*/
+				/*---------- Slow Start ---------------*/
+				/*-------------------------------------*/
 				// Actions
 				ssthresh_ = cwnd_ / 2;
 				System.out.println("ssthresh after time-out in SS: " + ssthresh_);
@@ -235,7 +249,10 @@ public class TCP extends Agent {
 				dupACKcount_ = 0;
 				net = retransmit(net, packet);
 
-			} else if ((congestion_avoidance_ || fast_recovery_) && !slow_start_) {
+			} else if (congestion_avoidance_) {
+				/*-----------------------------------------*/
+				/*---------- Congestion Avoidance ---------*/
+				/*-----------------------------------------*/
 				// State transition to Slow-Start
 				slow_start_ = true;
 				congestion_avoidance_ = false;
@@ -246,18 +263,30 @@ public class TCP extends Agent {
 				cwnd_ = MAX_SEGMENT_SIZE;
 				dupACKcount_ = 0;
 				net = retransmit(net, packet);
-			} else {
+			} else if (fast_recovery_) {
+				/*--------------------------------------*/
+				/*---------- Fast Recovery -------------*/
+				/*--------------------------------------*/
 				log.generalLog("Invalid state varible for TCP congestions control.");
+				// State transition to Slow-Start
+				slow_start_ = true;
+				congestion_avoidance_ = false;
+				fast_recovery_ = false;
+				// Actions
+				ssthresh_ = cwnd_ / 2;
+				System.out.println("ssthresh after time-out in CA: " + ssthresh_);
+				cwnd_ = MAX_SEGMENT_SIZE;
+				dupACKcount_ = 0;
+				net = retransmit(net, packet);
 			}
 		} else {
+			// Packet has been delivered before the time-out
 			send_timer_.remove(packet.getSeqNum());
 		}
 
 		return super.timeOut(net, packet);
 
 	}
-
-	/** #################################################################### **/
 
 	/**************************************************************************/
 	/************ Transport Protocol Methods **********************************/
@@ -338,7 +367,7 @@ public class TCP extends Agent {
 		// Creating the TCP-TimeOut event
 		String next_type = "TCP-TimeOut";
 		Double next_time = net.time + this.TIME_OUT;
-		Node next_node = net.nodes.get(flow.getSrc());
+		Node next_node = net.nodes.get(flow.getSrc().getLabel());
 
 		// the time-out happened
 		net.event_List.generateEvent(next_time, next_type, packet, next_node);
