@@ -18,7 +18,7 @@ public class Flow {
 	private double end_time;
 
 	/** Is it needed? **/
-	public ArrayList<Packet> packets = new ArrayList<Packet>();
+	public ArrayList<Segment> packets = new ArrayList<Segment>();
 
 	/* Stores the Node IDs of the path */
 	/* Initialized at the creation of the flow */

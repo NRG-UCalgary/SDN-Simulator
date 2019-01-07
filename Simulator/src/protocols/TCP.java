@@ -63,7 +63,7 @@ public class TCP extends Agent {
 		log.entranceToMethod("TCP", "start");
 		// In TCP, the start method, creates the SYN packet and its corresponding events
 		// Create a SYN message
-		Packet syn_packet = createSYN();
+		Segment syn_packet = createSYN();
 		// Create the First-Packet Event for the SYN message
 		double start_time = this.flow.getStartTime();
 		String type = "Arrival";
@@ -77,7 +77,7 @@ public class TCP extends Agent {
 	}
 
 	@Override
-	public Network recv(Network net, Packet packet) {
+	public Network recv(Network net, Segment packet) {
 		log.entranceToMethod("TCP", "recv");
 		// TODO Auto-generated method stub
 		switch (packet.getType()) {
@@ -202,7 +202,7 @@ public class TCP extends Agent {
 			break;
 		/********** TCP Receiver ************/
 		case "SYN":
-			Packet ack_packet = createSYNACK();
+			Segment ack_packet = createSYNACK();
 			double start_time = net.time;
 			String type = "Arrival";
 			Node src_node = this.flow.getDst();
@@ -219,7 +219,7 @@ public class TCP extends Agent {
 			// Updating TCP states
 			seq_num_ = packet.getSeqNum();
 
-			Packet ack_packet1 = createACK();
+			Segment ack_packet1 = createACK();
 			double start_time1 = net.time;
 			String type1 = "Arrival";
 			Node src_node1 = this.flow.getDst();
@@ -232,7 +232,7 @@ public class TCP extends Agent {
 	}
 
 	@Override
-	public Network timeOut(Network net, Packet packet) {
+	public Network timeOut(Network net, Segment packet) {
 		// Check if the ACK of the packet has already received
 		if (send_timer_.get(packet.getSeqNum()) == true) {
 			send_timer_.put(packet.getSeqNum(), false);
@@ -291,12 +291,12 @@ public class TCP extends Agent {
 	/**************************************************************************/
 	/************ Transport Protocol Methods **********************************/
 	/**************************************************************************/
-	private Network retransmit(Network net, Packet ack) {
+	private Network retransmit(Network net, Segment ack) {
 
 		return net;
 	}
 
-	private Network transmit(Network net, Packet ack) {
+	private Network transmit(Network net, Segment ack) {
 
 		return net;
 	}
@@ -309,7 +309,7 @@ public class TCP extends Agent {
 		double next_time = net.time;
 
 		for (int i = 0; i < send_window_; i++) {
-			Packet next_packet = createDataPacket();
+			Segment next_packet = createDataPacket();
 			// Create the First-Packet Event for the SYN message
 			String next_type = "Arrival";
 			Node next_node = this.flow.getSrc();
@@ -326,39 +326,37 @@ public class TCP extends Agent {
 	}
 
 	/* Returns a SYN packet */
-	private Packet createSYN() {
+	private Segment createSYN() {
 		log.entranceToMethod("TCP", "createSYN");
-		Packet syn_packet = new Packet(flow.getLabel(), SYN_PACKET_NUMBER, SYN_PACKET_SIZE, flow.getSrc(),
+		Segment syn_packet = new Segment(flow.getLabel(), "SYN", SYN_PACKET_NUMBER, SYN_PACKET_SIZE, flow.getSrc(),
 				flow.getDst());
-		syn_packet.setType("SYN");
 		return syn_packet;
 	}
 
 	/* Returns a data packet */
-	private Packet createDataPacket() {
+	private Segment createDataPacket() {
 		log.entranceToMethod("TCP", "createPacket");
-		Packet packet = new Packet(flow.getLabel(), seq_num_, MAX_SEGMENT_SIZE, flow.getSrc(), flow.getDst());
-		packet.setType("Data");
+		Segment packet = new Segment(flow.getLabel(), "Data", seq_num_, MAX_SEGMENT_SIZE, flow.getSrc(), flow.getDst());
 		return packet;
 	}
 
 	/* Returns an ACK packet */
-	private Packet createACK() {
+	private Segment createACK() {
 		log.entranceToMethod("TCP", "createACK");
-		Packet packet = new Packet(flow.getLabel() + ".ACK", seq_num_, ACK_PACKET_SIZE, flow.getDst(), flow.getSrc());
-		packet.setType("ACK");
+		Segment packet = new Segment(flow.getLabel() + ".ACK", "ACK", seq_num_, ACK_PACKET_SIZE, flow.getDst(),
+				flow.getSrc());
 		return packet;
 	}
 
 	/* Returns a SYNACK packet */
-	private Packet createSYNACK() {
+	private Segment createSYNACK() {
 		log.entranceToMethod("TCP", "createSYNACK");
-		Packet packet = new Packet(flow.getLabel() + ".ACK", seq_num_, ACK_PACKET_SIZE, flow.getDst(), flow.getSrc());
-		packet.setType("SYNACK");
+		Segment packet = new Segment(flow.getLabel() + ".ACK", "SYNACK", seq_num_, ACK_PACKET_SIZE, flow.getDst(),
+				flow.getSrc());
 		return packet;
 	}
 
-	private Network setTimer(Network net, Packet packet) {
+	private Network setTimer(Network net, Segment packet) {
 		log.entranceToMethod("TCP", "setTimer");
 		// TODO set the timer flag to true and create a time_out event
 

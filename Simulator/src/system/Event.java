@@ -5,9 +5,14 @@ import entities.*;
 public class Event {
 	private Logger log = new Logger();
 
+	/** Special Strings **/
+	private final String ArrivalEvent = "ARRIVAL";
+	private final String DepartureEvent = "DEPAARTURE";
+	private final String TCPTimeOutEvent = "TCPTIMEOUT";
+
 	protected double time;
 	protected String event_type;
-	protected Packet packet;
+	protected Segment packet;
 	protected Node node; // This Node does not possess any STATE Variable. Be careful to use it as only
 							// it is an ID!
 
@@ -22,7 +27,7 @@ public class Event {
 	private String next_type;
 	private Node next_node;
 
-	public Event(double start_t, String event_type, Packet p, Node node) {
+	public Event(double start_t, String event_type, Segment p, Node node) {
 		this.time = start_t;
 		this.event_type = event_type;
 		this.packet = p;
@@ -52,8 +57,8 @@ public class Event {
 
 		switch (this.event_type) {
 		/* ################## Arrival event ######################## */
-		case "Arrival":
-			log.captureCase("Event", "execute", "Arrival");
+		case ArrivalEvent:
+			log.captureCase("Event", "execute", ArrivalEvent);
 
 			if (packet.hasArrived(updated_node)) {
 				log.arrivalOfPaket(this.packet.getSeqNum(), this.node.getLabel());
@@ -98,7 +103,7 @@ public class Event {
 						next_time = this.time + queue_delay + process_delay + trans_delay;
 
 						/* Updating next_type */
-						next_type = "Departure";
+						next_type = DepartureEvent;
 
 						/* Updating next_node */
 						next_node = node;
@@ -141,7 +146,7 @@ public class Event {
 						next_node = node;
 
 						// Updating next_type
-						next_type = "Departure";
+						next_type = DepartureEvent;
 
 						// Generate next arrival event
 						net.event_List.generateEvent(next_time, next_type, packet, next_node);
@@ -152,8 +157,8 @@ public class Event {
 			/* Update the Log */
 
 			break;
-		case "Departure":
-			log.captureCase("Event", "execute", "Departure");
+		case DepartureEvent:
+			log.captureCase("Event", "execute", DepartureEvent);
 			// The departure case is for updating the state of the buffers (occupancy). Now
 			// that we have departures, creating of new arrivals can come to this part too.
 			// This means the arrival event checks for delivery to destination node or
@@ -175,15 +180,15 @@ public class Event {
 			next_node = node.getEgressLink(packet.getFlowLabel()).getDst();
 
 			// Updating next_type
-			next_type = "Arrival";
+			next_type = ArrivalEvent;
 
 			// Generate next arrival event
 			net.event_List.generateEvent(next_time, next_type, packet, next_node);
 
 			// Right now we do not need Departure event
 			break;
-		case "TCP-TimeOut":
-			log.captureCase("Event", "run", "TCP-TimeOut");
+		case TCPTimeOutEvent:
+			log.captureCase("Event", "run", TCPTimeOutEvent);
 
 			/* Calling TimeOut method of the corresponding agent */
 

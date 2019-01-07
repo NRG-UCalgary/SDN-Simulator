@@ -30,7 +30,7 @@ public class Controller {
 
 	/** Called in Class::Event.run() **/
 	/* Objective::Updating flow_table of the Node */
-	public Network newFlow(Network net, Node curr_node, Packet packet) {
+	public Network newFlow(Network net, Node curr_node, Segment packet) {
 		log.entranceToMethod("Controller", "newFlow");
 
 		/* Controller runs the router module to find the path for the flow */

@@ -6,11 +6,3 @@ Packet num:1 from flow f1 arrived to Node h1
 ####################
 Packet num:1 from flow f1.ACK arrived to Node h0
 ####################
-Packet num:2 from flow f1 arrived to Node h1
-####################
-Packet num:3 from flow f1 arrived to Node h1
-####################
-Packet num:2 from flow f1.ACK arrived to Node h0
-####################
-Packet num:3 from flow f1.ACK arrived to Node h0
-####################

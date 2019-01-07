@@ -13,7 +13,7 @@ public class EventList {
 	public EventList() {
 	}
 
-	public void generateEvent(double start_t, String type, Packet packet, Node node) {
+	public void generateEvent(double start_t, String type, Segment packet, Node node) {
 		log.entranceToMethod("EventList", "generateEvent");
 
 		Event event = new Event(start_t, type, packet, node);
