@@ -1,0 +1,42 @@
+Entered Simulator.createNode()
+Entered Simulator.createNode()
+Entered Simulator.createNode()
+Entered Simulator.createNode()
+Entered Simulator.createLink()
+Entered Simulator.createLink()
+Entered Simulator.createLink()
+Entered Simulator.createLink()
+Entered Simulator.generateFlow()
+Entered TCP.start()
+Entered TCP.createSYN()
+Entered EventList.generateEvent()
+Entered TCP.setTimer()
+Entered EventList.generateEvent()
+Entered Simulator.run()
+******************************************
+********** Initialization done. **********
+******************************************
+-----------------------------------------------
+---------- Simulator::Main Loop (#0) ----------
+-----------------------------------------------
+Entered EventList.getEvent()
+Entered Event.execute()
+Event type: Arrival
++++++++++++++++++++
++     Flow: f1    +
++     Type: SYN   +
++     Node: h0    +
++     Time: 0.0   +
++++++++++++++++++++
+-----------------------------------------------
+---------- Simulator::Main Loop (#1) ----------
+-----------------------------------------------
+Entered EventList.getEvent()
+Entered Event.execute()
+Event type: TCP-TimeOut
++++++++++++++++++++++++++
++     Flow: f1          +
++     Type: SYN         +
++     Node: h0          +
++     Time: 5000000.0   +
++++++++++++++++++++++++++

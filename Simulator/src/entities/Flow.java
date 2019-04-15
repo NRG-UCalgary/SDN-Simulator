@@ -1,16 +1,16 @@
 package entities;
 
-import system.Logger;
-
 import java.util.ArrayList;
+
+import utilities.Logger;
 
 public class Flow {
 	private Logger log = new Logger();
 
 	private String label;
 	private String type;
-	private Node source;
-	private Node destination;
+	private Host source;
+	private Host destination;
 	private int size;
 	private int packet_size;
 	private double arrival_time;
@@ -22,9 +22,9 @@ public class Flow {
 
 	/* Stores the Node IDs of the path */
 	/* Initialized at the creation of the flow */
-	public ArrayList<Node> path = new ArrayList<Node>();
+	public ArrayList<SDNSwitch> path = new ArrayList<SDNSwitch>();
 
-	public Flow(String label, String type, Node src, Node dst, int size, Double arrv_time) {
+	public Flow(String label, String type, Host src, Host dst, int size, Double arrv_time) {
 		this.label = label;
 		this.type = type;
 		this.source = src;
@@ -37,11 +37,11 @@ public class Flow {
 	/**********************************************************************/
 	/********************** Getters and Setters ***************************/
 	/**********************************************************************/
-	public Node getSrc() {
+	public Host getSrc() {
 		return source;
 	}
 
-	public Node getDst() {
+	public Host getDst() {
 		return destination;
 	}
 
@@ -87,6 +87,10 @@ public class Flow {
 
 	public void setLabel(String l) {
 		this.label = l;
+	}
+
+	public int getFlowID() {
+		return this.getFlowID();
 	}
 	/***********************************************************************/
 }

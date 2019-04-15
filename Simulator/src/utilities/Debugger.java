@@ -1,5 +1,5 @@
 /* Handles all types of debugging logs */
-package system;
+package utilities;
 
 import java.util.ArrayList;
 

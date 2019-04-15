@@ -1,6 +1,8 @@
 package system;
 
 import entities.*;
+import utilities.Logger;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,7 +15,7 @@ public class EventList {
 	public EventList() {
 	}
 
-	public void generateEvent(double start_t, String type, Segment packet, Node node) {
+	public void generateEvent(double start_t, String type, Segment packet, SDNSwitch node) {
 		log.entranceToMethod("EventList", "generateEvent");
 
 		Event event = new Event(start_t, type, packet, node);

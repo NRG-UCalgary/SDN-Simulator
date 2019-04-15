@@ -1,19 +1,26 @@
 package entities;
 
 import system.*;
+import utilities.Logger;
 
 public class Segment {
 	private Logger log;
+
+	/** my protocol variables **/
+	public int sWndSize;
+	public int flowID;
+	public double rtt;
+	/**************************/
 
 	private int seq_num;
 	private String flow_label;
 	private String type;
 	private int size;
 	private String state;
-	private Node source;
-	private Node destination;
+	private Host source;
+	private Host destination;
 
-	public Segment(String flow_label, String type, int seq_num, int size, Node source, Node destination) {
+	public Segment(String flow_label, String type, int seq_num, int size, Host source, Host destination) {
 		this.flow_label = flow_label;
 		this.type = type;
 		this.seq_num = seq_num;
@@ -26,11 +33,11 @@ public class Segment {
 
 	/* Called in Class::Event */
 	/* Gets current node and returns true if it is the flow destination */
-	public boolean hasArrived(Node current_node) {
+	public boolean hasArrived(Host current_node) {
 		log.entranceToMethod("Packet", "hasArrived");
 		if (current_node == this.destination) {
-			log.networkLog("Packet num:" + seq_num + " from flow " + flow_label + " arrived to Node "
-					+ destination.getLabel());
+		//	log.networkLog("Packet num:" + seq_num + " from flow " + flow_label + " arrived to Node "
+		//			+ destination.getLabel());
 			return true;
 		}
 		return false;
@@ -62,6 +69,10 @@ public class Segment {
 	public void setFlow_label(String flow_label) {
 		this.flow_label = flow_label;
 	}
+	
+	public int getFlowID() {
+		return flowID;
+	}
 
 	public String getType() {
 		return type;
@@ -87,19 +98,19 @@ public class Segment {
 		this.state = state;
 	}
 
-	public Node getSource() {
+	public Host getSource() {
 		return source;
 	}
 
-	public void setSource(Node source) {
+	public void setSource(Host source) {
 		this.source = source;
 	}
 
-	public Node getDestination() {
+	public Host getDestination() {
 		return destination;
 	}
 
-	public void setDestination(Node destination) {
+	public void setDestination(Host destination) {
 		this.destination = destination;
 	}
 	/***********************************************************************/

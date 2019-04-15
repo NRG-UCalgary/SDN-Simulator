@@ -13,17 +13,25 @@ program compared to having departure events.
 3. Packet Drop :: when do packet drops happen?
 a1- When multiple packets arrive at the same time to the same node.
 a2- When one packet arrives before the transmission time the previous packet to the node is finished.
-a3- When the occupancy of the corrsponding link's buffer is full. (This case is certain.)
+a3- When the occupancy of the corresponding link's buffer is full. (This case is certain.)
 -- In general we can say the packet drop happens at two levels. First, upon arrival at the node. Second, inside the node at 
 the links buffer.
 
-4. The strucure of buffer can be updated. Right now packets do not actualy stay in the buffer queue. The wait-Time of each 
+4. The structure of buffer can be updated. Right now packets do not actually stay in the buffer queue. The wait-Time of each 
 packet is determined by 
-the buffer based on the wait_time of previous packets. This means at events, departure events are created upon arriavl as 
-oppsed to be created upon
+the buffer based on the wait_time of previous packets. This means at events, departure events are created upon arrival as 
+opposed to be created upon
 departure of earlier packets in the buffer.
 
-5. ** There is an issue with the ACK flow label. In the current design, ACKs have the same lable of the flow.
--- Solution: The src agent is called by flow.label+".ACK" and the ACK flow is called by the same new name. In this condiion, 
-there qould no problem
+5. ** There is an issue with the ACK flow label. In the current design, ACKs have the same label of the flow.
+-- Solution: The source agent is called by flow.label+".ACK" and the ACK flow is called by the same new name. In this condition, 
+there should no problem
 ACK flow and Data flow.
+###################################################################################################################################
+#############################################   TCP Related Issues     ############################################################
+###################################################################################################################################
+1. How does TCP handle the timers?
+	- Is there a timer for each segment sent from the sender? Or there is a aggregate timer mechanism?
+	- What does TCP do with an ACK that has arrived after its timer is expired?
+** The timer is working only for the oldest non-acknowledged segment. Hence the time-out should happen only for such acknowledge?
+@ In GBN, whenever a timer is timed out, the sender will send the whole sending window starting from the timed-out segment

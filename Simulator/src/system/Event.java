@@ -1,6 +1,7 @@
 package system;
 
 import entities.*;
+import utilities.Logger;
 
 public class Event {
 	private Logger log = new Logger();
@@ -12,8 +13,8 @@ public class Event {
 
 	protected double time;
 	protected String event_type;
-	protected Segment packet;
-	protected Node node; // This Node does not possess any STATE Variable. Be careful to use it as only
+	protected Segment segment;
+	protected SDNSwitch node; // This Node does not possess any STATE Variable. Be careful to use it as only
 							// it is an ID!
 
 	// TODO Must be set through simulator by user
@@ -25,12 +26,12 @@ public class Event {
 
 	private double next_time;
 	private String next_type;
-	private Node next_node;
+	private SDNSwitch next_node;
 
-	public Event(double start_t, String event_type, Segment p, Node node) {
+	public Event(double start_t, String event_type, Segment s, SDNSwitch node) {
 		this.time = start_t;
 		this.event_type = event_type;
-		this.packet = p;
+		this.segment = s;
 		this.node = node;
 
 		this.next_time = 0;
@@ -49,39 +50,42 @@ public class Event {
 
 		/* Update net time to the event time */
 		net.time = this.time;
-		log.eventInfo(this.packet.getFlowLabel(), this.packet.getType(), this.node.getLabel(),
+		log.eventInfo(this.segment.getFlowLabel(), this.segment.getType(), this.node.getLabel(),
 				Double.toString(this.time));
 
 		/* Updating the node for new state */
-		Node updated_node = net.nodes.get(this.node.getLabel());
+		SDNSwitch updated_node = net.switches.get(this.node.getLabel());
 
 		switch (this.event_type) {
 		/* ################## Arrival event ######################## */
 		case ArrivalEvent:
 			log.captureCase("Event", "execute", ArrivalEvent);
 
-			if (packet.hasArrived(updated_node)) {
-				log.arrivalOfPaket(this.packet.getSeqNum(), this.node.getLabel());
+			if (segment.hasArrived(updated_node)) {
+				log.arrivalOfPaket(this.segment.getSeqNum(), this.node.getLabel());
 
 				/*
-				 * Informing the flow agent that the packet has arrived - using recv() method
+				 * Informing the flow agent that the segment has arrived - using recv() method
 				 */
-				updated_node.agents.get(packet.getFlowLabel()).recv(net, packet);
+				updated_node.agents.get(segment.getFlowLabel()).recv(net, segment);
 			} else {
-				/* Check if the flow entry exists in node's flow table */
-				if (!node.hasFlowEntry(packet.getFlowLabel())) {
+				/* Check if segment type is SYN */
+				// if (!node.hasFlowEntry(segment.getFlowLabel())) {
+				if (this.segment.getType().equals("SYN")) {
 					/******************************************************************/
 					/********** Flow Entry dose not exists in the Flow Table **********/
 					/******************************************************************/
-
+					// This is the part that the flow has arrived to the access switch.
+					
+					
 					/* The node informs the controller with the new flow */
-					net = net.controller.newFlow(net, node, packet);
+					net = net.controller.newFlow(net, node, segment);
 
-					/* Checking the occupancy of the buffer upon packet arrival */
-					if (updated_node.getEgressLink(packet.getFlowLabel()).buffer.isFull()) {
+					/* Checking the occupancy of the buffer upon segment arrival */
+					if (updated_node.getEgressLink(segment.getFlowLabel()).buffer.isFull()) {
 						/** The buffer is full **/
 
-						// The statistics should be updated for a packet drop
+						// The statistics should be updated for a segment drop
 
 					} else {
 						/** The buffer has available space **/
@@ -89,11 +93,11 @@ public class Event {
 						/* Generating next Arrival event */
 
 						// Transmission Delay
-						Double trans_delay = updated_node.getEgressLink(packet.getFlowLabel())
-								.getTransmissionDelay(packet.getSize());
+						Double trans_delay = updated_node.getEgressLink(segment.getFlowLabel())
+								.getTransmissionDelay(segment.getSize());
 
 						// Queuing Delay
-						Double queue_delay = updated_node.getEgressLink(packet.getFlowLabel()).buffer
+						Double queue_delay = updated_node.getEgressLink(segment.getFlowLabel()).buffer
 								.getWaitTime(trans_delay, this.time);
 
 						// Processing Delay
@@ -109,7 +113,7 @@ public class Event {
 						next_node = node;
 
 						// Generate next arrival event
-						net.event_List.generateEvent(next_time, next_type, packet, next_node);
+						net.eventList.generateEvent(next_time, next_type, segment, next_node);
 					}
 
 				} else {
@@ -117,11 +121,11 @@ public class Event {
 					/********** Flow Entry Exists in the Flow Table **********/
 					/*********************************************************/
 
-					/* Checking the occupancy of the buffer upon packet arrival */
-					if (updated_node.getEgressLink(packet.getFlowLabel()).buffer.isFull()) {
+					/* Checking the occupancy of the buffer upon segment arrival */
+					if (updated_node.getEgressLink(segment.getFlowLabel()).buffer.isFull()) {
 						/** The buffer is full **/
 
-						// The statistics should be updated for a packet drop
+						// The statistics should be updated for a segment drop
 
 					} else {
 						/** The buffer has available space **/
@@ -129,11 +133,11 @@ public class Event {
 						/* Generating next Arrival event */
 
 						// Transmission Delay
-						Double trans_delay = updated_node.getEgressLink(packet.getFlowLabel())
-								.getTransmissionDelay(packet.getSize());
+						Double trans_delay = updated_node.getEgressLink(segment.getFlowLabel())
+								.getTransmissionDelay(segment.getSize());
 
 						// Queuing Delay
-						Double queue_delay = updated_node.getEgressLink(packet.getFlowLabel()).buffer
+						Double queue_delay = updated_node.getEgressLink(segment.getFlowLabel()).buffer
 								.getWaitTime(trans_delay, this.time);
 
 						// 2- Processing Delay
@@ -149,7 +153,7 @@ public class Event {
 						next_type = DepartureEvent;
 
 						// Generate next arrival event
-						net.event_List.generateEvent(next_time, next_type, packet, next_node);
+						net.eventList.generateEvent(next_time, next_type, segment, next_node);
 
 					}
 				}
@@ -157,6 +161,7 @@ public class Event {
 			/* Update the Log */
 
 			break;
+		/* ################## Departure event ######################## */
 		case DepartureEvent:
 			log.captureCase("Event", "execute", DepartureEvent);
 			// The departure case is for updating the state of the buffers (occupancy). Now
@@ -165,28 +170,29 @@ public class Event {
 			// updating the buffer occupancy of buffer and newFlow entry.
 
 			/* Updating the corresponding buffer occupancy state */
-			updated_node.getEgressLink(packet.getFlowLabel()).buffer.deQueue();
+			updated_node.getEgressLink(segment.getFlowLabel()).buffer.deQueue();
 
 			/* Creating the next Arrival event */
 			/* Generating next Arrival event */
 
 			// Propagation Delay
-			Double prop_delay = updated_node.getEgressLink(packet.getFlowLabel()).getPropagationDelay();
+			Double prop_delay = updated_node.getEgressLink(segment.getFlowLabel()).getPropagationDelay();
 
 			// Updating next_time
 			next_time = this.time + prop_delay;
 
 			// Getting next_node
-			next_node = node.getEgressLink(packet.getFlowLabel()).getDst();
+			next_node = node.getEgressLink(segment.getFlowLabel()).getDst();
 
 			// Updating next_type
 			next_type = ArrivalEvent;
 
 			// Generate next arrival event
-			net.event_List.generateEvent(next_time, next_type, packet, next_node);
+			net.eventList.generateEvent(next_time, next_type, segment, next_node);
 
 			// Right now we do not need Departure event
 			break;
+		/* ################## TimeOut event ######################## */
 		case TCPTimeOutEvent:
 			log.captureCase("Event", "run", TCPTimeOutEvent);
 
@@ -199,7 +205,7 @@ public class Event {
 		}
 
 		/* Updating nodes and agents (and its flow) of Network object */
-		net.nodes.put(updated_node.getLabel(), updated_node);
+		net.switches.put(updated_node.getLabel(), updated_node);
 
 		return net;
 	}

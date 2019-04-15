@@ -1,6 +1,7 @@
 package protocols;
 
 import system.*;
+import utilities.Logger;
 import entities.*;
 
 public abstract class Agent {
@@ -12,7 +13,9 @@ public abstract class Agent {
 	protected final String ACK = "ACK";
 	protected final String DATA = "DATA";
 	protected final String FIN = "FIN";
+	protected final String FINACK = "FINACK";
 	protected final String ACKFlowExtention = ".ACK";
+	protected final String TCPTimeOutEvent = "TCPTIMEOUT";
 
 	protected final String SlowStart = "SS";
 	protected final String CongAvoidance = "CA";
@@ -20,8 +23,19 @@ public abstract class Agent {
 
 	protected final String ArrivalEvent = "ARRIVAL";
 
-	protected Node src;
-	protected Node dst;
+	protected final double ACKGenerationTime = 0.5; // usually is less than 500MS
+
+	protected final int DataSegSize = 1000;
+	protected final int ACKSegSize = 40;
+	protected final int SYNSegSize = 40;
+	protected final int FINSegSize = 40;
+	protected final int SlowStartSSThreshFactor = 64;
+	protected final int FastRecoveryCWNDDivindingFactore = 2;
+	protected final int TimeOutSlowStartCWNDDivindingFactore = 2;
+	protected final int SYNSeqNum = 0;
+
+	protected SDNSwitch srcNode;
+	protected SDNSwitch dstNode;
 	protected int size;
 
 	protected Flow flow;
@@ -29,10 +43,11 @@ public abstract class Agent {
 	/* Constructor */
 	public Agent(Flow flow) {
 		this.flow = flow;
+
 	}
 
 	// This function may be overridden in transport protocol implementations
-	public Network recv(Network net, Segment packet) {
+	public Network recv(Network net, Segment segment) {
 		// if the received packet is a Data-Packet, an ACK packet should be created
 
 		// if the received packet is an Ack-Packet, the next Data-Packet should be sent.
@@ -40,7 +55,7 @@ public abstract class Agent {
 		return net;
 	}
 
-	public Network timeOut(Network net, Segment packet) {
+	public Network timeOut(Network net, Segment segment) {
 		return net;
 	}
 
@@ -60,7 +75,6 @@ public abstract class Agent {
 	public void setFlow(Flow flow) {
 		this.flow = flow;
 	}
-
 	/***********************************************************************/
 
 }

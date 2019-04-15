@@ -1,27 +1,25 @@
 package entities;
 
-import system.Logger;
+import utilities.Logger;
 
 public class Link {
 	private Logger log = new Logger();
 
 	public Buffer buffer;
 
-	private double bandwidth;
-	private double propagation_delay;
-	private Node source;
-	private Node destination;
+	private int bandwidth;
+	private double propDelay;
+	private Node srcNode;
+	private Node dstNode;
 	private String label;
 
-	public Link(String label, Node src, Node dest, Double prop_del, Double band, int buffer_size,
+	public Link(String label, Node source, Node destination, double propagation_Delay, int band, int buffer_size,
 			String buffer_policy) {
 		this.label = label;
-		// TODO The bandwidth unit should be determined by user from Simulator. The
-		// default is Mbps
-		this.bandwidth = band * (10 ^ 6); // The bandwidth unit is Mbps
-		this.propagation_delay = prop_del;
-		this.source = src;
-		this.destination = dest;
+		this.bandwidth = band; // Mega_bits/second
+		this.propDelay = propagation_Delay; // millisecond 
+		this.srcNode = source;
+		this.dstNode = destination;
 
 		buffer = new Buffer(buffer_size, buffer_policy);
 	}
@@ -34,44 +32,20 @@ public class Link {
 	}
 
 	/*------------------- Getters and Setters  ------------------------*/
-	public void setBandwidth(Double b) {
-		this.bandwidth = b;
-	}
-
-	public Double getBandwidth() {
+	public int getBandwidth() {
 		return this.bandwidth;
 	}
 
-	public void setPropagationDelay(Double pd) {
-		this.propagation_delay = pd;
-	}
-
 	public Double getPropagationDelay() {
-		return this.propagation_delay;
-	}
-
-	public void setSrc(Node src) {
-		this.source = src;
+		return this.propDelay;
 	}
 
 	public Node getSrc() {
-		return this.source;
-	}
-
-	public void setDst(Node dst) {
-		this.destination = dst;
+		return this.srcNode;
 	}
 
 	public Node getDst() {
-		return this.destination;
-	}
-
-	public String getLabel() {
-		return this.label;
-	}
-
-	public void setLabel(String l) {
-		this.label = l;
+		return this.dstNode;
 	}
 	/*--------------------------------------------------------------*/
 }

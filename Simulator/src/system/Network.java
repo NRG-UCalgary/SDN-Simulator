@@ -4,18 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 import entities.*;
+import utilities.Logger;
 
 public class Network {
 	private Logger log = new Logger();
 
-	public Map<String, Node> nodes;
+	/* Topology entities */
+	public Map<String, Host> hosts;
+	public Map<String, SDNSwitch> switches;
 	public Controller controller;
-	public double time = 0.0;
-	public EventList event_List;
+	
+	/* Controller databases */
+	 
+	
+	/* Simulation entities */
+	public double time;
+	public EventList eventList;
 
 	public Network() {
-		nodes = new HashMap<String, Node>();
-		event_List = new EventList();
+		hosts = new HashMap<String, Host>();
+		switches = new HashMap<String, SDNSwitch>();
+		
+		time = 0;
+		eventList = new EventList();
 	}
 
 }

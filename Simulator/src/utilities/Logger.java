@@ -1,5 +1,5 @@
 /* Handles simulation log for experimental results */
-package system;
+package utilities;
 
 import java.io.*;
 
@@ -16,8 +16,8 @@ public class Logger {
 	private final int PRELOAD = 10;
 	private String LINE = "####################";
 
-	private final String GENERAL_LOG = "/Log/general_log.txt";
-	private final String NETWORK_LOG = "/Log/network_log.txt";
+	private final String GENERAL_LOG = "log/general_log.txt";
+	private final String NETWORK_LOG = "log/network_log.txt";
 	private FileWriter file_writer;
 	private BufferedWriter buffered_writer;
 	private PrintWriter print_writer;

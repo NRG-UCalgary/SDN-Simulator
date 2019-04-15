@@ -1,6 +1,6 @@
 package entities;
 
-import system.Logger;
+import utilities.Logger;
 
 public class Buffer {
 	private Logger log = new Logger();
