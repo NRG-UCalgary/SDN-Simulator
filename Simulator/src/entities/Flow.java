@@ -1,10 +1,12 @@
 package entities;
 
+import switches.*;
+
 import java.util.ArrayList;
 
 import utilities.Logger;
 
-public class Flow {
+public class Flow extends Entity {
 	private Logger log = new Logger();
 
 	private String label;
@@ -22,10 +24,10 @@ public class Flow {
 
 	/* Stores the Node IDs of the path */
 	/* Initialized at the creation of the flow */
-	public ArrayList<SDNSwitch> path = new ArrayList<SDNSwitch>();
+	public ArrayList<SDNSwitchv1> path = new ArrayList<SDNSwitchv1>();
 
-	public Flow(String label, String type, Host src, Host dst, int size, Double arrv_time) {
-		this.label = label;
+	public Flow(int ID, String type, Host src, Host dst, int size, Double arrv_time) {
+		super(ID);
 		this.type = type;
 		this.source = src;
 		this.destination = dst;

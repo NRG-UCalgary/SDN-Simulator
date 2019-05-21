@@ -1,4 +1,4 @@
-package protocols;
+package transport_protocols;
 
 import java.util.HashMap;
 
@@ -7,11 +7,13 @@ import system.*;
 
 public class RBTCPSenderv1 extends Agent {
 
+	protected int bigrtt__;
+
 	/* Sending Window */
 	private int sWnd_;
 
-	/* RTT introduced by the controller using SYNACK */
-	private double rtt_;
+	/* rtt_ introduced by the controller using SYNACK */
+	private double rtt__;
 
 	/* Number of flows introduced by controller using SYNACK */
 	private double flowCount_;
@@ -40,13 +42,13 @@ public class RBTCPSenderv1 extends Agent {
 
 	public RBTCPSenderv1(Flow flow) {
 		super(flow);
-		this.srcNode = flow.getSrc();
-		this.dstNode = flow.getDst();
+		this.srcHostID = flow.getSrc().getID();
+		this.dstHostID = flow.getDst().getID();
 		segsToSend_ = flow.getSize();
 
 		/* initializing the state variables of the sender */
 		sWnd_ = 1;
-		rtt_ = 0;
+		rtt__ = 0;
 		flowCount_ = 1;
 		pacingDelay_ = 0;
 		seqNo_ = 0;
@@ -59,15 +61,14 @@ public class RBTCPSenderv1 extends Agent {
 	public Network recv(Network net, Segment recvdSegment) {
 
 		switch (recvdSegment.getType()) {
-		case ACK:
-			// TODO check timer status
-			/* sWnd_ is updated to the value that controller has announced */
-			sWnd_ = recvdSegment.sWndSize;
+		case Keywords.CTRL:
+			this.sWnd_ = recvdSegment.sWnd_;
+			this.bigrtt__ = recvdSegment.bigRTT_;
+			this.rtt__ = recvdSegment.rtt_;
+			break;
+		case Keywords.ACK:
 			ackNo_ = recvdSegment.getSeqNum();
-			rtt_ = recvdSegment.rtt;
-			flowCount_ = recvdSegment.flowCount;
-			pacingDelay_ = Math.floor(rtt_ / (double) flowCount_ * sWnd_); // TODO should it be floor or the actual
-																			// double value?
+			// double value?
 			inFlight_ = seqNo_ - ackNo_ + 1;
 
 			// TODO call a method named send to handle the sending window calculations and
@@ -75,15 +76,15 @@ public class RBTCPSenderv1 extends Agent {
 			send(net);
 
 			break;
-		case SYNACK:
+		case Keywords.SYNACK:
 			// For now with do not separate ACK from SYNACK
 			break;
 		/* ==================================== */
 		/* Not applicable for now */
 		/* Maybe in future we can separate different types of ACKs */
-		case FINACK:
+		case Keywords.FINACK:
 			break;
-		case FIN:
+		case Keywords.FIN:
 			break;
 		/* ==================================== */
 		default:
@@ -95,7 +96,7 @@ public class RBTCPSenderv1 extends Agent {
 
 	@Override
 	public Network start(Network net) {
-		net.event_List.generateEvent(this.flow.getStartTime(), "ARRIVAL", genSYN(), this.srcNode);
+		net.eventList.generateEvent(this.flow.getStartTime(), "ARRIVAL", genSYN(), this.srcNode);
 		return super.start(net);
 	}
 
@@ -112,7 +113,7 @@ public class RBTCPSenderv1 extends Agent {
 	private Network send(Network net) {
 		// TODO create departure events based on the sWnd_ and the number of unACKed
 		// segments
-		double send_time = net.time;
+		double send_time = net.getCurrentTime();
 		Segment send_segment;
 		if (segsToSend_ > 0) {
 			send_segment = genSegment();
@@ -121,7 +122,7 @@ public class RBTCPSenderv1 extends Agent {
 		}
 		for (int i = 0; i < sWnd_ - inFlight_; i++) {
 
-			net.event_List.generateEvent(send_time, "ARRIVAL", send_segment, this.srcNode);
+			net.eventList.generateEvent(send_time, this.srcHostID, send_segment);
 			send_time += pacingDelay_;
 		}
 
@@ -129,21 +130,23 @@ public class RBTCPSenderv1 extends Agent {
 	}
 
 	private Segment genSegment() {
-		Segment seg = new Segment(this.flow.getLabel(), DATA, seqNo_++, DataSegSize, this.srcNode, this.dstNode);
+		Segment seg = new Segment(this.flow.getID(), Keywords.DATA, seqNo_++, DataSegSize, this.srcHostID,
+				this.dstHostID);
 		segsToSend_--;
 		return seg;
 	}
 
 	private Segment genSYN() {
-		Segment seg = new Segment(this.flow.getLabel(), SYN, SYNSeqNum, SYNSegSize, this.srcNode, this.dstNode);
-		seg.rtt = 0;
-		seg.flowCount = 1;
-		seg.sWndSize = 1;
+		Segment seg = new Segment(this.flow.getID(), Keywords.SYN, SYNSeqNum, SYNSegSize, this.srcHostID,
+				this.dstHostID);
+		seg.rtt_ = 0;
+		seg.sWnd_ = 1;
 		return seg;
 	}
 
 	private Segment genFIN() {
-		Segment seg = new Segment(this.flow.getLabel(), FIN, SYNSeqNum, FINSegSize, this.srcNode, this.dstNode);
+		Segment seg = new Segment(this.flow.getID(), Keywords.FIN, SYNSeqNum, FINSegSize, this.srcHostID,
+				this.dstHostID);
 		return seg;
 	}
 

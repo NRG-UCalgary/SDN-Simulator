@@ -1,0 +1,40 @@
+#########################################################################################################################
+#############################################   Design Rules     ########################################################
+#########################################################################################################################
+++++++++++++ Network Structure Rules ++++++++++++++
+	1. Nodes are defined in Network
+	2. Link is defined in its source Node (or Switch?):
+		- Each Switch has two maps:
+			a. accessLinks <HostID, Link>
+			b. neighborLinks <SwitchID, link>
+		- Each Host has a accessLink with type Link 
+	3. Buffer is defined in Link
+	4. Agent is defined in Host
+++++++++++++ Other Rules for entities ++++++++++++++
+	1. Flow is defined in Agent (or Host?)
+	
+++++++++++++ Control Messages ++++++++++++++
+	1. CTRL segments versus CTRL Events:
+		+ I think we need CTRL segment to be sent to switches:
+			- Do we need CTRL segments for flow table updates?
+				- If yes, then all switches must expect to see CTRL segments
+				+ If no, then only access switches will receive those
+					- Then we need to distinguish between access and network switches
+		+ I believe it is better to have CTRL messages and all switch be capable of receiving them (which means
+		the routing tables must be sent via these messages too)
+		+ How to make sure these actions take place before actual arrival of data or ack segments:
+			+ For routing tables updates there would be no issues since the sender will not start sending segments
+			before receiving the SYNACK
+			- For CC algorithm, there will be no problem since we are considering the time needed to these action to 
+			happen in the algorithm   
+	
+	
+##########################################################################################################################
+	- What is needed to execute the bufferUpdateMessage?
+		- desired mode of the buffer:
+			1. Flush mode
+			2. Token-Based:
+				- interFlowDelay for each host(a.k.a accessLink buffer)
+				- startTime of the ACK releasing
+				- number of tokens for release time
+		

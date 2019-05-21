@@ -1,80 +1,131 @@
 package entities;
 
-import utilities.Logger;
-
 import java.util.HashMap;
-import java.util.Map;
 
-import protocols.Agent;
+import events.ArrivalToController;
+import events.Departure;
+import system.Event;
+import system.Network;
 
-public class SDNSwitch extends Node {
-	private Logger log = new Logger();
+public abstract class SDNSwitch extends Node {
 
-	public Map<Host, Link> accessLinks;
-	public Map<SDNSwitch, Link> neighbors;
-	private Map<String, Link> flow_table;
+	public Link controlLink;
 
-	// Probably this should be removed from here and it should go to the host
-	/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
-	// Agents become a property of Nodes -- Map<Flow_label, Agent>
-	public Map<String, Agent> agents;
-	/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
+	// Only for DIjkstra (temporary) // TODO Must be filled by simulator
+	public HashMap<SDNSwitch, Link> neighbors;
+	public HashMap<Integer, Link> accessLinks; // <HostID, Link>
+	public HashMap<Integer, Link> networkLinks; // <SwitchID, Link>
+	public HashMap<Integer, Integer> flowTable; // <FlowID, SwitchID(neighbors)>
 
-	/* Constructor */
-	public SDNSwitch(String label) {
-		super(label);
-		accessLinks = new HashMap<Host, Link>();
+	public SDNSwitch(int ID, Link controlLink) {
+		super(ID);
+		this.controlLink = controlLink;
 		neighbors = new HashMap<SDNSwitch, Link>();
-		flow_table = new HashMap<String, Link>();
-		agents = new HashMap<String, Agent>();
+		accessLinks = new HashMap<Integer, Link>();
+		networkLinks = new HashMap<Integer, Link>();
+		flowTable = new HashMap<Integer, Integer>();
 	}
 
-	/** Called in Class::Event.run() **/
-	/* Objective::Checking to find the flow label in the node flow table */
-	public boolean hasFlowEntry(String flow_label) {
-		log.entranceToMethod("Node", "hasFlowEntry");
+	/* --------------------------------------------------- */
+	/* ---------- Abstract methods ----------------------- */
+	/* --------------------------------------------------- */
+	public abstract Network recvCtrlMessage(Network net, CtrlMessage message);
 
-		if (flow_table.containsKey(flow_label)) {
+	/* --------------------------------------------------- */
+	/* ---------- Inherited methods (from Node) ---------- */
+	/* --------------------------------------------------- */
+	public Network recvSegment(Network net, Segment segment) {
+		/* # The switch decisions: # */
+		/* ## Forward the segment to the Host (if connected to it) ## */
+		/* ## Forward the segment to the next switch (if has the Flow entry) ## */
+		/* ## Forward the segment to the controller ## */
+		if (this.isConnectedToHost(segment.getDstHostID())) {
+			return forwardToHost(net, segment);
+		} else if (this.hasFlowEntry(segment.getDstHostID())) {
+			return forwardToSwitch(net, segment);
+		} else {
+			return forwardToController(net, segment);
+		}
+	}
+
+	/* --------------------------------------------------- */
+	/* ---------- Implemented methods -------------------- */
+	/* --------------------------------------------------- */
+
+	/* ########## Protected ############################## */
+	/* Objective::Checking if the flow table has the flowID entry */
+	protected boolean hasFlowEntry(int flowID) {
+		if (flowTable.containsKey(flowID)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	/** Called in Class::Event.run() **/
-	/* Objective::Showing the egress-link for the desired destination Node */
-	public Link getEgressLink(String flow_label) {
-		log.entranceToMethod("Node", "getEgressLink");
-		return flow_table.get(flow_label);
+	/* Objective::Forwarding the segment to the Destination Host */
+	protected Network forwardToHost(Network net, Segment segment) {
+		double nextTime = net.getCurrentTime()
+				+ this.accessLinks.get(segment.getDstHostID()).getBufferTime(net.getCurrentTime(), segment);
+		if (nextTime > 0) {
+			Event nextEvent = new Departure(nextTime, this.ID, segment);
+			net.eventList.addEvent(nextEvent);
+		} else {
+			// TODO segment drop happens here
+		}
+		return net;
 	}
 
-	/** Called in Class::Controller.newFlow() **/
-	/* Objective::Updating the forwarding table */
-	public void updateFlowTable(String flow_label, Link egress_link) {
-		log.entranceToMethod("Node", "UpdateFlowTable");
-		this.flow_table.put(flow_label, egress_link);
+	/* Objective::Forwarding the segment to the next switch in the path */
+	protected Network forwardToSwitch(Network net, Segment segment) {
+		double nextTime = net.getCurrentTime() + this.networkLinks.get(getNextSwitchID(segment.getFlowID()))
+				.getBufferTime(net.getCurrentTime(), segment);
+		if (nextTime > 0) {
+			Event nextEvent = new Departure(nextTime, this.ID, segment);
+			net.eventList.addEvent(nextEvent);
+		} else {
+			// TODO segment drop happens here
+		}
+		return net;
 	}
 
-	/*-------------------------- Getters and Setters -------------------------------------*/
-	public double getAccessLinkDelay(Host host, int segmentSize) {
-		Link link = this.accessLinks.get(host);
-		return link.getPropagationDelay() + link.getTransmissionDelay(segmentSize);
+	/* Objective::Forwarding the segment to the controller */
+	protected Network forwardToController(Network net, Segment segment) {
+		double nextTime = net.getCurrentTime() + net.controller.getControlLinkDelay(this.getID(), segment.getSize());
+		Event nextEvent = new ArrivalToController(nextTime, this.getID(), segment);
+		net.eventList.addEvent(nextEvent);
+		return net;
 	}
 
-	public void setTable(Map<String, Link> table) {
-		this.flow_table = table;
+	/* Objective::Returning the next switchID in the path */
+	protected int getNextSwitchID(int flowID) {
+		return this.flowTable.get(flowID);
 	}
 
-	public void setLabel(String label) {
-		this.label = label;
+	/* ########## Public ################################# */
+	public double getAccessLinkDelay(int hostID, int segmentSize) {
+		return accessLinks.get(hostID).getTransmissionDelay(segmentSize)
+				+ accessLinks.get(hostID).getPropagationDelay();
 	}
 
-	public Map<String, Link> getTable() {
-		return this.flow_table;
+	// TODO We may not need this method
+	public void addFlowTableEntry(int flowID, int neighborID) {
+		this.flowTable.put(flowID, neighborID);
 	}
 
-	public String getLabel() {
-		return this.label;
+	public boolean isConnectedToHost(int hostID) {
+		if (accessLinks.get(hostID) != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-	/*------------------------------------------------------------------------------------*/
+
+	public boolean isAccessSwitch() {
+		if (this.accessLinks.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 }

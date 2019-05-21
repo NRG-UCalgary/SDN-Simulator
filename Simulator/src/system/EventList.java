@@ -1,6 +1,5 @@
 package system;
 
-import entities.*;
 import utilities.Logger;
 
 import java.util.ArrayList;
@@ -15,14 +14,9 @@ public class EventList {
 	public EventList() {
 	}
 
-	public void generateEvent(double start_t, String type, Segment packet, SDNSwitch node) {
+	public void addEvent(Event newEvent) {
 		log.entranceToMethod("EventList", "generateEvent");
-
-		Event event = new Event(start_t, type, packet, node);
-		// Some considerations may be added here about the place of the new event among
-		// the events on the events
-		events.add(event);
-
+		events.add(newEvent);
 		// Sorting the events based on their happening time
 		Collections.sort(events, timeComparator);
 	}
@@ -31,9 +25,9 @@ public class EventList {
 	public static Comparator<Event> timeComparator = new Comparator<Event>() {
 		@Override
 		public int compare(Event e1, Event e2) {
-			if (e1.time < e2.time) {
+			if (e1.currentTime < e2.currentTime) {
 				return -1;
-			} else if (e1.time > e2.time) {
+			} else if (e1.currentTime > e2.currentTime) {
 				return 1;
 			} else {
 				return 0;

@@ -1,117 +1,70 @@
 package entities;
 
-import system.*;
-import utilities.Logger;
-
-public class Segment {
-	private Logger log;
+public class Segment extends Entity {
 
 	/** my protocol variables **/
-	public int sWndSize;
-	public int flowID;
-	public double rtt;
+	public int sWnd_;
+	public int flowID_;
+	public double rtt_;
+	public int bigRTT_;
 	/**************************/
 
 	private int seq_num;
-	private String flow_label;
-	private String type;
+	private int type;
 	private int size;
-	private String state;
-	private Host source;
-	private Host destination;
+	private int srcHostID;
+	private int dstHostID;
 
-	public Segment(String flow_label, String type, int seq_num, int size, Host source, Host destination) {
-		this.flow_label = flow_label;
+	public Segment(int flowID, int type, int seq_num, int size, int sourceID, int destinationID) {
+		super(-1);
+		this.flowID_ = flowID;
+		this.sWnd_ = 0;
+		this.rtt_ = 0;
+		this.bigRTT_ = 0;
 		this.type = type;
 		this.seq_num = seq_num;
 		this.size = size;
-		this.source = source;
-		this.destination = destination;
+		this.srcHostID = sourceID;
+		this.dstHostID = destinationID;
 
-		log = new Logger();
-	}
-
-	/* Called in Class::Event */
-	/* Gets current node and returns true if it is the flow destination */
-	public boolean hasArrived(Host current_node) {
-		log.entranceToMethod("Packet", "hasArrived");
-		if (current_node == this.destination) {
-		//	log.networkLog("Packet num:" + seq_num + " from flow " + flow_label + " arrived to Node "
-		//			+ destination.getLabel());
-			return true;
-		}
-		return false;
 	}
 
 	/**********************************************************************/
 	/********************** Getters and Setters ***************************/
 	/**********************************************************************/
-	public Logger getLog() {
-		return log;
-	}
-
-	public void setLog(Logger log) {
-		this.log = log;
-	}
 
 	public int getSeqNum() {
 		return seq_num;
 	}
 
-	public void setSeqNum(int seq_num) {
-		this.seq_num = seq_num;
-	}
-
-	public String getFlowLabel() {
-		return flow_label;
-	}
-
-	public void setFlow_label(String flow_label) {
-		this.flow_label = flow_label;
-	}
-	
 	public int getFlowID() {
-		return flowID;
+
+		return flowID_;
 	}
 
-	public String getType() {
+	public void setFlowID(int flowID) {
+		this.flowID_ = flowID;
+	}
+
+	public int getType() {
 		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public int getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
-		this.size = size;
+	public int getSrcHostID() {
+		return srcHostID;
 	}
 
-	public String getState() {
-		return state;
+	public int getDstHostID() {
+		return dstHostID;
 	}
 
-	public void setState(String state) {
-		this.state = state;
+	public void setDstHostID(int dstHostID) {
+		this.dstHostID = dstHostID;
 	}
 
-	public Host getSource() {
-		return source;
-	}
-
-	public void setSource(Host source) {
-		this.source = source;
-	}
-
-	public Host getDestination() {
-		return destination;
-	}
-
-	public void setDestination(Host destination) {
-		this.destination = destination;
-	}
 	/***********************************************************************/
 }

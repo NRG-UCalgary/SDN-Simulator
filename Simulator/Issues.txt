@@ -35,3 +35,17 @@ ACK flow and Data flow.
 	- What does TCP do with an ACK that has arrived after its timer is expired?
 ** The timer is working only for the oldest non-acknowledged segment. Hence the time-out should happen only for such acknowledge?
 @ In GBN, whenever a timer is timed out, the sender will send the whole sending window starting from the timed-out segment
+
+// Question:
+	Where should I put the buffer entities?
+		- an attribute of link
+		- an element of a set of buffers in side a switch
+	Where is the definition of links?
+		- in the net entity
+		- in the source node entity  
+	Do we need to have actual link to controller?
+	Do we need to have arrival to controller Event?
+		- probably yes. Because it is possible that in the time the SYN segment is being sent to the controller
+		  some other event happen in the network and updating the time to the 
+
+

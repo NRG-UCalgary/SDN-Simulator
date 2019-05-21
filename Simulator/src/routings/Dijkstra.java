@@ -6,19 +6,18 @@ package routings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import entities.*;
 
-public class Dijkstra extends Routing {
+public class Dijkstra extends Router {
 
-	private Map<String, SDNSwitch> nodes;
+	private HashMap<Integer, SDNSwitch> nodes;
 	private List<SDNSwitch> unvisited;
-	private Map<SDNSwitch, SDNSwitch> previous;
-	private Map<SDNSwitch, Double> distance;
-	private Map<SDNSwitch, Link> result;
+	private HashMap<SDNSwitch, SDNSwitch> previous;
+	private HashMap<SDNSwitch, Double> distance;
+	private HashMap<SDNSwitch, Link> result;
 
 	/* Constructor */
-	public Dijkstra(Map<String, SDNSwitch> nodes) {
+	public Dijkstra(HashMap<Integer, SDNSwitch> nodes) {
 		this.nodes = nodes;
 		distance = new HashMap<SDNSwitch, Double>();
 		previous = new HashMap<SDNSwitch, SDNSwitch>();
@@ -26,11 +25,8 @@ public class Dijkstra extends Routing {
 		result = new HashMap<SDNSwitch, Link>();
 	}
 
-	/** Called in Class::Controller.generatePaths() **/
-
 	/* Objective::Finding the optimal paths for each Node */
-	public Map<SDNSwitch, Link> run(SDNSwitch src, SDNSwitch target) {
-		log.entranceToMethod("Dijkstra", "run");
+	public HashMap<SDNSwitch, Link> run(SDNSwitch src, SDNSwitch target) {
 
 		distance = new HashMap<SDNSwitch, Double>();
 		previous = new HashMap<SDNSwitch, SDNSwitch>();
@@ -74,7 +70,6 @@ public class Dijkstra extends Routing {
 	/** Called in Class::Dijkstra.run() **/
 	/* Objective::Returning the routing table result<Node,Link> for Node src */
 	private SDNSwitch generateResult(SDNSwitch src, SDNSwitch dst) {
-		log.entranceToMethod("Dijkstra", "generateResult");
 
 		SDNSwitch neighbor = previous.get(dst);
 		this.result.put(neighbor, neighbor.neighbors.get(dst));

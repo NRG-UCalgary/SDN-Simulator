@@ -1,8 +1,11 @@
 package system;
 
+import switches.*;
+import controllers.*;
 import entities.*;
-import protocols.*;
+import transport_protocols.*;
 import utilities.Logger;
+import utilities.OneToOneMap;
 
 public class Simulator {
 
@@ -10,22 +13,41 @@ public class Simulator {
 	/* Controller */
 	private final double CONTROLLER_RTT_DEALAY = 1.0;
 	private final double CONTROLLER_PROCESS_DELAY = 1.0;
-	private final String CONTROLLER_ROUTING_ALG = "Dijkstra";
+	private final int CONTROLLER_ROUTING_ALG = 1;
 
 	/* Buffer Algorithm */
 	// private final String BUFFER_ALG = "FCFS";
 
-	/** ################################################# **/
+	/** ############### ID to Label Mappings ############### **/
+	private OneToOneMap switchLabels;
+	private OneToOneMap hostLabels;
+	private OneToOneMap linkLabels;
+	private OneToOneMap controllerLabels;
+	private OneToOneMap flowLabels;
+
+	private int switchCounter;
+	private int hostCounter;
+	private int linkCounter;
+	private int controllerCounter;
+	private int flowCounter;
+
+	/** ############### Variables ############### **/
 
 	private Logger log = new Logger();
 	private Network net = new Network();
-	private Controller controller;
-	private String routing_policy;
 
 	public Simulator() {
-		routing_policy = "Dijkstra";
-		controller = new Controller(net, routing_policy); // The default value of routing policy should be Dijkstra
 		/* Default Settings of the Simulator */
+		switchLabels = new OneToOneMap();
+		hostLabels = new OneToOneMap();
+		linkLabels = new OneToOneMap();
+		controllerLabels = new OneToOneMap();
+		flowLabels = new OneToOneMap();
+		switchCounter = 0;
+		hostCounter = 0;
+		linkCounter = 0;
+		controllerCounter = 0;
+		flowCounter = 0;
 	}
 
 	/********** Run **********/
@@ -41,20 +63,17 @@ public class Simulator {
 		// This Initialization can be done through src_agent of each flow so their state
 		// variables can be updated.
 
-		// Dummy line
-		controller.router.equals(null);
-
 		/* Reading the first Event from Network Event List */
 
 		log.endOfPhase("Initialization done.");
-		int loop_counter = 0;
+		int loopCounter = 0;
 		/* Main Loop */
-		while (net.time <= end_time) {
-			log.startOfLoop("Simulator::Main Loop", loop_counter);
+		while (net.getCurrentTime() <= end_time) {
+			log.startOfLoop("Simulator::Main Loop", loopCounter);
 			/* Running the Current Event and Updating the net */
 			net = net.eventList.getEvent().execute(net);
 
-			loop_counter++;
+			loopCounter++;
 
 		}
 	}
@@ -63,66 +82,99 @@ public class Simulator {
 
 	/*-------------------------------------------------------*/
 	/* Switch Creation Method */
-	public void createSwitch(String label) {
+	public void createSwitch(String label, double ctrlLinkPropagationDelay, int ctrlLinkBandwidth) {
 		// Note that here we are assuming that we only use SDN switches.
 		// Later, if needed, a mechanism for choosing type of switch should be
 		// implemented
-		SDNSwitch sw = new SDNSwitch(label);
-		net.switches.put(label, sw);
+
+		Link controlLink = new Link(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
+				ctrlLinkPropagationDelay, ctrlLinkBandwidth, 1, Keywords.FIFO);
+		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
+		net.switches.put(switchCounter, sw);
+
+		// Handling labeling
+		switchLabels.put(switchCounter, label);
+		switchCounter++;
 	}
 
 	/*-------------------------------------------------------*/
 	/* Host Creation Method */
 	public void createHost(String label) {
-		Host host = new Host(label);
-		net.hosts.put(label, host);
+		Host host = new Host(hostCounter);
+		net.hosts.put(hostCounter, host);
+
+		// Handling labeling
+		hostLabels.put(hostCounter, label);
+		hostCounter++;
+
 	}
 
 	/*-------------------------------------------------------*/
 	/* Link Creation Method */
 	public void createLink(String label, String src, String dst, double propDelay, int bandwidth, int bufferSize,
-			String bufferPolicy) {
+			int bufferPolicy) {
 		// The link from SRC to DST
-		Link link = new Link(label, net.switches.get(src), net.switches.get(dst), propDelay, bandwidth, bufferSize,
-				bufferPolicy);
-		net.switches.get(src).neighbors.put(net.switches.get(dst), link);
+		Link link = new Link(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay, bandwidth,
+				bufferSize, bufferPolicy);
+		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
+
+		// Handling Labeling
+		linkLabels.put(linkCounter, label);
+		linkCounter++;
 
 		// The link from DST to SRC
-		link = new Link(label, net.switches.get(dst), net.switches.get(src), propDelay, bandwidth, bufferSize,
-				bufferPolicy);
-		net.switches.get(dst).neighbors.put(net.switches.get(src), link);
+		link = new Link(linkCounter, switchLabels.getKey(dst), switchLabels.getKey(src), propDelay, bandwidth,
+				bufferSize, bufferPolicy);
+		net.switches.get(switchLabels.getKey(dst)).networkLinks.put(switchLabels.getKey(src), link);
+
+		// Handling Labeling
+		linkLabels.put(linkCounter, label + "r"); // TODO There should be a mechanism for handling different labels for
+													// reverse links
+		linkCounter++;
 	}
 
 	/* Access link creation method */
 	public void createAccessLink(String label, String src, String dst, double propDelay, int bandwidth, int bufferSize,
-			String bufferPolicy) {
-
+			int bufferPolicy) {
 		// The link from host to switch
-		Link link = new Link(label, net.hosts.get(src), net.switches.get(dst), propDelay, bandwidth, bufferSize,
-				bufferPolicy);
-		net.hosts.get(src).connectToNetwork(link, dst);
+		Link link = new Link(linkCounter, hostLabels.getKey(src), switchLabels.getKey(dst), propDelay, bandwidth,
+				bufferSize, bufferPolicy);
+		net.hosts.get(hostLabels.getKey(src)).connectToNetwork(switchLabels.getKey(dst), link);
+
+		// Handling Labeling
+		linkLabels.put(linkCounter, label);
+		linkCounter++;
 
 		// The link from switch to host
-		link = new Link(label, net.switches.get(dst), net.hosts.get(src), propDelay, bandwidth, bufferSize,
+		link = new Link(linkCounter, switchLabels.getKey(dst), hostLabels.getKey(dst), propDelay, bandwidth, bufferSize,
 				bufferPolicy);
-		net.switches.get(dst).accessLinks.put(net.hosts.get(src), link);
+		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
+
+		// Handling Labeling
+		linkLabels.put(linkCounter, label + "r"); // TODO There should be a mechanism for handling different labels for
+													// reverse links
+		linkCounter++;
 	}
 
 	/*-------------------------------------------------------*/
 	/* Controller Creation Method */
-	public void createController(String routing_alg, double rtt_delay, double process_delay) {
-		Controller controller = new Controller(net, routing_alg);
+	public void createController(String label, int routing_alg, double rtt_delay, double process_delay) {
+		Controller controller = new Controllerv1(controllerCounter, net, routing_alg);
 		net.controller = controller;
+
+		// Handling Labeling
+		controllerLabels.put(controllerCounter, label);
+		controllerCounter++;
 	}
 
 	// Overload
-	public void createController(String routing_alg) {
-		createController(routing_alg, CONTROLLER_RTT_DEALAY, CONTROLLER_PROCESS_DELAY);
+	public void createController(String label, int routing_alg) {
+		createController(label, routing_alg, CONTROLLER_RTT_DEALAY, CONTROLLER_PROCESS_DELAY);
 	}
 
 	// Overload
-	public void createController() {
-		createController(CONTROLLER_ROUTING_ALG);
+	public void createController(String label) {
+		createController(label, CONTROLLER_ROUTING_ALG);
 	}
 	/*-------------------------------------------------------*/
 
@@ -131,55 +183,41 @@ public class Simulator {
 	public void generateFlow(String label, String type, String src, String dst, int size, double arrival_time) {
 		log.entranceToMethod("Simulator", "generateFlow");
 
-		Flow flow = new Flow(label, type, net.hosts.get(src), net.hosts.get(dst), size, arrival_time);
+		Flow flow = new Flow(flowCounter, type, net.hosts.get(hostLabels.getKey(src)),
+				net.hosts.get(hostLabels.getKey(dst)), size, arrival_time);
+
+		// Handling Labeling
+		flowLabels.put(flowCounter, label);
+		flowCounter++;
+
 		Agent src_agent = null;
 		Agent dst_agent = null;
 
-		// TODO Agents can be assigned in switches? In this case each agent in each node
-		// (Host) can be found by the flow_label and each node has only one agent with a
-		// specific flow_label in this scenario.
-		/* All transport layer protocols must be added to this switch case */
-		/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
-
-		// TODO If the TCP agents can be two different types of sender and receiver,
-		// then the switch case must be updated correspondingly
 		switch (type) {
-		case "TCP":
-			// src_agent = new TCP(flow);
-			// dst_agent = new TCP(flow);
+		case Keywords.TCP:
+			src_agent = new TCPSender(flow);
+			dst_agent = new TCPReceiver(flow);
 			break;
-		case "RBTCP":
+		case Keywords.RBTCP:
 			Main.print("Simulator.generateFlow()::RBTCP sender and receiver are going to be created.");
 			src_agent = new RBTCPSenderv1(flow);
 			dst_agent = new RBTCPReceiverv1(flow);
-		case "UDP":
-			// UDP udp = new UDP();
+		case Keywords.SDTCP:
+
 		default:
 			System.out.println("Simulator.generateFlow()::Invalid type for flow.");
 			break;
 		}
 
-		// Initialization
-		src_agent.start(net);
+		// TODO should it be here?!
+		// src_agent.start(net);
 
 		// Net update
-		net.switches.get(src).agents.put(label + ".ACK", src_agent);
-		net.switches.get(dst).agents.put(label, dst_agent);
-		// Agents are stored with their flow's label in a Map <String,Agent> in Network
-		/* ^^^^^^^^^ New Architecture ^^^^^^^^^^^ */
+		net.hosts.get(hostLabels.getKey(src)).transportAgent = src_agent;
+		net.hosts.get(hostLabels.getKey(dst)).transportAgent = dst_agent;
 
 	}
 
 	/********* General Programming Methods **********/
-	public static void print(Object o) {
-		System.out.println(o);
-	}
-
-	public static void debug(Object o) {
-		boolean DEB = true;
-		if (DEB) {
-			System.out.println("Debug: " + o);
-		}
-	}
 
 }

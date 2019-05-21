@@ -1,32 +1,42 @@
 package system;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import entities.*;
-import utilities.Logger;
 
 public class Network {
-	private Logger log = new Logger();
+
+	/* Statistical holder */
+	public Statistics stats;
 
 	/* Topology entities */
-	public Map<String, Host> hosts;
-	public Map<String, SDNSwitch> switches;
+	public HashMap<Integer, Host> hosts;
+	public HashMap<Integer, SDNSwitch> switches;
 	public Controller controller;
-	
+
 	/* Controller databases */
-	 
-	
+	// Do we need a set of flows in the net object?
+	// What do we use to map them?
+
 	/* Simulation entities */
-	public double time;
+
+	private double time;
 	public EventList eventList;
 
 	public Network() {
-		hosts = new HashMap<String, Host>();
-		switches = new HashMap<String, SDNSwitch>();
-		
+		stats = new Statistics();
+		hosts = new HashMap<Integer, Host>();
+		switches = new HashMap<Integer, SDNSwitch>();
 		time = 0;
 		eventList = new EventList();
+	}
+
+	public void updateTime(double currentTime) {
+		this.time = currentTime;
+	}
+
+	public double getCurrentTime() {
+		return this.time;
 	}
 
 }

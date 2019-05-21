@@ -1,33 +1,59 @@
 package entities;
 
-import utilities.Logger;
+import buffers.Bufferv1;
+import system.Keywords;
 
-public class Link {
-	private Logger log = new Logger();
+/** Links are attributes of Switch and Host **/
+/** There are two types of link: 1.accessLink 2.networkLink **/
+
+public class Link extends Entity {
 
 	public Buffer buffer;
 
 	private int bandwidth;
 	private double propDelay;
-	private Node srcNode;
-	private Node dstNode;
-	private String label;
+	private int srcNodeID;
+	private int dstNodeID;
 
-	public Link(String label, Node source, Node destination, double propagation_Delay, int band, int buffer_size,
-			String buffer_policy) {
-		this.label = label;
+	public Link(int ID, int sourceID, int destinationID, double propagationDelay, int band, int bufferSize,
+			int bufferPolicy) {
+		super(ID);
 		this.bandwidth = band; // Mega_bits/second
-		this.propDelay = propagation_Delay; // millisecond 
-		this.srcNode = source;
-		this.dstNode = destination;
+		this.propDelay = propagationDelay; // millisecond
+		this.srcNodeID = sourceID;
+		this.dstNodeID = destinationID;
 
-		buffer = new Buffer(buffer_size, buffer_policy);
+		buffer = new Bufferv1(bufferSize, bufferPolicy);
 	}
 
-	public double getTransmissionDelay(int packet_size) {
-		log.entranceToMethod("Link", "getTransmissionDelay");
-		Double trans_delay = packet_size / (double) this.bandwidth;
-		log.generalLog("Transmision is: " + trans_delay);
+	public void setBufferMode(int mode, double releaseTokenTime, int ackNumber) {
+		this.buffer.mode = mode;
+		this.buffer.setReleaseTokenTime(releaseTokenTime);
+
+	}
+
+	/** Called in Class::ArrivalToSwitch.execute() **/
+	/* Objective::Returning the wait time in the buffer */
+	public double getBufferTime(double currentTime, Segment segment) {
+		if (buffer.isFull()) {
+			// TODO check if this is <0
+			return Double.NEGATIVE_INFINITY;
+		} else {
+			switch (segment.getType()) {
+			case Keywords.ACK:
+				return buffer.getACKWaitTime(currentTime, getTransmissionDelay(segment.getSize()));
+			default:
+				return buffer.getWaitTime(currentTime, getTransmissionDelay(segment.getSize()));
+			}
+		}
+	}
+
+	public double getTotalDelay(int segmentSize) {
+		return this.getTransmissionDelay(segmentSize) + this.propDelay;
+	}
+
+	public double getTransmissionDelay(int segmentSize) {
+		Double trans_delay = segmentSize / (double) this.bandwidth;
 		return trans_delay;
 	}
 
@@ -40,12 +66,12 @@ public class Link {
 		return this.propDelay;
 	}
 
-	public Node getSrc() {
-		return this.srcNode;
+	public int getSrcID() {
+		return this.srcNodeID;
 	}
 
-	public Node getDst() {
-		return this.dstNode;
+	public int getDstID() {
+		return this.dstNodeID;
 	}
 	/*--------------------------------------------------------------*/
 }

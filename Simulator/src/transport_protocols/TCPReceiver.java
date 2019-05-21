@@ -5,9 +5,9 @@ import java.util.HashMap;
 import entities.*;
 import system.*;
 
-public class RBTCPReceiverv1 extends Agent {
+public class TCPReceiver extends Agent {
 
-	public RBTCPReceiverv1(Flow flow) {
+	public TCPReceiver(Flow flow) {
 		super(flow);
 		// TODO Auto-generated constructor stub
 	}

@@ -1,24 +1,33 @@
 package entities;
 
-import protocols.*;
+import system.Keywords;
 
 public class Host extends Node {
 	/* Each host should be connected to an access SDNSwitch */
 	// TODO determine encapsulation level of the attributes
 	public Link accessLink;
-	public String accessSwitchLabel;
+	public int accessSwitchID;
 	public Agent transportAgent;
 
 	/* Each host has string label */
 	public String label;
 
-	public Host(String label) {
-		super(label);
+	public Host(int ID) {
+		super(ID);
 	}
 
-	public void connectToNetwork(Link accessLink, String accessSwitchLabel) {
+	/* --------------------------------------------------- */
+	/* ---------- Inherited methods (from Node) ---------- */
+	/* --------------------------------------------------- */
+
+	public double getAccessLinkDelay(int hostID, int segmentSize) {
+		return accessLink.getTransmissionDelay(segmentSize) + accessLink.getPropagationDelay();
+	}
+	/* --------------------------------------------------- */
+
+	public void connectToNetwork(int accessSwitchID, Link accessLink) {
 		this.accessLink = accessLink;
-		this.accessSwitchLabel = accessSwitchLabel;
+		this.accessSwitchID = accessSwitchID;
 	}
 
 	public void setAgent(Agent agent) {
@@ -28,6 +37,12 @@ public class Host extends Node {
 	public double getAccessLinkDelay(int segmentSize) {
 		Link link = this.accessLink;
 		return link.getPropagationDelay() + link.getTransmissionDelay(segmentSize);
+	}
+
+	/** Called in Class::Event.run() **/
+	/* Objective::Showing the egress-link for the desired destination Node */
+	public Link getEgressLink() {
+		return this.accessLink;
 	}
 
 }
