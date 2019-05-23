@@ -23,9 +23,9 @@ public class Main {
 		 * createLink: 1.String src_label 2.String dst_label 3.Double delay_prob
 		 * 4.Double bandwidth 5.Integer buffer_size 6.String buffer_policy)
 		 */
-		sim.createAccessLink("l1", "h0", "s0", 1.0, 1, 10, -1);
-		sim.createLink("l2", "sw0", "sw1", 1.0, 1, 10, -1);
-		sim.createAccessLink("l3", "sw1", "h1", 1.0, 1, 10, -1);
+		sim.createAccessLink("l0", "h0", "sw0", 2.0, 10, 10, Keywords.FIFO);
+		sim.createLink("l1", "sw0", "sw1", 1, 100, 10, Keywords.FIFO);
+		sim.createAccessLink("l2", "sw1", "h1", 2.0, 10, 10, Keywords.FIFO);
 
 		/* Controller must be defined after the topology is complete */
 		// TODO When creating the controller, maybe we can give the constructor the

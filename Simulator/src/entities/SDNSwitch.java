@@ -3,8 +3,11 @@ package entities;
 import java.util.HashMap;
 
 import events.ArrivalToController;
+import events.ArrivalToHost;
+import events.ArrivalToSwitch;
 import events.Departure;
 import system.Event;
+import system.Keywords;
 import system.Network;
 
 public abstract class SDNSwitch extends Node {
@@ -48,12 +51,35 @@ public abstract class SDNSwitch extends Node {
 		}
 	}
 
+	public Network releaseSegment(Network net, Segment segment) {
+		int nextNodeID;
+		double nextTime;
+		Event nextEvent;
+
+		if (isConnectedToHost(segment.getDstHostID())) { // The next node is a Host
+			if (segment.getType() != Keywords.ACK) { // TODO this should change later
+				deQueueFromAccessLinkBuffer(segment.getDstHostID());
+			}
+			nextNodeID = segment.getDstHostID();
+			nextTime = net.getCurrentTime() + getAccessLinkTotalDelay(segment.getDstHostID(), segment.getSize());
+			nextEvent = new ArrivalToHost(nextTime, nextNodeID, segment);
+		} else { // The next node is a Switch
+			if (segment.getType() != Keywords.ACK) {// TODO this should change later
+				deQueueFromNetworkLinkBuffer(segment.getFlowID());
+			}
+			nextNodeID = segment.getDstHostID();
+			nextTime = net.getCurrentTime() + getNetworkLinkTotalDelay(segment.getFlowID(), segment.getSize());
+			nextEvent = new ArrivalToSwitch(nextTime, nextNodeID, segment, null);
+		}
+		net.eventList.addEvent(nextEvent);
+		return net;
+	}
+
 	/* --------------------------------------------------- */
 	/* ---------- Implemented methods -------------------- */
 	/* --------------------------------------------------- */
 
 	/* ########## Protected ############################## */
-	/* Objective::Checking if the flow table has the flowID entry */
 	protected boolean hasFlowEntry(int flowID) {
 		if (flowTable.containsKey(flowID)) {
 			return true;
@@ -62,10 +88,10 @@ public abstract class SDNSwitch extends Node {
 		}
 	}
 
-	/* Objective::Forwarding the segment to the Destination Host */
 	protected Network forwardToHost(Network net, Segment segment) {
-		double nextTime = net.getCurrentTime()
-				+ this.accessLinks.get(segment.getDstHostID()).getBufferTime(net.getCurrentTime(), segment);
+		double nextTime = net.getCurrentTime() + this.accessLinks.get(segment.getDstHostID()).buffer.getBufferTime(
+				net.getCurrentTime(), segment.getType(),
+				accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()));
 		if (nextTime > 0) {
 			Event nextEvent = new Departure(nextTime, this.ID, segment);
 			net.eventList.addEvent(nextEvent);
@@ -75,10 +101,10 @@ public abstract class SDNSwitch extends Node {
 		return net;
 	}
 
-	/* Objective::Forwarding the segment to the next switch in the path */
 	protected Network forwardToSwitch(Network net, Segment segment) {
-		double nextTime = net.getCurrentTime() + this.networkLinks.get(getNextSwitchID(segment.getFlowID()))
-				.getBufferTime(net.getCurrentTime(), segment);
+		double nextTime = net.getCurrentTime() + this.networkLinks.get(getNextSwitchID(segment.getFlowID())).buffer
+				.getBufferTime(net.getCurrentTime(), segment.getType(),
+						accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()));
 		if (nextTime > 0) {
 			Event nextEvent = new Departure(nextTime, this.ID, segment);
 			net.eventList.addEvent(nextEvent);
@@ -88,7 +114,6 @@ public abstract class SDNSwitch extends Node {
 		return net;
 	}
 
-	/* Objective::Forwarding the segment to the controller */
 	protected Network forwardToController(Network net, Segment segment) {
 		double nextTime = net.getCurrentTime() + net.controller.getControlLinkDelay(this.getID(), segment.getSize());
 		Event nextEvent = new ArrivalToController(nextTime, this.getID(), segment);
@@ -96,28 +121,38 @@ public abstract class SDNSwitch extends Node {
 		return net;
 	}
 
-	/* Objective::Returning the next switchID in the path */
 	protected int getNextSwitchID(int flowID) {
 		return this.flowTable.get(flowID);
 	}
 
-	/* ########## Public ################################# */
-	public double getAccessLinkDelay(int hostID, int segmentSize) {
-		return accessLinks.get(hostID).getTransmissionDelay(segmentSize)
-				+ accessLinks.get(hostID).getPropagationDelay();
+	protected double getAccessLinkTotalDelay(int hostID, int segmentSize) {
+		return accessLinks.get(hostID).getTotalDelay(segmentSize);
 	}
 
-	// TODO We may not need this method
-	public void addFlowTableEntry(int flowID, int neighborID) {
-		this.flowTable.put(flowID, neighborID);
+	protected double getNetworkLinkTotalDelay(int flowID, int segmentSize) {
+		return networkLinks.get(getNextSwitchID(flowID)).getTotalDelay(segmentSize);
 	}
 
-	public boolean isConnectedToHost(int hostID) {
+	protected boolean isConnectedToHost(int hostID) {
 		if (accessLinks.get(hostID) != null) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	protected void deQueueFromAccessLinkBuffer(int dstHostID) {
+		accessLinks.get(dstHostID).buffer.deQueue();
+	}
+
+	protected void deQueueFromNetworkLinkBuffer(int flowID) {
+		networkLinks.get(getNextSwitchID(flowID)).buffer.deQueue();
+	}
+
+	/* ########## Public ################################# */
+
+	public void addFlowTableEntry(int flowID, int neighborID) {
+		this.flowTable.put(flowID, neighborID);
 	}
 
 	public boolean isAccessSwitch() {
@@ -127,5 +162,7 @@ public abstract class SDNSwitch extends Node {
 			return true;
 		}
 	}
+
+	/* ########## Private ################################# */
 
 }

@@ -34,7 +34,7 @@ public class Controllerv1 extends Controller {
 	}
 
 	/* --------------------------------------------------- */
-	/* ---------- Inherited methods (from SDNSwitch) ----- */
+	/* ---------- Inherited methods (from Controller) ---- */
 	/* --------------------------------------------------- */
 	public Network recvSegment(Network net, int switchID, Segment segment) {
 		this.currentNetwork = net;
@@ -68,8 +68,7 @@ public class Controllerv1 extends Controller {
 	private void handleCongestionControl() {
 		updateStateVariables();
 		notifyHosts();
-		sendBufferUpdateMessageToAccessSwitches(Keywords.TokenBasedBuffer, this.interFlowDelay,
-				this.waitTimeBeforeRelease, this.sWnd);
+		sendBufferUpdateMessageToAccessSwitches(prepareMessage());
 	}
 
 	/* ==================== */
@@ -115,15 +114,9 @@ public class Controllerv1 extends Controller {
 	/* Methods for switch communication */
 	/* ================================ */
 
-	private void sendBufferUpdateMessageToAccessSwitches(int bufferMode, double interFlowDelay,
-			double waitBeforeRelease, int tokenNumber) {
-		CtrlMessage message = new CtrlMessage();
-		message.bufferMode = bufferMode;
-		message.interFlowDelay = interFlowDelay;
-		message.waitBeforeRelease = waitBeforeRelease;
-		message.ackNumber = tokenNumber;
+	private void sendBufferUpdateMessageToAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
 		for (int switchID : accessSwitches) {
-			sendBufferUpdateMessage(switchID, message);
+			sendBufferUpdateMessage(switchID, messages.get(switchID));
 		}
 	}
 
@@ -131,5 +124,10 @@ public class Controllerv1 extends Controller {
 		double nextTime = currentNetwork.getCurrentTime() + this.getControlLinkDelay(switchID, Keywords.CTRLSegSize);
 		Event nextEvent = new ArrivalToSwitch(nextTime, switchID, null, controlMessage);
 		currentNetwork.eventList.addEvent(nextEvent);
+	}
+
+	private HashMap<Integer, CtrlMessage> prepareMessage() {
+		HashMap<Integer, CtrlMessage> message = new HashMap<Integer, CtrlMessage>();
+		return message;
 	}
 }

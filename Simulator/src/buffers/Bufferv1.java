@@ -1,6 +1,9 @@
 package buffers;
 
+import java.util.ArrayList;
+
 import entities.Buffer;
+import entities.BufferToken;
 import system.Keywords;
 
 public class Bufferv1 extends Buffer {
@@ -12,56 +15,51 @@ public class Bufferv1 extends Buffer {
 	/* --------------------------------------------------- */
 	/* ---------- Inherited methods (from Buffer) -------- */
 	/* --------------------------------------------------- */
-	public double getWaitTime() {
 
-		return 0;
-	}
-
-	public boolean isFull() {
-		if (occupancy < capacity) {
-			return false;
-		} else if (occupancy == capacity) {
-			return true;
-		}
-		System.out.println("Error Class::Buffer--Invalid buffer occupancy(" + occupancy + ").");
-		return false;
-	}
-
-	public void deQueue() {
-		if (occupancy > 0) {
-			occupancy--;
-		} else if (occupancy < 0) {
-			System.out.println("Error Class::Buffer--Invalid buffer occupancy(" + occupancy + ").");
+	public double getBufferTime(double currentTime, int segmentType, double segmentTransmissionDelay) {
+		if (isFull()) {
+			return Double.NEGATIVE_INFINITY;
+		} else {
+			switch (segmentType) {
+			case Keywords.ACK:
+				return getACKWaitTime(currentTime, segmentTransmissionDelay);
+			default:
+				return getWaitTime(currentTime, segmentTransmissionDelay);
+			}
 		}
 	}
 
 	/* --------------------------------------------------- */
-	public double getWaitTime(double currentTime, double transmissionTime) {
-		occupancy++;
-		double waitTime;
-		if (occupancy == 1) {
-			waitTime = 0;
-		} else {
-			waitTime = mostRecntSegmentDepartureTime - currentTime;
+
+	/* Called by SDNSwitch when executing the control message from controller */
+	public void updateTokenList(ArrayList<BufferToken> tokens) {
+		this.releaseTokens = tokens;
+	}
+
+	public double getACKWaitTime(double currentTime, double transmissionDelay) {
+		double waitTime = 0;
+		double timeToEmpty = 0;
+
+		if (this.releaseTokens.size() == 0) { // TODO might create a problem
+
+			if (mostRecentACKDeparture > currentTime) {
+				timeToEmpty = mostRecentACKDeparture - currentTime;
+			}
+
+			if (this.releaseTokens.get(0).ACKsToGo > 0) {
+				if (releaseTokens.get(0).isFirst) {
+					waitTime = releaseTokens.get(0).waitTime;
+					releaseTokens.get(0).isFirst = false;
+				}
+				waitTime += timeToEmpty;
+				(this.releaseTokens.get(0).ACKsToGo)--;
+			} else {
+				releaseTokens.remove(0);
+				waitTime = getACKWaitTime(currentTime, transmissionDelay);
+			}
+			mostRecentACKDeparture = currentTime + waitTime + transmissionDelay;
 		}
-		mostRecntSegmentDepartureTime = currentTime + waitTime + transmissionTime;
 		return waitTime;
-	}
-
-	public double getACKWaitTime(double currentTime, double transmissionTime) {
-		switch (this.mode) {
-		case Keywords.FlushBuffer:
-			return getWaitTime(currentTime, transmissionTime);
-		case Keywords.TokenBasedBuffer:
-			this.mode = Keywords.FlushBuffer;
-			return releaseToken.time - currentTime;
-		default:
-			return Double.NEGATIVE_INFINITY;
-		}
-	}
-
-	public void setReleaseTokenTime(double time) {
-		this.releaseToken.time = time;
 	}
 
 }

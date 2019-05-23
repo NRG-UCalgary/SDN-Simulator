@@ -4,10 +4,8 @@ import switches.*;
 
 import java.util.ArrayList;
 
-import utilities.Logger;
 
 public class Flow extends Entity {
-	private Logger log = new Logger();
 
 	private String label;
 	private String type;
@@ -15,9 +13,8 @@ public class Flow extends Entity {
 	private Host destination;
 	private int size;
 	private int packet_size;
-	private double arrival_time;
-	private double start_time;
-	private double end_time;
+	private double arrivalTime;
+	private double completionTime;
 
 	/** Is it needed? **/
 	public ArrayList<Segment> packets = new ArrayList<Segment>();
@@ -32,7 +29,7 @@ public class Flow extends Entity {
 		this.source = src;
 		this.destination = dst;
 		this.size = size;
-		this.arrival_time = arrv_time;
+		this.arrivalTime = arrv_time;
 
 	}
 
@@ -52,23 +49,15 @@ public class Flow extends Entity {
 	}
 
 	public double getArrivalTime() {
-		return arrival_time;
+		return arrivalTime;
 	}
 
-	public double getStartTime() {
-		return start_time;
+	public double getCompletionTime() {
+		return completionTime;
 	}
 
-	public void setStartTime(double start_time) {
-		this.start_time = start_time;
-	}
-
-	public double getEndTime() {
-		return end_time;
-	}
-
-	public void setEndTime(double end_time) {
-		this.end_time = end_time;
+	public void setCompletionTime(double end_time) {
+		this.completionTime = end_time;
 	}
 
 	public String getType() {

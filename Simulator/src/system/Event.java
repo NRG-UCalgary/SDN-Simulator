@@ -8,10 +8,6 @@ public abstract class Event {
 	protected Segment currentSegment;
 	protected int currentNodeID;
 
-	protected Event nextEvent;
-	protected double nextTime;
-	protected int nextNodeID;
-
 	public Event(double startTime, int nodeID, Segment segment) {
 		this.currentTime = startTime;
 		this.currentSegment = segment;

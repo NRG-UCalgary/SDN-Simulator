@@ -2,10 +2,14 @@ package entities;
 
 public class BufferToken {
 
-	public double time;
+	public double waitTime;
+	public int ACKsToGo;
+	public boolean isFirst;
 
-	public BufferToken(double releaseTime) {
-		this.time = releaseTime;
+	public BufferToken(double releaseTime, int ACKsToGo) {
+		this.waitTime = releaseTime;
+		this.ACKsToGo = ACKsToGo;
+		this.isFirst = true;
 	}
 
 }

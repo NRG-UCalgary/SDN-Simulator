@@ -19,11 +19,10 @@ public class ArrivalToSwitch extends Event {
 	public Network execute(Network net) {
 		net.updateTime(currentTime);
 		if (currentCtrlMessage != null) {
-			net = net.switches.get(this.currentNodeID).recvCtrlMessage(net, currentCtrlMessage);
+			return net.switches.get(this.currentNodeID).recvCtrlMessage(net, currentCtrlMessage);
 		} else {
-			net = net.switches.get(this.currentNodeID).recvSegment(net, currentSegment);
+			return net.switches.get(this.currentNodeID).recvSegment(net, currentSegment);
 		}
-		return net;
 	}
 
 }

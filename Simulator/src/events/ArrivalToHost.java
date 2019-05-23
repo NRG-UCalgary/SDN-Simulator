@@ -15,7 +15,6 @@ public class ArrivalToHost extends Event {
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
 		net.updateTime(currentTime);
-		net = net.hosts.get(currentNodeID).recvSegment(net, currentSegment);
-		return net;
+		return net.hosts.get(currentNodeID).recvSegment(net, currentSegment);
 	}
 }

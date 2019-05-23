@@ -4,8 +4,7 @@ import switches.*;
 import controllers.*;
 import entities.*;
 import transport_protocols.*;
-import utilities.Logger;
-import utilities.OneToOneMap;
+import utilities.*;
 
 public class Simulator {
 
@@ -14,6 +13,7 @@ public class Simulator {
 	private final double CONTROLLER_RTT_DEALAY = 1.0;
 	private final double CONTROLLER_PROCESS_DELAY = 1.0;
 	private final int CONTROLLER_ROUTING_ALG = 1;
+	private final int alpha = 1;
 
 	/* Buffer Algorithm */
 	// private final String BUFFER_ALG = "FCFS";
@@ -57,6 +57,9 @@ public class Simulator {
 
 		/* Initializing Controller with Network Object */
 		/* Network object should be initialized here */
+		for (Host host : net.hosts.values()) {
+			net = host.startSending(net);
+		}
 
 		// This method is for creating the first arrival event (for TCP it is SYN
 		// packet) for each flow.
@@ -159,7 +162,7 @@ public class Simulator {
 	/*-------------------------------------------------------*/
 	/* Controller Creation Method */
 	public void createController(String label, int routing_alg, double rtt_delay, double process_delay) {
-		Controller controller = new Controllerv1(controllerCounter, net, routing_alg);
+		Controller controller = new Controllerv1(controllerCounter, net, routing_alg, alpha);
 		net.controller = controller;
 
 		// Handling Labeling
@@ -195,13 +198,13 @@ public class Simulator {
 
 		switch (type) {
 		case Keywords.TCP:
-			src_agent = new TCPSender(flow);
-			dst_agent = new TCPReceiver(flow);
+			// src_agent = new TCPSender(flow);
+			// dst_agent = new TCPReceiver(flow);
 			break;
 		case Keywords.RBTCP:
 			Main.print("Simulator.generateFlow()::RBTCP sender and receiver are going to be created.");
-			src_agent = new RBTCPSenderv1(flow);
-			dst_agent = new RBTCPReceiverv1(flow);
+			src_agent = new SDTCPSenderv1(flow);
+			dst_agent = new SDTCPReceiverv1(flow);
 		case Keywords.SDTCP:
 
 		default:

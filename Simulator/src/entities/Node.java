@@ -12,20 +12,8 @@ public abstract class Node extends Entity {
 	/* ---------- Abstract methods ----------------------- */
 	/* --------------------------------------------------- */
 
-	/** Implemented in Class::SDNSwitch, Host **/
-
-	/**
-	 * @param net
-	 * @param segment
-	 * @return
-	 */
 	public abstract Network recvSegment(Network net, Segment segment);
 
-	/** Implemented in Class::Switch, Host **/
-	/**
-	 * @param nodeID
-	 * @param segmentSize
-	 * @return
-	 */
-	public abstract double getAccessLinkDelay(int nodeID, int segmentSize);
+	public abstract Network releaseSegment(Network net, Segment segment);
+
 }

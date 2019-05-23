@@ -14,10 +14,7 @@ public class ArrivalToController extends Event {
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
 		net.updateTime(currentTime);
-		// TODO the interface method of controller must be called which will make a
-		// recvFromController event for the corresponding switch
-		net = net.controller.recvSegment(net, currentNodeID, currentSegment);
-		return net;
+		return net.controller.recvSegment(net, currentNodeID, currentSegment);
 	}
 
 }

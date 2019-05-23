@@ -16,7 +16,7 @@ public class FlowPathSetup extends Event {
 	public Network execute(Network net) {
 		net.updateTime(currentTime);
 		net.switches.get(this.currentNodeID).addFlowTableEntry(flowID, neighborID);
-		return null;
+		return net;
 	}
 
 }

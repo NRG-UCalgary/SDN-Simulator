@@ -1,5 +1,8 @@
 package entities;
 
+import java.util.ArrayList;
+
+import events.ArrivalToSwitch;
 import system.*;
 
 public abstract class Agent {
@@ -10,6 +13,8 @@ public abstract class Agent {
 	protected int dstHostID;
 	protected int size;
 
+	ArrayList<Segment> sendingBuffer;
+
 	protected Flow flow;
 
 	/* Constructor */
@@ -17,35 +22,23 @@ public abstract class Agent {
 		this.flow = flow;
 	}
 
-	// This function may be overridden in transport protocol implementations
-	public Network recv(Network net, Segment segment) {
-		// if the received packet is a Data-Packet, an ACK packet should be created
-
-		// if the received packet is an Ack-Packet, the next Data-Packet should be sent.
-
-		return net;
-	}
-
-	public Network timeOut(Network net, Segment segment) {
-		return net;
-	}
-
-	// This method shall be overridden in any implementation of the class Agent
+	/* --------------------------------------------------- */
+	/* ---------- Abstract methods ----------------------- */
+	/* --------------------------------------------------- */
 	public Network start(Network net) {
-
 		return net;
 	}
 
-	/**********************************************************************/
-	/********************** Getters and Setters ***************************/
-	/**********************************************************************/
-	public Flow getFlow() {
-		return this.flow;
-	}
+	public abstract Network recvSegment(Network net, Segment segment);
 
-	public void setFlow(Flow flow) {
-		this.flow = flow;
+	/* --------------------------------------------------- */
+	/* ---------- Implemented methods -------------------- */
+	/* --------------------------------------------------- */
+
+	protected Network sendSegment(Network net, Segment segment) {
+		double nextTime = net.getCurrentTime() + net.hosts.get(srcHostID).accessLink.getTotalDelay(segment.getSize());
+		net.eventList.addEvent(new ArrivalToSwitch(nextTime, net.hosts.get(srcHostID).accessSwitchID, segment, null));
+		return net;
 	}
-	/***********************************************************************/
 
 }

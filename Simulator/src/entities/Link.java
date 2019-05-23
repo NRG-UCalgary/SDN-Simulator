@@ -26,28 +26,6 @@ public class Link extends Entity {
 		buffer = new Bufferv1(bufferSize, bufferPolicy);
 	}
 
-	public void setBufferMode(int mode, double releaseTokenTime, int ackNumber) {
-		this.buffer.mode = mode;
-		this.buffer.setReleaseTokenTime(releaseTokenTime);
-
-	}
-
-	/** Called in Class::ArrivalToSwitch.execute() **/
-	/* Objective::Returning the wait time in the buffer */
-	public double getBufferTime(double currentTime, Segment segment) {
-		if (buffer.isFull()) {
-			// TODO check if this is <0
-			return Double.NEGATIVE_INFINITY;
-		} else {
-			switch (segment.getType()) {
-			case Keywords.ACK:
-				return buffer.getACKWaitTime(currentTime, getTransmissionDelay(segment.getSize()));
-			default:
-				return buffer.getWaitTime(currentTime, getTransmissionDelay(segment.getSize()));
-			}
-		}
-	}
-
 	public double getTotalDelay(int segmentSize) {
 		return this.getTransmissionDelay(segmentSize) + this.propDelay;
 	}
