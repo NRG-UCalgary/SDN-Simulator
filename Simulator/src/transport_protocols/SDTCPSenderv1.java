@@ -50,7 +50,7 @@ public class SDTCPSenderv1 extends Agent {
 				+ net.hosts.get(srcHostID).accessLink.getTotalDelay(synSegment.getSize());
 		net.eventList
 				.addEvent(new ArrivalToSwitch(nextTime, net.hosts.get(srcHostID).accessSwitchID, synSegment, null));
-		return sendSegment(net, genSYN());
+		return net;
 	}
 
 	public Network recvSegment(Network net, Segment recvdSegment) {

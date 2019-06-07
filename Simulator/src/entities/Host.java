@@ -1,5 +1,6 @@
 package entities;
 
+import system.Keywords;
 import system.Main;
 import system.Network;
 
@@ -41,6 +42,10 @@ public class Host extends Node {
 
 	public double getAccessLinkDelay(int segmentSize) {
 		return accessLink.getTransmissionDelay(segmentSize) + accessLink.getPropagationDelay();
+	}
+
+	public double getAccessLinkRTT() {
+		return getAccessLinkDelay(Keywords.ACKSegSize) + getAccessLinkDelay(Keywords.DataSegSize);
 	}
 
 	public void connectToNetwork(int accessSwitchID, Link accessLink) {

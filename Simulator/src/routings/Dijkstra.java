@@ -3,82 +3,81 @@
 
 package routings;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import entities.*;
 
 public class Dijkstra extends Router {
 
 	private HashMap<Integer, SDNSwitch> nodes;
-	private List<SDNSwitch> unvisited;
-	private HashMap<SDNSwitch, SDNSwitch> previous;
-	private HashMap<SDNSwitch, Double> distance;
-	private HashMap<SDNSwitch, Link> result;
+	private HashMap<Integer, Integer> unvisited; // <SwitchID, sameSwitchID>
+	private HashMap<Integer, Integer> previous; // <SwitchID, SwitchID>
+	private HashMap<Integer, Double> distance; // <SwitchID, PropagationDelay>
+	private HashMap<Integer, Link> result; // <SwitchID, Link>
 
 	/* Constructor */
 	public Dijkstra(HashMap<Integer, SDNSwitch> nodes) {
 		this.nodes = nodes;
-		distance = new HashMap<SDNSwitch, Double>();
-		previous = new HashMap<SDNSwitch, SDNSwitch>();
-		unvisited = new ArrayList<SDNSwitch>();
-		result = new HashMap<SDNSwitch, Link>();
+		distance = new HashMap<Integer, Double>();
+		previous = new HashMap<Integer, Integer>();
+		unvisited = new HashMap<Integer, Integer>();
+		result = new HashMap<Integer, Link>();
+
 	}
 
 	/* Objective::Finding the optimal paths for each Node */
-	public HashMap<SDNSwitch, Link> run(SDNSwitch src, SDNSwitch target) {
+	public HashMap<Integer, Link> run(int srcID, int targetID) {
 
-		distance = new HashMap<SDNSwitch, Double>();
-		previous = new HashMap<SDNSwitch, SDNSwitch>();
-		unvisited = new ArrayList<SDNSwitch>();
+		distance = new HashMap<Integer, Double>();
+		previous = new HashMap<Integer, Integer>();
+		unvisited = new HashMap<Integer, Integer>();
 
 		/* Initialization */
-		for (SDNSwitch curr_node : nodes.values()) {
-			distance.put(curr_node, Double.MAX_VALUE); // Unknown distance from source to v
-			previous.put(curr_node, src); // Previous node in optimal path from source
-			unvisited.add(curr_node); // All nodes initially in Q (unvisited nodes)
+		for (SDNSwitch currentNode : nodes.values()) {
+			distance.put(currentNode.getID(), Double.MAX_VALUE); // Unknown distance from source to v
+			previous.put(currentNode.getID(), srcID); // Previous node in optimal path from source
+			unvisited.put(currentNode.getID(), currentNode.getID()); // All nodes initially in Q (unvisited nodes)
 		}
 
-		distance.put(src, 0.0); // Distance from source to source
+		distance.put(srcID, 0.0); // Distance from source to source
 
 		while (!unvisited.isEmpty()) {
-			SDNSwitch minNode = null;
+			int minNodeID = -1;
+
 			Double minValue = Double.MAX_VALUE;
-			for (SDNSwitch node : unvisited) { // Node with the least distance
-				if (distance.get(node) < minValue) { // will be selected first
-					minValue = distance.get(node);
-					minNode = node;
+			for (int nodeID : unvisited.keySet()) { // Node with the least distance
+				if (distance.get(nodeID) < minValue) { // will be selected first
+					minValue = distance.get(nodeID);
+					minNodeID = nodeID;
 				}
 			}
-			unvisited.remove(minNode);
+			unvisited.remove(minNodeID);
 
-			for (SDNSwitch n : minNode.neighbors.keySet()) { // For each neighbor n of minNode
-				Double alt = distance.get(minNode) + minNode.neighbors.get(n).getPropagationDelay();
+			for (int n : nodes.get(minNodeID).networkLinks.keySet()) { // For each neighbor n of minNode
+				Double alt = distance.get(minNodeID) + nodes.get(minNodeID).networkLinks.get(n).getPropagationDelay();
 				if (alt < distance.get(n)) {
 					distance.put(n, alt);
-					previous.put(n, minNode);
+					previous.put(n, minNodeID);
 
 				}
 			}
 		}
 
-		this.result = new HashMap<SDNSwitch, Link>();
-		generateResult(src, target);
+		this.result = new HashMap<Integer, Link>();
+		generateResult(srcID, targetID);
 		return this.result;
 	}
 
 	/** Called in Class::Dijkstra.run() **/
 	/* Objective::Returning the routing table result<Node,Link> for Node src */
-	private SDNSwitch generateResult(SDNSwitch src, SDNSwitch dst) {
-
-		SDNSwitch neighbor = previous.get(dst);
-		this.result.put(neighbor, neighbor.neighbors.get(dst));
+	private SDNSwitch generateResult(int srcID, int dstID) {
+		int neighborID = previous.get(dstID);
+		this.result.put(neighborID, nodes.get(neighborID).networkLinks.get(dstID));
 		// Check if the neighbor is connected to the src
-		if (previous.get(neighbor).equals(src)) {
-			this.result.put(src, src.neighbors.get(neighbor));
+		if (previous.get(neighborID).equals(srcID)) {
 			return null;
 		} else {
-			return generateResult(src, neighbor);
+			return generateResult(srcID, neighborID);
+
 		}
 	}
 }

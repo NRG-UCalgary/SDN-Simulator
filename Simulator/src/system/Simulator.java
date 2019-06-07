@@ -57,17 +57,12 @@ public class Simulator {
 
 		/* Initializing Controller with Network Object */
 		/* Network object should be initialized here */
-		for (Host host : net.hosts.values()) {
-			net = host.startSending(net);
-		}
 
 		// This method is for creating the first arrival event (for TCP it is SYN
 		// packet) for each flow.
 		// This Initialization can be done through src_agent of each flow so their state
 		// variables can be updated.
-
 		/* Reading the first Event from Network Event List */
-
 		log.endOfPhase("Initialization done.");
 		int loopCounter = 0;
 		/* Main Loop */
@@ -120,7 +115,6 @@ public class Simulator {
 		Link link = new Link(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay, bandwidth,
 				bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
-
 		// Handling Labeling
 		linkLabels.put(linkCounter, label);
 		linkCounter++;
@@ -149,7 +143,7 @@ public class Simulator {
 		linkCounter++;
 
 		// The link from switch to host
-		link = new Link(linkCounter, switchLabels.getKey(dst), hostLabels.getKey(dst), propDelay, bandwidth, bufferSize,
+		link = new Link(linkCounter, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay, bandwidth, bufferSize,
 				bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
 
@@ -188,7 +182,7 @@ public class Simulator {
 
 		Flow flow = new Flow(flowCounter, type, net.hosts.get(hostLabels.getKey(src)),
 				net.hosts.get(hostLabels.getKey(dst)), size, arrival_time);
-
+		Main.print("This is flowID: " + flowCounter);
 		// Handling Labeling
 		flowLabels.put(flowCounter, label);
 		flowCounter++;
@@ -198,26 +192,25 @@ public class Simulator {
 
 		switch (type) {
 		case Keywords.TCP:
-			// src_agent = new TCPSender(flow);
-			// dst_agent = new TCPReceiver(flow);
 			break;
-		case Keywords.RBTCP:
-			Main.print("Simulator.generateFlow()::RBTCP sender and receiver are going to be created.");
+		case Keywords.SDTCP:
+			log.generalLog("Simulator.generateFlow()::SDTCP sender and receiver are going to be created.");
 			src_agent = new SDTCPSenderv1(flow);
 			dst_agent = new SDTCPReceiverv1(flow);
-		case Keywords.SDTCP:
-
+			break;
+		case Keywords.RBTCP:
+			break;
 		default:
 			System.out.println("Simulator.generateFlow()::Invalid type for flow.");
 			break;
 		}
 
-		// TODO should it be here?!
-		// src_agent.start(net);
-
 		// Net update
 		net.hosts.get(hostLabels.getKey(src)).transportAgent = src_agent;
 		net.hosts.get(hostLabels.getKey(dst)).transportAgent = dst_agent;
+
+		// Creating initial ArrivalToSwitch event for the flow
+		net = net.hosts.get(hostLabels.getKey(src)).startSending(net);
 
 	}
 

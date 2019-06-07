@@ -1,7 +1,6 @@
 package entities;
 
 import buffers.Bufferv1;
-import system.Keywords;
 
 /** Links are attributes of Switch and Host **/
 /** There are two types of link: 1.accessLink 2.networkLink **/

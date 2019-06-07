@@ -1,17 +1,6 @@
-Entered Simulator.createNode()
-Entered Simulator.createNode()
-Entered Simulator.createNode()
-Entered Simulator.createNode()
-Entered Simulator.createLink()
-Entered Simulator.createLink()
-Entered Simulator.createLink()
-Entered Simulator.createLink()
 Entered Simulator.generateFlow()
-Entered TCP.start()
-Entered TCP.createSYN()
-Entered EventList.generateEvent()
-Entered TCP.setTimer()
-Entered EventList.generateEvent()
+Simulator.generateFlow()::SDTCP sender and receiver are going to be created.
+Entered EventList.addEvent()
 Entered Simulator.run()
 ******************************************
 ********** Initialization done. **********
@@ -20,23 +9,32 @@ Entered Simulator.run()
 ---------- Simulator::Main Loop (#0) ----------
 -----------------------------------------------
 Entered EventList.getEvent()
-Entered Event.execute()
-Event type: Arrival
-+++++++++++++++++++
-+     Flow: f1    +
-+     Type: SYN   +
-+     Node: h0    +
-+     Time: 0.0   +
-+++++++++++++++++++
+Entered EventList.addEvent()
 -----------------------------------------------
 ---------- Simulator::Main Loop (#1) ----------
 -----------------------------------------------
 Entered EventList.getEvent()
-Entered Event.execute()
-Event type: TCP-TimeOut
-+++++++++++++++++++++++++
-+     Flow: f1          +
-+     Type: SYN         +
-+     Node: h0          +
-+     Time: 5000000.0   +
-+++++++++++++++++++++++++
+Entered EventList.addEvent()
+Entered EventList.addEvent()
+Entered EventList.addEvent()
+Entered EventList.addEvent()
+Entered EventList.addEvent()
+Entered EventList.addEvent()
+-----------------------------------------------
+---------- Simulator::Main Loop (#2) ----------
+-----------------------------------------------
+Entered EventList.getEvent()
+-----------------------------------------------
+---------- Simulator::Main Loop (#3) ----------
+-----------------------------------------------
+Entered EventList.getEvent()
+Entered EventList.addEvent()
+-----------------------------------------------
+---------- Simulator::Main Loop (#4) ----------
+-----------------------------------------------
+Entered EventList.getEvent()
+Entered EventList.addEvent()
+-----------------------------------------------
+---------- Simulator::Main Loop (#5) ----------
+-----------------------------------------------
+Entered EventList.getEvent()

@@ -15,7 +15,7 @@ public class EventList {
 	}
 
 	public void addEvent(Event newEvent) {
-		log.entranceToMethod("EventList", "generateEvent");
+		log.entranceToMethod("EventList", "addEvent");
 		events.add(newEvent);
 		// Sorting the events based on their happening time
 		Collections.sort(events, timeComparator);

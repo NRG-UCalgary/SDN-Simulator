@@ -7,7 +7,6 @@ public class CtrlMessage extends Entity {
 
 	public int switchID;
 	public int bufferMode;
-	public double interFlowDelay;
 	public HashMap<Integer, ArrayList<BufferToken>> tokens; // <HostID, tokensForEachBuffer>
 
 	public CtrlMessage() {

@@ -8,22 +8,21 @@ import events.ArrivalToSwitch;
 import events.Departure;
 import system.Event;
 import system.Keywords;
+import system.Main;
 import system.Network;
 
 public abstract class SDNSwitch extends Node {
 
 	public Link controlLink;
 
-	// Only for DIjkstra (temporary) // TODO Must be filled by simulator
-	public HashMap<SDNSwitch, Link> neighbors;
 	public HashMap<Integer, Link> accessLinks; // <HostID, Link>
 	public HashMap<Integer, Link> networkLinks; // <SwitchID, Link>
 	public HashMap<Integer, Integer> flowTable; // <FlowID, SwitchID(neighbors)>
+	public boolean isAccessSwitch;
 
 	public SDNSwitch(int ID, Link controlLink) {
 		super(ID);
 		this.controlLink = controlLink;
-		neighbors = new HashMap<SDNSwitch, Link>();
 		accessLinks = new HashMap<Integer, Link>();
 		networkLinks = new HashMap<Integer, Link>();
 		flowTable = new HashMap<Integer, Integer>();
@@ -42,7 +41,9 @@ public abstract class SDNSwitch extends Node {
 		/* ## Forward the segment to the Host (if connected to it) ## */
 		/* ## Forward the segment to the next switch (if has the Flow entry) ## */
 		/* ## Forward the segment to the controller ## */
-		if (this.isConnectedToHost(segment.getDstHostID())) {
+		if (segment.getDstHostID() == Keywords.BroadcastDestination) {
+			return broadcastToHosts(net, segment);
+		} else if (this.isConnectedToHost(segment.getDstHostID())) {
 			return forwardToHost(net, segment);
 		} else if (this.hasFlowEntry(segment.getDstHostID())) {
 			return forwardToSwitch(net, segment);
@@ -67,7 +68,7 @@ public abstract class SDNSwitch extends Node {
 			if (segment.getType() != Keywords.ACK) {// TODO this should change later
 				deQueueFromNetworkLinkBuffer(segment.getFlowID());
 			}
-			nextNodeID = segment.getDstHostID();
+			nextNodeID = segment.getDstHostID(); // FIXME incorrect
 			nextTime = net.getCurrentTime() + getNetworkLinkTotalDelay(segment.getFlowID(), segment.getSize());
 			nextEvent = new ArrivalToSwitch(nextTime, nextNodeID, segment, null);
 		}
@@ -86,6 +87,21 @@ public abstract class SDNSwitch extends Node {
 		} else {
 			return false;
 		}
+	}
+
+	protected Network broadcastToHosts(Network net, Segment segment) {
+		double nextTime;
+		for (int hostID : accessLinks.keySet()) {
+			nextTime = net.getCurrentTime() + accessLinks.get(hostID).buffer.getBufferTime(net.getCurrentTime(),
+					segment.getType(), accessLinks.get(hostID).getTransmissionDelay(segment.getSize()));
+			if (nextTime > 0) {
+				Event nextEvent = new Departure(nextTime, this.ID, segment);
+				net.eventList.addEvent(nextEvent);
+			} else {
+				// TODO segment drop happens here
+			}
+		}
+		return net;
 	}
 
 	protected Network forwardToHost(Network net, Segment segment) {
@@ -115,7 +131,7 @@ public abstract class SDNSwitch extends Node {
 	}
 
 	protected Network forwardToController(Network net, Segment segment) {
-		double nextTime = net.getCurrentTime() + net.controller.getControlLinkDelay(this.getID(), segment.getSize());
+		double nextTime = net.getCurrentTime() + controlLink.getTotalDelay(segment.getSize());
 		Event nextEvent = new ArrivalToController(nextTime, this.getID(), segment);
 		net.eventList.addEvent(nextEvent);
 		return net;
@@ -152,6 +168,7 @@ public abstract class SDNSwitch extends Node {
 	/* ########## Public ################################# */
 
 	public void addFlowTableEntry(int flowID, int neighborID) {
+		Main.print("This is switch: " + this.ID + " and the flow entry is: " + flowID + ", " + neighborID);
 		this.flowTable.put(flowID, neighborID);
 	}
 

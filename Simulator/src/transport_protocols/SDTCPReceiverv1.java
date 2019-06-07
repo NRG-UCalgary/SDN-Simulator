@@ -45,7 +45,10 @@ public class SDTCPReceiverv1 extends Agent {
 	}
 
 	/** ###################################################### **/
-
+	public Network start(Network net) {
+		Main.print("Do we get hereR?!");
+		return net;
+	}
 	/* Local methods */
 
 }

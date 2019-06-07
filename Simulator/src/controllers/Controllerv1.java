@@ -3,50 +3,40 @@ package controllers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import entities.*;
-import events.*;
 import system.*;
 import utilities.*;
 
 public class Controllerv1 extends Controller {
 
-	/* Congestion Control variables */
-	// The aggression control variable
-	private double alpha;
-	// The big rtt that accommodates all rtts of the flows
-	private int bigRTT;
-	// Optimum sending window
-	private int sWnd;
-	// The waitTime before releasing first ACK from accessSwitch
-	private double waitTimeBeforeRelease;
-	// inter-flow delay
-	private double interFlowDelay;
-	// Controller has a database of each flow (id) and its AccessLinkDelay
-	HashMap<Integer, Double> AccessDelays;
+	/* Congestion Control Variables */
+	public double alpha;
+	public int bigRTT; // TODO With only one access Switch
+	// TODO it should be changed to a map <AccessSwitchID, bigRTT> later
+	public int previousSWnd;
+	public int sWnd;
+	public int numberOfSendingCycles;
+	public double interFlowDelay; // The fixed delay between each flow swnd
 
 	public Controllerv1(int ID, Network net, int routingAlgorithm, double alpha) {
 		super(ID, net, routingAlgorithm);
 		this.alpha = alpha;
-		bigRTT = 0;
-		sWnd = 0;
-		interFlowDelay = 0;
-		waitTimeBeforeRelease = 0;
-		AccessDelays = new HashMap<Integer, Double>();
+
 	}
 
-	/* --------------------------------------------------- */
-	/* ---------- Inherited methods (from Controller) ---- */
-	/* --------------------------------------------------- */
+	/* -------------------------------------------------------------------------- */
+	/* ---------- Inherited methods (from Controller) --------------------------- */
+	/* -------------------------------------------------------------------------- */
 	public Network recvSegment(Network net, int switchID, Segment segment) {
 		this.currentNetwork = net;
 		this.currentSegment = segment;
 		switch (segment.getType()) {
 		case Keywords.SYN:
-			this.flowCount++; // Increasing the flowCounter
-			currentSegment.setFlowID(flowCount); // Setting the flowID field of SYN segment
+			currentSegment.setFlowID(database.flowCount); // Setting the flowID field of SYN segment
+			database.flowCount++; // Increasing the flowCounter
 			handleRouting(currentNetwork.switches.get(switchID), this.getAccessSwitch(currentSegment.getDstHostID()));
 			break;
 		case Keywords.FIN:
-			this.flowCount--;
+			database.flowCount--;
 			// TODO we might want to remove the flow entries for the completed flow
 			break;
 		default:
@@ -58,30 +48,94 @@ public class Controllerv1 extends Controller {
 		return currentNetwork;
 	}
 
-	/* --------------------------------------------------- */
-	/* ---------- Implemented methods -------------------- */
-	/* --------------------------------------------------- */
+	/* -------------------------------------------------------------------------- */
+	/* ---------- Implemented methods ------------------------------------------- */
+	/* -------------------------------------------------------------------------- */
 
-	/* =================== */
-	/* First level methods */
-	/* =================== */
+	/* =========================================== */
+	/* ========== Congestion Control ============= */
+	/* =========================================== */
 	private void handleCongestionControl() {
-		updateStateVariables();
+		updateBigRTT();
+		updateInterFlowDelay();
+		updateSWnd();
+		updateNumberOfSendingCycles();
 		notifyHosts();
-		sendBufferUpdateMessageToAccessSwitches(prepareMessage());
+		notifyAccessSwitch(prepareMessage());
+
 	}
 
-	/* ==================== */
-	/* Second level methods */
-	/* ==================== */
-	private void updateStateVariables() {
-		updateBigRTT();
-		updateSWnd();
-		updateInterFlowDelay();
-		updateWaitTimeBeforeRelease();
+	private void updateBigRTT() {
+		// TODO the bigRTT for the corresponding access Switch must be updated
+		// NOTE: We start with only one accessSwitch so for now this implementation
+		// works
+		ArrayList<Integer> rtts = new ArrayList<Integer>();
+		for (double rtt : database.RTTs.values()) {
+			// TODO We consider RTT in millisecond and we use ceiling
+			rtts.add((int) Math.ceil(rtt));
+		}
+		bigRTT = Mathematics.lcm(rtts);
+	}
+
+	private void updateInterFlowDelay() {
+		// TODO this is for one access Switch only
+		// TODO must be updated accordingly later
+		interFlowDelay = bigRTT / database.flowCount;
+		Main.print("ControllerV1.updateInerFlowDelay() -- the value is = " + interFlowDelay);
+	}
+
+	private void updateSWnd() {
+		// note that this is only for the single bottleneck scenario
+		previousSWnd = sWnd;
+		this.sWnd = (int) Math.floor(alpha * (bigRTT * database.BtlBWs.get(currentSegment.getFlowID())
+				/ (database.flowCount * Keywords.DataSegSize)));
+		Main.print("ControllerV1.updateSWnd() -- the value is = " + sWnd);
+		if (previousSWnd == 0) {
+			previousSWnd = sWnd;
+		}
+	}
+
+	private void updateNumberOfSendingCycles() {
+		// TODO what should the number of sending cycles be?
+		numberOfSendingCycles = 100;
+	}
+
+	private HashMap<Integer, CtrlMessage> prepareMessage() {
+		HashMap<Integer, CtrlMessage> messages = new HashMap<Integer, CtrlMessage>();
+		CtrlMessage singleMessage = new CtrlMessage();
+		HashMap<Integer, ArrayList<BufferToken>> preparedTokens = new HashMap<Integer, ArrayList<BufferToken>>();
+		ArrayList<BufferToken> eachAccessBufferTokens;
+		BufferToken token;
+		// a CtrlMessage for each accessSwitches in the network
+		for (int accessSwitchID : database.AccessSwitchIDs) {
+			// The flow ID index
+			int i = 0;
+			eachAccessBufferTokens = new ArrayList<BufferToken>();
+			for (int hostID : currentNetwork.switches.get(accessSwitchID).accessLinks.keySet()) {
+				for (int j = 0; j <= numberOfSendingCycles; j++) {
+					token = new BufferToken(
+							((i * interFlowDelay) - currentNetwork.hosts.get(hostID).getAccessLinkRTT() + j * bigRTT),
+							previousSWnd);
+					eachAccessBufferTokens.add(token);
+				}
+				preparedTokens.put(hostID, eachAccessBufferTokens);
+			}
+			singleMessage.tokens = preparedTokens;
+
+			messages.put(accessSwitchID, singleMessage);
+		}
+		return messages;
+	}
+
+	private void notifyAccessSwitch(HashMap<Integer, CtrlMessage> messages) {
+		// TODO this is for one accessSwitch assumption
+		// TODO must be updated for more than access switches
+		sendControlMessageToAccessSwitches(messages);
 	}
 
 	private void notifyHosts() {
+		// TODO this is for one accessSwitch assumption
+		// TODO must be updated for more than access switches
 		Segment segmentToHosts = new Segment(Keywords.ControllerFLowID, Keywords.CTRL, -1, Keywords.CTRLSegSize,
 				Keywords.ControllerID, Keywords.BroadcastDestination);
 		segmentToHosts.bigRTT_ = this.bigRTT;
@@ -89,45 +143,4 @@ public class Controllerv1 extends Controller {
 		sendSegmentToAccessSwitches(segmentToHosts);
 	}
 
-	private void updateBigRTT() {
-		ArrayList<Integer> rtts = new ArrayList<Integer>();
-		for (double rtt : RTTs.values()) {
-			rtts.add((int) rtt);
-		}
-		bigRTT = Mathematics.lcm(rtts);
-	}
-
-	private void updateSWnd() {
-		// note that this is only for the single bottleneck scenario
-		this.sWnd = (int) Math.floor(alpha * (bigRTT * BtlBWs.get(currentSegment.getFlowID()) / flowCount));
-	}
-
-	private void updateInterFlowDelay() {
-		this.interFlowDelay = (this.bigRTT / (double) flowCount);
-	}
-
-	private void updateWaitTimeBeforeRelease() {
-		this.waitTimeBeforeRelease = this.bigRTT;
-	}
-
-	/* ================================ */
-	/* Methods for switch communication */
-	/* ================================ */
-
-	private void sendBufferUpdateMessageToAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
-		for (int switchID : accessSwitches) {
-			sendBufferUpdateMessage(switchID, messages.get(switchID));
-		}
-	}
-
-	private void sendBufferUpdateMessage(int switchID, CtrlMessage controlMessage) {
-		double nextTime = currentNetwork.getCurrentTime() + this.getControlLinkDelay(switchID, Keywords.CTRLSegSize);
-		Event nextEvent = new ArrivalToSwitch(nextTime, switchID, null, controlMessage);
-		currentNetwork.eventList.addEvent(nextEvent);
-	}
-
-	private HashMap<Integer, CtrlMessage> prepareMessage() {
-		HashMap<Integer, CtrlMessage> message = new HashMap<Integer, CtrlMessage>();
-		return message;
-	}
 }

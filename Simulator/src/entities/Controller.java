@@ -2,42 +2,22 @@ package entities;
 
 import system.*;
 import routings.*;
-
-import java.util.ArrayList;
+import events.*;
+import controllers.ControlDatabase;
 import java.util.HashMap;
-
-import events.ArrivalToSwitch;
-import events.FlowPathSetup;
 
 public abstract class Controller extends Entity {
 
 	// Modules
 	protected Router router;
-	// This Data Structure holds the links to accessSwitches - <SwitchID, Link>
-	protected ArrayList<Integer> accessSwitches;
-	// This data structure holds the BottleneckBW of each flow - <FlowID, LinkBW>
-	protected HashMap<Integer, Integer> BtlBWs;
-	// This data structure holds the BottleneckBW of each flow - <FlowID, rtt>
-	protected HashMap<Integer, Double> RTTs;
+	protected ControlDatabase database;
+
 	protected Network currentNetwork;
 	protected Segment currentSegment;
-	protected int flowCount;
-	protected final int FirstFlowID;
 
 	public Controller(int ID, Network net, int routingAlgorithm) {
 		super(ID);
-		FirstFlowID = 0;
-		currentNetwork = new Network();
-		currentSegment = new Segment(0, 0, 0, 0, 0, 0);
-		flowCount = 0;
-		BtlBWs = new HashMap<Integer, Integer>();
-		RTTs = new HashMap<Integer, Double>();
-		accessSwitches = new ArrayList<Integer>();
-		for (SDNSwitch sdnSwitch : net.switches.values()) {
-			if (sdnSwitch.isAccessSwitch()) {
-				accessSwitches.add(sdnSwitch.getID());
-			}
-		}
+		database = new ControlDatabase(net);
 		switch (routingAlgorithm) {
 		case Keywords.Dijkstra:
 			router = new Dijkstra(net.switches);
@@ -47,64 +27,61 @@ public abstract class Controller extends Entity {
 		default:
 			break;
 		}
+		currentNetwork = net;
+		currentSegment = new Segment(-1, -1, -1, -1, -1, -1);
+
 	}
 
-	/* --------------------------------------------------- */
-	/* ---------- Abstract methods ----------------------- */
-	/* --------------------------------------------------- */
+	/* -------------------------------------------------------------------------- */
+	/* ---------- Abstract methods ---------------------------------------------- */
+	/* -------------------------------------------------------------------------- */
 	public abstract Network recvSegment(Network net, int switchID, Segment segment);
 
-	/* --------------------------------------------------- */
-	/* ---------- Implemented methods -------------------- */
-	/* --------------------------------------------------- */
-	/* ########## Protected ############################## */
-	protected SDNSwitch getAccessSwitch(int hostID) {
-		return currentNetwork.switches.get(currentNetwork.hosts.get(hostID).accessSwitchID);
-	}
-
-	protected int getBtlBW(int flowID) {
-		return this.getBtlBW(flowID);
-	}
+	/* -------------------------------------------------------------------------- */
+	/* ---------- Implemented methods ------------------------------------------- */
+	/* -------------------------------------------------------------------------- */
 
 	protected void handleRouting(SDNSwitch srcAccessSwitch, SDNSwitch dstAccessSwitch) {
 		/* Controller runs the router module to find the path for the flow */
-		HashMap<SDNSwitch, Link> result = router.run(srcAccessSwitch, dstAccessSwitch);
+		HashMap<Integer, Link> result = router.run(srcAccessSwitch.getID(), dstAccessSwitch.getID());
 
+		/* Updating flow path database */
 		/* Controller updates flow tables of all switches in the flow path */
-		for (SDNSwitch networkSwitch : result.keySet()) {
-			sendFlowSetupMessage(networkSwitch.getID(), result.get(networkSwitch));
+
+		for (int switchID : result.keySet()) {
+			sendFlowSetupMessage(switchID, result.get(switchID));
 		}
+
+		// TODO The ACK flow path must be set up too
 
 		/* Finding the bottleneck link and RTT for the flow */
 		int minBW = Integer.MAX_VALUE;
 		double rtt = 0;
 		for (Link link : result.values()) {
-			rtt += 2 * link.getTotalDelay(currentSegment.getSize());
+			rtt += link.getTotalDelay(Keywords.ACKSegSize) + link.getTotalDelay(Keywords.DataSegSize);
 			if (link.getBandwidth() <= minBW) {
 				minBW = link.getBandwidth();
 			}
 		}
-		this.BtlBWs.put(currentSegment.getFlowID(), minBW);
-		this.RTTs.put(currentSegment.getFlowID(), rtt);
+		rtt += currentNetwork.hosts.get(currentSegment.getSrcHostID()).getAccessLinkRTT();
+		rtt += currentNetwork.hosts.get(currentSegment.getDstHostID()).getAccessLinkRTT();
+		database.BtlBWs.put(currentSegment.getFlowID(), minBW);
+		database.RTTs.put(currentSegment.getFlowID(), rtt);
 	}
 
-	/* ########## Public ################################# */
-	public double getControlLinkDelay(int switchID, int segmentSize) {
-		return currentNetwork.switches.get(switchID).controlLink.getTotalDelay(segmentSize);
-	}
-
-	/* ================================ */
-	/* Methods for switch communication */
-	/* ================================ */
-	protected void sendSegmentToAccessSwitches(Segment segment) {
-		for (int switchID : accessSwitches) {
-			sendSegmentToSwitch(switchID, segment);
-		}
-	}
+	/* =========================================== */
+	/* ========== Switch Communication =========== */
+	/* =========================================== */
 
 	protected void sendSegmentToSwitch(int switchID, Segment segment) {
 		double nextTime = currentNetwork.getCurrentTime() + getControlLinkDelay(switchID, segment.getSize());
 		currentNetwork.eventList.addEvent(new ArrivalToSwitch(nextTime, switchID, segment, null));
+	}
+
+	protected void sendControlMessageToSwitch(int switchID, CtrlMessage controlMessage) {
+		double nextTime = currentNetwork.getCurrentTime() + this.getControlLinkDelay(switchID, Keywords.CTRLSegSize);
+		Event nextEvent = new ArrivalToSwitch(nextTime, switchID, null, controlMessage);
+		currentNetwork.eventList.addEvent(nextEvent);
 	}
 
 	protected void sendFlowSetupMessage(int switchID, Link egressLink) {
@@ -114,6 +91,30 @@ public abstract class Controller extends Entity {
 		Event nextEvent = new FlowPathSetup(nextTime, networkSwitch.getID(), currentSegment.getFlowID(),
 				egressLink.getDstID());
 		currentNetwork.eventList.addEvent(nextEvent);
+	}
+
+	/* =========================================== */
+	/* ========== Utility ======================== */
+	/* =========================================== */
+
+	protected SDNSwitch getAccessSwitch(int hostID) {
+		return currentNetwork.switches.get(currentNetwork.hosts.get(hostID).accessSwitchID);
+	}
+
+	protected double getControlLinkDelay(int switchID, int segmentSize) {
+		return currentNetwork.switches.get(switchID).controlLink.getTotalDelay(segmentSize);
+	}
+
+	protected void sendSegmentToAccessSwitches(Segment segment) {
+		for (int switchID : database.AccessSwitchIDs) {
+			sendSegmentToSwitch(switchID, segment);
+		}
+	}
+
+	protected void sendControlMessageToAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
+		for (int switchID : database.AccessSwitchIDs) {
+			sendControlMessageToSwitch(switchID, messages.get(switchID));
+		}
 	}
 
 }
