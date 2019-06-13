@@ -8,6 +8,7 @@ public class ArrivalToHost extends Event {
 
 	public ArrivalToHost(double startTime, int switchID, Segment segment) {
 		super(startTime, switchID, segment);
+		name = "Arrival to Host";
 	}
 
 	/* --------------------------------------------------- */

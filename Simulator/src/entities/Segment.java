@@ -4,14 +4,13 @@ public class Segment extends Entity {
 
 	/** my protocol variables **/
 	public int sWnd_;
-	public int flowID_;
 	public double rtt_;
 	public int bigRTT_;
 	/**************************/
-
+	private int flowID_;
 	private int seq_num;
 	private int type;
-	private int size;
+	private int size; // in bits
 	private int srcHostID;
 	private int dstHostID;
 
@@ -23,7 +22,7 @@ public class Segment extends Entity {
 		this.bigRTT_ = 0;
 		this.type = type;
 		this.seq_num = seq_num;
-		this.size = size;
+		this.size = size * 8; // The size from user is in Bytes. The size in segment is in bits
 		this.srcHostID = sourceID;
 		this.dstHostID = destinationID;
 

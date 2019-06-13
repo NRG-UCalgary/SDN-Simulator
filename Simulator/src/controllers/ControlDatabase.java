@@ -3,8 +3,7 @@ package controllers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import entities.Link;
-import entities.SDNSwitch;
+import entities.*;
 import system.Network;
 
 public class ControlDatabase {
@@ -18,7 +17,7 @@ public class ControlDatabase {
 	public HashMap<Integer, Double> RTTs; // <FlowID, RTT>
 	// TODO ultimately this should changed to a map of access Switch ID and RTTs
 	public HashMap<Integer, ArrayList<Link>> Paths; // <FlowID, ArrayList<Link>>
-	public int flowCount;
+	public HashMap<Integer, Integer> Flows; // <srcHostID, FlowID>
 
 	public ControlDatabase(Network net) {
 		AccessSwitchIDs = new ArrayList<Integer>();
@@ -33,7 +32,7 @@ public class ControlDatabase {
 		BtlBWs = new HashMap<Integer, Integer>();
 		RTTs = new HashMap<Integer, Double>();
 		Paths = new HashMap<Integer, ArrayList<Link>>();
-		flowCount = 0;
+		Flows = new HashMap<Integer, Integer>();
 	}
 
 }

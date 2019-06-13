@@ -2,14 +2,8 @@ package entities;
 
 import java.util.HashMap;
 
-import events.ArrivalToController;
-import events.ArrivalToHost;
-import events.ArrivalToSwitch;
-import events.Departure;
-import system.Event;
-import system.Keywords;
-import system.Main;
-import system.Network;
+import events.*;
+import system.*;
 
 public abstract class SDNSwitch extends Node {
 
@@ -56,21 +50,32 @@ public abstract class SDNSwitch extends Node {
 		int nextNodeID;
 		double nextTime;
 		Event nextEvent;
+		double linkUtilizationTime;
 
 		if (isConnectedToHost(segment.getDstHostID())) { // The next node is a Host
 			if (segment.getType() != Keywords.ACK) { // TODO this should change later
 				deQueueFromAccessLinkBuffer(segment.getDstHostID());
 			}
 			nextNodeID = segment.getDstHostID();
-			nextTime = net.getCurrentTime() + getAccessLinkTotalDelay(segment.getDstHostID(), segment.getSize());
+			linkUtilizationTime = getAccessLinkTotalDelay(segment.getDstHostID(), segment.getSize());
+			nextTime = net.getCurrentTime() + linkUtilizationTime;
 			nextEvent = new ArrivalToHost(nextTime, nextNodeID, segment);
+			/** ===== Statistical Counters ===== **/
+			this.accessLinks.get(segment.getDstHostID()).utilizationTimePerFlow.put(segment.getFlowID(),
+					linkUtilizationTime);
+			/** ================================ **/
 		} else { // The next node is a Switch
 			if (segment.getType() != Keywords.ACK) {// TODO this should change later
 				deQueueFromNetworkLinkBuffer(segment.getFlowID());
 			}
 			nextNodeID = segment.getDstHostID(); // FIXME incorrect
-			nextTime = net.getCurrentTime() + getNetworkLinkTotalDelay(segment.getFlowID(), segment.getSize());
+			linkUtilizationTime = getNetworkLinkTotalDelay(segment.getFlowID(), segment.getSize());
+			nextTime = net.getCurrentTime() + linkUtilizationTime;
 			nextEvent = new ArrivalToSwitch(nextTime, nextNodeID, segment, null);
+			/** ===== Statistical Counters ===== **/
+			this.networkLinks.get(getNextSwitchID(segment.getFlowID())).utilizationTimePerFlow.put(segment.getFlowID(),
+					linkUtilizationTime);
+			/** ================================ **/
 		}
 		net.eventList.addEvent(nextEvent);
 		return net;
@@ -90,10 +95,12 @@ public abstract class SDNSwitch extends Node {
 	}
 
 	protected Network broadcastToHosts(Network net, Segment segment) {
-		double nextTime;
+		double nextTime = 0;
+		double bufferTime = 0;
 		for (int hostID : accessLinks.keySet()) {
-			nextTime = net.getCurrentTime() + accessLinks.get(hostID).buffer.getBufferTime(net.getCurrentTime(),
-					segment.getType(), accessLinks.get(hostID).getTransmissionDelay(segment.getSize()));
+			bufferTime = accessLinks.get(hostID).buffer.getBufferTime(net.getCurrentTime(), segment.getType(),
+					accessLinks.get(hostID).getTransmissionDelay(segment.getSize()));
+			nextTime = net.getCurrentTime() + bufferTime;
 			if (nextTime > 0) {
 				Event nextEvent = new Departure(nextTime, this.ID, segment);
 				net.eventList.addEvent(nextEvent);
@@ -105,28 +112,37 @@ public abstract class SDNSwitch extends Node {
 	}
 
 	protected Network forwardToHost(Network net, Segment segment) {
-		double nextTime = net.getCurrentTime() + this.accessLinks.get(segment.getDstHostID()).buffer.getBufferTime(
-				net.getCurrentTime(), segment.getType(),
-				accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()));
+		double bufferTime = this.accessLinks.get(segment.getDstHostID()).buffer.getBufferTime(net.getCurrentTime(),
+				segment.getType(), accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()));
+		double nextTime = net.getCurrentTime() + bufferTime;
 		if (nextTime > 0) {
 			Event nextEvent = new Departure(nextTime, this.ID, segment);
 			net.eventList.addEvent(nextEvent);
 		} else {
 			// TODO segment drop happens here
 		}
+
+		/** ===== Statistical Counters ===== **/
+		net.hosts.get(segment.getSrcHostID()).transportAgent.flow.totalBufferTime += bufferTime;
+		/** ================================ **/
 		return net;
 	}
 
 	protected Network forwardToSwitch(Network net, Segment segment) {
-		double nextTime = net.getCurrentTime() + this.networkLinks.get(getNextSwitchID(segment.getFlowID())).buffer
-				.getBufferTime(net.getCurrentTime(), segment.getType(),
-						accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()));
+		double bufferTime = this.networkLinks.get(getNextSwitchID(segment.getFlowID())).buffer.getBufferTime(
+				net.getCurrentTime(), segment.getType(),
+				accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()));
+		double nextTime = net.getCurrentTime() + bufferTime;
 		if (nextTime > 0) {
 			Event nextEvent = new Departure(nextTime, this.ID, segment);
 			net.eventList.addEvent(nextEvent);
 		} else {
 			// TODO segment drop happens here
 		}
+
+		/** ===== Statistical Counters ===== **/
+		net.hosts.get(segment.getSrcHostID()).transportAgent.flow.totalBufferTime += bufferTime;
+		/** ================================ **/
 		return net;
 	}
 
@@ -168,7 +184,6 @@ public abstract class SDNSwitch extends Node {
 	/* ########## Public ################################# */
 
 	public void addFlowTableEntry(int flowID, int neighborID) {
-		Main.print("This is switch: " + this.ID + " and the flow entry is: " + flowID + ", " + neighborID);
 		this.flowTable.put(flowID, neighborID);
 	}
 

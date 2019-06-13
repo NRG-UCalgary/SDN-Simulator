@@ -7,6 +7,7 @@ public class Departure extends Event {
 
 	public Departure(double startTime, int switchID, Segment segment) {
 		super(startTime, switchID, segment);
+		name = "Departure";
 	}
 
 	/* --------------------------------------------------- */

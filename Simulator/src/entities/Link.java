@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.HashMap;
+
 import buffers.Bufferv1;
 
 /** Links are attributes of Switch and Host **/
@@ -14,15 +16,24 @@ public class Link extends Entity {
 	private int srcNodeID;
 	private int dstNodeID;
 
+	/** ========== Statistical Counters ========== **/
+	public HashMap<Integer, Double> utilizationTimePerFlow; // <FlowID, utilizationzTime>
+	// in Departure event at releaseSegment in SDNSwitch
+
+	/** ========================================== **/
+
 	public Link(int ID, int sourceID, int destinationID, double propagationDelay, int band, int bufferSize,
 			int bufferPolicy) {
 		super(ID);
-		this.bandwidth = band; // Mega_bits/second
+		this.bandwidth = (int) (band * (int) Math.pow(10, 3)); // bits/millisecond
 		this.propDelay = propagationDelay; // millisecond
 		this.srcNodeID = sourceID;
 		this.dstNodeID = destinationID;
+		this.buffer = new Bufferv1(bufferSize, bufferPolicy);
 
-		buffer = new Bufferv1(bufferSize, bufferPolicy);
+		/** ========== Statistical Counters Initialization ========== **/
+		utilizationTimePerFlow = new HashMap<Integer, Double>();
+		/** ========================================================= **/
 	}
 
 	public double getTotalDelay(int segmentSize) {
@@ -34,7 +45,7 @@ public class Link extends Entity {
 		return trans_delay;
 	}
 
-	/*------------------- Getters and Setters  ------------------------*/
+	/*------------------- Getters ------------------------*/
 	public int getBandwidth() {
 		return this.bandwidth;
 	}
@@ -50,5 +61,4 @@ public class Link extends Entity {
 	public int getDstID() {
 		return this.dstNodeID;
 	}
-	/*--------------------------------------------------------------*/
 }

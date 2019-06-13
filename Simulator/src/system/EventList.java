@@ -40,6 +40,7 @@ public class EventList {
 		log.entranceToMethod("EventList", "getEvent");
 		Event event = this.events.get(0);
 		this.events.remove(0);
+		Main.debug("EventList.getEvent()::The event name: " + event.name + " at time = " + event.currentTime);
 		return event;
 	}
 }

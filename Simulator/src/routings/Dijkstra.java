@@ -3,8 +3,10 @@
 
 package routings;
 
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import entities.*;
+import system.Main;
 
 public class Dijkstra extends Router {
 
@@ -26,7 +28,6 @@ public class Dijkstra extends Router {
 
 	/* Objective::Finding the optimal paths for each Node */
 	public HashMap<Integer, Link> run(int srcID, int targetID) {
-
 		distance = new HashMap<Integer, Double>();
 		previous = new HashMap<Integer, Integer>();
 		unvisited = new HashMap<Integer, Integer>();
@@ -73,11 +74,10 @@ public class Dijkstra extends Router {
 		int neighborID = previous.get(dstID);
 		this.result.put(neighborID, nodes.get(neighborID).networkLinks.get(dstID));
 		// Check if the neighbor is connected to the src
-		if (previous.get(neighborID).equals(srcID)) {
+		if (neighborID == srcID) {
 			return null;
 		} else {
 			return generateResult(srcID, neighborID);
-
 		}
 	}
 }

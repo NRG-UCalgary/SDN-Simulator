@@ -3,7 +3,7 @@ package system;
 import entities.*;
 
 public abstract class Event {
-
+	public String name; // Used for debugging only
 	protected double currentTime;
 	protected Segment currentSegment;
 	protected int currentNodeID;

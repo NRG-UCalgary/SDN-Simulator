@@ -20,21 +20,8 @@ Entered EventList.addEvent()
 Entered EventList.addEvent()
 Entered EventList.addEvent()
 Entered EventList.addEvent()
+Entered EventList.addEvent()
 -----------------------------------------------
 ---------- Simulator::Main Loop (#2) ----------
------------------------------------------------
-Entered EventList.getEvent()
------------------------------------------------
----------- Simulator::Main Loop (#3) ----------
------------------------------------------------
-Entered EventList.getEvent()
-Entered EventList.addEvent()
------------------------------------------------
----------- Simulator::Main Loop (#4) ----------
------------------------------------------------
-Entered EventList.getEvent()
-Entered EventList.addEvent()
------------------------------------------------
----------- Simulator::Main Loop (#5) ----------
 -----------------------------------------------
 Entered EventList.getEvent()

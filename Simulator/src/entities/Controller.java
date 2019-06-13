@@ -47,8 +47,9 @@ public abstract class Controller extends Entity {
 
 		/* Updating flow path database */
 		/* Controller updates flow tables of all switches in the flow path */
-
 		for (int switchID : result.keySet()) {
+			Main.debug("Controller.handleRouting()::Switch ID = " + switchID + " and link id is = "
+					+ result.get(switchID).getID());
 			sendFlowSetupMessage(switchID, result.get(switchID));
 		}
 
@@ -87,9 +88,10 @@ public abstract class Controller extends Entity {
 	protected void sendFlowSetupMessage(int switchID, Link egressLink) {
 		SDNSwitch networkSwitch = currentNetwork.switches.get(switchID);
 		double nextTime = currentNetwork.getCurrentTime()
-				+ this.getControlLinkDelay(networkSwitch.getID(), Keywords.CTRLSegSize);
+				+ this.getControlLinkDelay(networkSwitch.getID(), Keywords.CTRLSegSize * 8);
 		Event nextEvent = new FlowPathSetup(nextTime, networkSwitch.getID(), currentSegment.getFlowID(),
 				egressLink.getDstID());
+		Main.debug("Controller.sendFlowSetupMessage()::\n	This is the flow setup arrival time = " + nextTime);
 		currentNetwork.eventList.addEvent(nextEvent);
 	}
 

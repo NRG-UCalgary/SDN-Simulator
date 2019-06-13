@@ -31,13 +31,12 @@ public class Controllerv1 extends Controller {
 		this.currentSegment = segment;
 		switch (segment.getType()) {
 		case Keywords.SYN:
-			currentSegment.setFlowID(database.flowCount); // Setting the flowID field of SYN segment
-			database.flowCount++; // Increasing the flowCounter
+			database.Flows.put(segment.getSrcHostID(), segment.getFlowID());
 			handleRouting(currentNetwork.switches.get(switchID), this.getAccessSwitch(currentSegment.getDstHostID()));
 			break;
 		case Keywords.FIN:
-			database.flowCount--;
 			// TODO we might want to remove the flow entries for the completed flow
+			database.Flows.remove(segment.getSrcHostID());
 			break;
 		default:
 			log.generalLog("Controllerv1.recvSegment()::Invalid segment type has been received.");
@@ -80,16 +79,14 @@ public class Controllerv1 extends Controller {
 	private void updateInterFlowDelay() {
 		// TODO this is for one access Switch only
 		// TODO must be updated accordingly later
-		interFlowDelay = bigRTT / database.flowCount;
-		Main.print("ControllerV1.updateInerFlowDelay() -- the value is = " + interFlowDelay);
+		interFlowDelay = bigRTT / database.Flows.size();
 	}
 
 	private void updateSWnd() {
 		// note that this is only for the single bottleneck scenario
 		previousSWnd = sWnd;
 		this.sWnd = (int) Math.floor(alpha * (bigRTT * database.BtlBWs.get(currentSegment.getFlowID())
-				/ (database.flowCount * Keywords.DataSegSize)));
-		Main.print("ControllerV1.updateSWnd() -- the value is = " + sWnd);
+				/ (database.Flows.size() * Keywords.DataSegSize)));
 		if (previousSWnd == 0) {
 			previousSWnd = sWnd;
 		}

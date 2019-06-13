@@ -8,26 +8,33 @@ public class SDTCPReceiverv1 extends Agent {
 	// indicates the sequence number of the latest received ACK
 	private int ackNo_;
 
-	private double rtt_;
-	private int sWnd_;
-
 	public SDTCPReceiverv1(Flow flow) {
 		super(flow);
-		this.srcHostID = flow.getDst().getID();
-		this.dstHostID = flow.getSrc().getID();
-		ackNo_ = 0;
-		rtt_ = 0;
-		sWnd_ = 0;
+		this.srcHostID = flow.getSrcID();
+		this.dstHostID = flow.getDstID();
+		ackNo_ = Keywords.SYNSeqNum;
 	}
 
 	public Network recvSegment(Network net, Segment segment) {
 		/* Updating the ackNo_ state variable */
-		ackNo_ = segment.getSeqNum() + 1;
+		Segment ackSegment;
+		updateACKNo(segment.getSeqNum());
 
 		switch (segment.getType()) {
+		case Keywords.CTRL:
+			Main.print("SDTCPRecv.recvSegment().case\"CTRL\"::We should never get here.");
+			break;
 		case Keywords.DATA:
+			// TODO late we might want to implement NACK
+			ackSegment = new Segment(flow.getID(), Keywords.ACK, ackNo_, Keywords.ACKSegSize, this.srcHostID,
+					this.dstHostID);
+			net = sendSegment(net, ackSegment, 0);
 			break;
 		case Keywords.SYN:
+			// SYNACK must be generated and sent to the sender
+			ackSegment = new Segment(flow.getID(), Keywords.SYNACK, Keywords.SYNACKSeqNum, Keywords.SYNSegSize,
+					this.srcHostID, this.dstHostID);
+			net = sendSegment(net, ackSegment, 0);
 			break;
 		/* ==================================== */
 		/* Not applicable for now */
@@ -35,10 +42,13 @@ public class SDTCPReceiverv1 extends Agent {
 		case Keywords.FINACK:
 			break;
 		case Keywords.FIN:
+			/** ===== Statistical Counters ===== **/
+			net.hosts.get(this.dstHostID).transportAgent.flow.completionTime = net.getCurrentTime();
+			/** ================================ **/
 			break;
 		/* ==================================== */
 		default:
-			Main.print("RBTCPReceiverv1.recv()::We should not get here.");
+			Main.print("SDTCPReceiverv1.recv().case\"default\"::We should not get here.");
 			break;
 		}
 		return net;
@@ -46,9 +56,15 @@ public class SDTCPReceiverv1 extends Agent {
 
 	/** ###################################################### **/
 	public Network start(Network net) {
-		Main.print("Do we get hereR?!");
+		Main.print("SDRCPReceiver.start()::We should never get here");
 		return net;
 	}
+
 	/* Local methods */
+	private void updateACKNo(int recvdSeqNo) {
+		if (recvdSeqNo == ackNo_) {
+			ackNo_++;
+		}
+	}
 
 }

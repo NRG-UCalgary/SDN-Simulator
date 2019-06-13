@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="jxl.jar"/>
-	<classpathentry exported="true" kind="lib" path="Libraries/jxl.jar"/>
-	<classpathentry kind="lib" path="Libraries/activation-1.1.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-codec-1.11.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-collections4-4.2.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-compress-1.18.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="Libraries/commons-math3-3.6.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/curvesapi-1.05.jar"/>
-	<classpathentry kind="lib" path="Libraries/jaxb-api-2.3.0.jar"/>
-	<classpathentry kind="lib" path="Libraries/jaxb-core-2.3.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/jaxb-impl-2.3.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/junit-4.12.jar"/>
-	<classpathentry kind="lib" path="Libraries/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="Libraries/poi-4.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/poi-examples-4.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/poi-excelant-4.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/poi-ooxml-4.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/poi-ooxml-schemas-4.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/poi-scratchpad-4.0.1.jar"/>
-	<classpathentry kind="lib" path="Libraries/xmlbeans-3.0.2.jar"/>
-	<classpathentry kind="lib" path="libraries/activation-1.1.1.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-codec-1.11.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-collections4-4.2.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-compress-1.18.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-math3-3.6.1.jar"/>
-	<classpathentry kind="lib" path="libraries/curvesapi-1.05.jar"/>
-	<classpathentry kind="lib" path="libraries/jaxb-api-2.3.0.jar"/>
-	<classpathentry kind="lib" path="libraries/jaxb-core-2.3.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/jaxb-impl-2.3.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/junit-4.12.jar"/>
-	<classpathentry kind="lib" path="libraries/jxl.jar"/>
-	<classpathentry kind="lib" path="libraries/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="libraries/poi-4.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/poi-examples-4.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/poi-excelant-4.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/poi-ooxml-4.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/poi-ooxml-schemas-4.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/poi-scratchpad-4.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/xmlbeans-3.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

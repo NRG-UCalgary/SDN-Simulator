@@ -36,7 +36,7 @@ public class Host extends Node {
 
 	/* ########## Public ################################# */
 	// TODO this method must be called for initialization
-	public Network startSending(Network net) {
+	public Network initialize(Network net) {
 		return transportAgent.start(net);
 	}
 

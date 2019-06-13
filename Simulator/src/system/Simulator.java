@@ -33,8 +33,9 @@ public class Simulator {
 
 	/** ############### Variables ############### **/
 
-	private Logger log = new Logger();
-	private Network net = new Network();
+	private Logger log;
+	private Network net;
+	public Statistics stats;
 
 	public Simulator() {
 		/* Default Settings of the Simulator */
@@ -48,20 +49,33 @@ public class Simulator {
 		linkCounter = 0;
 		controllerCounter = 0;
 		flowCounter = 0;
+
+		log = new Logger();
+		net = new Network();
 	}
 
 	/********** Run **********/
 	public void run(Double start_time, Double end_time) {
+		Main.debug("---------------------------");
+		Main.debug("Simulator.run()");
+		for (SDNSwitch s : net.switches.values()) {
+			Main.debug("=======================");
+			Main.debug("The switch ID = " + s.getID());
+			Main.debug(" These are the access links: ");
+			for (Link l : s.accessLinks.values()) {
+				Main.debug("  link ID: " + l.getID() + " connected to hostID: " + l.getDstID());
+			}
+			Main.debug(" These are the network links: ");
+			for (Link l : s.networkLinks.values()) {
+				Main.debug("  link ID: " + l.getID() + " connected to switchID: " + l.getDstID());
+			}
+			Main.debug("=======================");
+		}
+		Main.debug("---------------------------");
+
 		log.entranceToMethod("Simulator", "run");
 		/* Other Default settings of the Simulator */
 
-		/* Initializing Controller with Network Object */
-		/* Network object should be initialized here */
-
-		// This method is for creating the first arrival event (for TCP it is SYN
-		// packet) for each flow.
-		// This Initialization can be done through src_agent of each flow so their state
-		// variables can be updated.
 		/* Reading the first Event from Network Event List */
 		log.endOfPhase("Initialization done.");
 		int loopCounter = 0;
@@ -74,6 +88,7 @@ public class Simulator {
 			loopCounter++;
 
 		}
+		stats = new Statistics(net);
 	}
 
 	/********** Topology Creation methods ***********/
@@ -86,7 +101,7 @@ public class Simulator {
 		// implemented
 
 		Link controlLink = new Link(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
-				ctrlLinkPropagationDelay, ctrlLinkBandwidth, 1, Keywords.FIFO);
+				ctrlLinkPropagationDelay, ctrlLinkBandwidth, 10, Keywords.FIFO);
 		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
 		net.switches.put(switchCounter, sw);
 
@@ -117,16 +132,15 @@ public class Simulator {
 		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
 		// Handling Labeling
 		linkLabels.put(linkCounter, label);
-		linkCounter++;
 
 		// The link from DST to SRC
-		link = new Link(linkCounter, switchLabels.getKey(dst), switchLabels.getKey(src), propDelay, bandwidth,
+		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), switchLabels.getKey(src), propDelay, bandwidth,
 				bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).networkLinks.put(switchLabels.getKey(src), link);
 
 		// Handling Labeling
-		linkLabels.put(linkCounter, label + "r"); // TODO There should be a mechanism for handling different labels for
-													// reverse links
+		linkLabels.put(linkCounter + 10000, label + "r"); // TODO There should be a mechanism for handling different
+															// labels for
 		linkCounter++;
 	}
 
@@ -140,24 +154,24 @@ public class Simulator {
 
 		// Handling Labeling
 		linkLabels.put(linkCounter, label);
-		linkCounter++;
 
 		// The link from switch to host
-		link = new Link(linkCounter, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay, bandwidth, bufferSize,
-				bufferPolicy);
+		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay, bandwidth,
+				bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
+		net.switches.get(switchLabels.getKey(dst)).isAccessSwitch = true;
 
 		// Handling Labeling
-		linkLabels.put(linkCounter, label + "r"); // TODO There should be a mechanism for handling different labels for
-													// reverse links
+		linkLabels.put(linkCounter + 10000, label + "r"); // TODO There should be a mechanism for handling different
+															// labels for
+															// reverse links
 		linkCounter++;
 	}
 
 	/*-------------------------------------------------------*/
 	/* Controller Creation Method */
 	public void createController(String label, int routing_alg, double rtt_delay, double process_delay) {
-		Controller controller = new Controllerv1(controllerCounter, net, routing_alg, alpha);
-		net.controller = controller;
+		net.controller = new Controllerv1(controllerCounter, net, routing_alg, alpha);
 
 		// Handling Labeling
 		controllerLabels.put(controllerCounter, label);
@@ -180,13 +194,11 @@ public class Simulator {
 	public void generateFlow(String label, String type, String src, String dst, int size, double arrival_time) {
 		log.entranceToMethod("Simulator", "generateFlow");
 
-		Flow flow = new Flow(flowCounter, type, net.hosts.get(hostLabels.getKey(src)),
-				net.hosts.get(hostLabels.getKey(dst)), size, arrival_time);
-		Main.print("This is flowID: " + flowCounter);
+		Flow flow = new Flow(flowCounter, net.hosts.get(hostLabels.getKey(src)), net.hosts.get(hostLabels.getKey(dst)),
+				size, arrival_time);
 		// Handling Labeling
 		flowLabels.put(flowCounter, label);
 		flowCounter++;
-
 		Agent src_agent = null;
 		Agent dst_agent = null;
 
@@ -196,6 +208,8 @@ public class Simulator {
 		case Keywords.SDTCP:
 			log.generalLog("Simulator.generateFlow()::SDTCP sender and receiver are going to be created.");
 			src_agent = new SDTCPSenderv1(flow);
+			flow = new Flow(ACKStreamID(flowCounter), net.hosts.get(hostLabels.getKey(dst)),
+					net.hosts.get(hostLabels.getKey(src)), size, arrival_time);
 			dst_agent = new SDTCPReceiverv1(flow);
 			break;
 		case Keywords.RBTCP:
@@ -210,10 +224,12 @@ public class Simulator {
 		net.hosts.get(hostLabels.getKey(dst)).transportAgent = dst_agent;
 
 		// Creating initial ArrivalToSwitch event for the flow
-		net = net.hosts.get(hostLabels.getKey(src)).startSending(net);
+		net = net.hosts.get(hostLabels.getKey(src)).initialize(net);
 
 	}
 
 	/********* General Programming Methods **********/
-
+	public static int ACKStreamID(int dataStreamID) {
+		return (-1) * dataStreamID;
+	}
 }

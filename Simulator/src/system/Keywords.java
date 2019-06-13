@@ -9,13 +9,6 @@ public interface Keywords {
 	/* Special IDs */
 	public static final int ControllerFLowID = -1;
 
-	/* Event types */
-	public static final int ArrivalToSwitch = 0;
-	public static final int ArrivalToHost = 1;
-	public static final int DepartureFromHost = 2;
-	public static final int DepartureFromSwitch = 3;
-	public static final int TCPTimeOut = 4;
-
 	/* Node types */
 	public static final int Host = 0;
 	public static final int Switch = 1;
@@ -65,6 +58,7 @@ public interface Keywords {
 	public static final int FastRecoveryCWNDDivindingFactore = 2;
 	public static final int TimeOutSlowStartCWNDDivindingFactore = 2;
 	public static final int SYNSeqNum = 0;
+	public static final int SYNACKSeqNum = 1;
 
 	/*------------  Constant Values for different types of delays -----------*/
 	public static final double CONTROLLER_RTT_DELAY = 1.0;
