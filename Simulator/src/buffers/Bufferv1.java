@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import entities.Buffer;
 import entities.BufferToken;
-import utilities.Keywords;
+import utilities.*;
 
 public class Bufferv1 extends Buffer {
 
@@ -30,6 +30,7 @@ public class Bufferv1 extends Buffer {
 				}
 
 			default:
+				// Anything other type than ACK
 				return getWaitTime(currentTime, segmentTransmissionDelay);
 			}
 		}
@@ -46,12 +47,11 @@ public class Bufferv1 extends Buffer {
 		double waitTime = 0;
 		double timeToEmpty = 0;
 
-		if (this.releaseTokens.size() == 0) { // TODO might create a problem
+		if (this.releaseTokens.size() != 0) { // TODO might create a problem
 
 			if (mostRecentACKDeparture > currentTime) {
 				timeToEmpty = mostRecentACKDeparture - currentTime;
 			}
-
 			if (this.releaseTokens.get(0).ACKsToGo > 0) {
 				if (releaseTokens.get(0).isFirst) {
 					waitTime = releaseTokens.get(0).waitTime;

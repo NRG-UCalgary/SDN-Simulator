@@ -1,6 +1,5 @@
 package entities;
 
-import utilities.Debugger;
 
 public class Segment extends Entity {
 

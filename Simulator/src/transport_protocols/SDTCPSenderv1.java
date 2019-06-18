@@ -54,6 +54,10 @@ public class SDTCPSenderv1 extends Agent {
 		double nextTime = flow.arrivalTime + net.hosts.get(srcHostID).accessLink.getTotalDelay(synSegment.getSize());
 		net.eventList
 				.addEvent(new ArrivalToSwitch(nextTime, net.hosts.get(srcHostID).accessSwitchID, synSegment, null));
+		/** ===== Statistical Counters ===== **/
+		this.flow.totalSentSegments++;
+		this.flow.dataSeqNumSendingTimes.put(synSegment.getSeqNum(), net.getCurrentTime());
+		/** ================================ **/
 		return net;
 	}
 
@@ -63,7 +67,7 @@ public class SDTCPSenderv1 extends Agent {
 		case Keywords.CTRL:
 			/* Update the congestion control variables */
 			this.sWnd_ = segment.sWnd_;
-			// this.sWnd_ = 4;
+			this.sWnd_ = 4;
 			this.bigrtt_ = segment.bigRTT_;
 			break;
 		case Keywords.ACK:

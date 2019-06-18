@@ -1,8 +1,7 @@
 package entities;
 
 import system.*;
-import utilities.Debugger;
-import utilities.Keywords;
+import utilities.*;
 import routings.*;
 import events.*;
 import controllers.ControlDatabase;

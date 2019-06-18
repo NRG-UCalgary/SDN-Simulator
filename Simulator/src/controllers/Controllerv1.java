@@ -111,16 +111,16 @@ public class Controllerv1 extends Controller {
 		// a CtrlMessage for each accessSwitches in the network
 		for (int accessSwitchID : database.AccessSwitchIDs) {
 			// The flow ID index
-			int i = 0;
+			int i = 1;
 			eachAccessBufferTokens = new ArrayList<BufferToken>();
 			for (int hostID : currentNetwork.switches.get(accessSwitchID).accessLinks.keySet()) {
 				for (int j = 0; j <= numberOfSendingCycles; j++) {
-					token = new BufferToken(
-							((i * interFlowDelay) - currentNetwork.hosts.get(hostID).getAccessLinkRTT() + j * bigRTT),
-							previousSWnd);
+					double t = (i * interFlowDelay) - currentNetwork.hosts.get(hostID).getAccessLinkRTT() + j * bigRTT;
+					token = new BufferToken(t, previousSWnd);
 					eachAccessBufferTokens.add(token);
 				}
 				preparedTokens.put(hostID, eachAccessBufferTokens);
+				i++;
 			}
 			singleMessage.tokens = preparedTokens;
 

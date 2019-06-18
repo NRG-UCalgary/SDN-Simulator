@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import system.Main;
 
 public class OutputHandler {
 	private final String seqNums = "output/SeqNumbers.txt";
