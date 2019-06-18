@@ -1,29 +1,28 @@
 package events;
 
 import system.*;
+import utilities.*;
 
 import entities.*;
 
 public class ArrivalToSwitch extends Event {
 
-	private CtrlMessage currentCtrlMessage;
-
 	public ArrivalToSwitch(double startTime, int switchID, Segment segment, CtrlMessage controlMessage) {
-		super(startTime, switchID, segment);
-		name = "Arrival to Switch";
-		this.currentCtrlMessage = controlMessage;
+		super(Keywords.ArrivalToSwitch, startTime, switchID, segment);
+		this.ctrlMessage = controlMessage;
 	}
 
 	/* --------------------------------------------------- */
 	/* ---------- Inherited methods (from Event) --------- */
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
-		net.updateTime(currentTime);
-		if (currentCtrlMessage != null) {
-			return net.switches.get(this.currentNodeID).recvCtrlMessage(net, currentCtrlMessage);
+		net.updateTime(time);
+		if (ctrlMessage != null) {
+			//Debugger.event(this.type, this.time, this.nodeID, null, ctrlMessage);
+			return net.switches.get(this.nodeID).recvCtrlMessage(net, ctrlMessage);
 		} else {
-			Main.debug("ArrivalToSwitch.execute()::Switch ID = " + this.currentNodeID);
-			return net.switches.get(this.currentNodeID).recvSegment(net, currentSegment);
+			//Debugger.event(this.type, this.time, this.nodeID, this.segment, null);
+			return net.switches.get(this.nodeID).recvSegment(net, segment);
 		}
 	}
 

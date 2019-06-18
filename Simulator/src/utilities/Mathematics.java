@@ -7,6 +7,10 @@ public class Mathematics {
 	public Mathematics() {
 	}
 
+	public static int MegabitPerSecondTobitPerMsecond(double band) {
+		return (int) (band * (int) Math.pow(10, 4));
+	}
+
 	public static double Max(double a, double b) {
 		if (a >= b) {
 			return a;
@@ -15,9 +19,20 @@ public class Mathematics {
 		}
 	}
 
-	public static int lcm(ArrayList<Integer> vals) {
+	public static int minInteger(int a, int b) {
+		if (a <= b) {
+			return a;
+		} else {
+			return b;
+		}
+	}
 
-		return (int) ((int) multiply(vals) / (double) findGCD(vals));
+	public static int lcm(ArrayList<Integer> vals) {
+		if (vals.size() == 1) {
+			return vals.get(0);
+		} else {
+			return (int) ((int) multiply(vals) / (double) findGCD(vals));
+		}
 	}
 
 	public static int gcd(int a, int b) {
@@ -34,7 +49,7 @@ public class Mathematics {
 		for (int val : vals) {
 			result = gcd(val, result);
 		}
-		return 0;
+		return result;
 
 	}
 

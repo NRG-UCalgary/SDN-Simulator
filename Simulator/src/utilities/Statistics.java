@@ -1,7 +1,8 @@
-package system;
+package utilities;
 
 import java.util.HashMap;
 import entities.*;
+import system.Network;
 
 public class Statistics {
 

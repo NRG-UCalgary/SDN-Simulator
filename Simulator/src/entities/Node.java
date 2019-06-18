@@ -4,8 +4,11 @@ import system.Network;
 
 public abstract class Node extends Entity {
 
-	public Node(int ID) {
+	public final String type;
+
+	public Node(int ID, String type) {
 		super(ID);
+		this.type = type;
 	}
 
 	/* --------------------------------------------------- */

@@ -46,12 +46,12 @@ public class Logger {
 		generalLog(lineWithContent(CASE_CAPTURE, content));
 	}
 
-	public void eventInfo(String flow_label, String packet_type, String node_label, String event_time) {
+	public void eventInfo(int flowID, int segmentType, int nodeID, Double eventTime) {
 		String[] content = new String[4];
-		content[0] = "Flow: " + flow_label;
-		content[1] = "Type: " + packet_type;
-		content[2] = "Node: " + node_label;
-		content[3] = "Time: " + event_time;
+		content[0] = "EventType: " + segmentType;
+		content[1] = "FlowID: " + flowID;
+		content[2] = "NodeID: " + nodeID;
+		content[3] = "Time: " + Double.toString(eventTime);
 		generalLog(box(BOX, content));
 	}
 

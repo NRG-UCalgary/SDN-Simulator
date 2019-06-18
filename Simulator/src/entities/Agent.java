@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import events.ArrivalToSwitch;
 import system.*;
+import utilities.*;
 
 public abstract class Agent {
 
@@ -20,18 +21,24 @@ public abstract class Agent {
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Abstract methods ---------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
-	public abstract Network start(Network net);
 
 	public abstract Network recvSegment(Network net, Segment segment);
 
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
-	protected Network sendMultipleSegments(Network net, ArrayList<Segment> segments) {
-		double interSegmentDelay = net.hosts.get(srcHostID).accessLink
-				.getTransmissionDelay((segments.get(0).getSize()));
-		for (int i = 0; i < segments.size(); i++) {
-			net = sendSegment(net, segments.get(i), i * interSegmentDelay);
+	public Network sendSYN(Network net) {
+		Debugger.debug("SDRCPReceiver.start()::We should never get here");
+		return null;
+	}
+
+	protected Network sendMultipleSegments(Network net, ArrayList<Segment> segmentsToSend) {
+		Link accessLink = net.hosts.get(srcHostID).accessLink;
+		double interSegmentDelay = 0;
+
+		for (int i = 0; i < segmentsToSend.size(); i++) {
+			net = sendSegment(net, segmentsToSend.get(i), i * interSegmentDelay);
+			interSegmentDelay = accessLink.getTransmissionDelay((segmentsToSend.get(i).getSize()));
 		}
 		return net;
 	}
@@ -41,10 +48,15 @@ public abstract class Agent {
 				+ net.hosts.get(srcHostID).accessLink.getTotalDelay(segment.getSize());
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, net.hosts.get(srcHostID).accessSwitchID, segment, null));
 
-		/** ===== Statistical Counters ===== **/
-		this.flow.totalSentSegments++;
-		this.flow.dataSeqNumSendingTimes.put(segment.getSeqNum(), sendTimeOffset + net.getCurrentTime());
-		/** ================================ **/
+		if (segment.getType() == Keywords.DATA) {
+			/** ===== Statistical Counters ===== **/
+			this.flow.totalSentSegments++;
+			this.flow.dataSeqNumSendingTimes.put(segment.getSeqNum(), sendTimeOffset + net.getCurrentTime());
+			/** ================================ **/
+			Debugger.debug(
+					"The SeqNum: " + segment.getSeqNum() + " is sent at: " + (net.getCurrentTime() + sendTimeOffset));
+		}
+
 		return net;
 	}
 

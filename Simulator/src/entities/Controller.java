@@ -1,6 +1,8 @@
 package entities;
 
 import system.*;
+import utilities.Debugger;
+import utilities.Keywords;
 import routings.*;
 import events.*;
 import controllers.ControlDatabase;
@@ -48,11 +50,8 @@ public abstract class Controller extends Entity {
 		/* Updating flow path database */
 		/* Controller updates flow tables of all switches in the flow path */
 		for (int switchID : result.keySet()) {
-			Main.debug("Controller.handleRouting()::Switch ID = " + switchID + " and link id is = "
-					+ result.get(switchID).getID());
 			sendFlowSetupMessage(switchID, result.get(switchID));
 		}
-
 		// TODO The ACK flow path must be set up too
 
 		/* Finding the bottleneck link and RTT for the flow */
@@ -68,6 +67,7 @@ public abstract class Controller extends Entity {
 		rtt += currentNetwork.hosts.get(currentSegment.getDstHostID()).getAccessLinkRTT();
 		database.BtlBWs.put(currentSegment.getFlowID(), minBW);
 		database.RTTs.put(currentSegment.getFlowID(), rtt);
+
 	}
 
 	/* =========================================== */
@@ -88,10 +88,9 @@ public abstract class Controller extends Entity {
 	protected void sendFlowSetupMessage(int switchID, Link egressLink) {
 		SDNSwitch networkSwitch = currentNetwork.switches.get(switchID);
 		double nextTime = currentNetwork.getCurrentTime()
-				+ this.getControlLinkDelay(networkSwitch.getID(), Keywords.CTRLSegSize * 8);
+				+ this.getControlLinkDelay(networkSwitch.getID(), Keywords.CTRLSegSize);
 		Event nextEvent = new FlowPathSetup(nextTime, networkSwitch.getID(), currentSegment.getFlowID(),
 				egressLink.getDstID());
-		Main.debug("Controller.sendFlowSetupMessage()::\n	This is the flow setup arrival time = " + nextTime);
 		currentNetwork.eventList.addEvent(nextEvent);
 	}
 

@@ -1,5 +1,7 @@
 package entities;
 
+import utilities.Debugger;
+
 public class Segment extends Entity {
 
 	/** my protocol variables **/
@@ -22,7 +24,7 @@ public class Segment extends Entity {
 		this.bigRTT_ = 0;
 		this.type = type;
 		this.seq_num = seq_num;
-		this.size = size * 8; // The size from user is in Bytes. The size in segment is in bits
+		this.size = size; // The size from user is in Bytes. The size in segment is in bits
 		this.srcHostID = sourceID;
 		this.dstHostID = destinationID;
 

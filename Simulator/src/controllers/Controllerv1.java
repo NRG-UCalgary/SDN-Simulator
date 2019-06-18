@@ -8,6 +8,9 @@ import utilities.*;
 
 public class Controllerv1 extends Controller {
 
+	// Temorary
+	public int currentSwitchID;
+
 	/* Congestion Control Variables */
 	public double alpha;
 	public int bigRTT; // TODO With only one access Switch
@@ -27,6 +30,7 @@ public class Controllerv1 extends Controller {
 	/* ---------- Inherited methods (from Controller) --------------------------- */
 	/* -------------------------------------------------------------------------- */
 	public Network recvSegment(Network net, int switchID, Segment segment) {
+		this.currentSwitchID = switchID;
 		this.currentNetwork = net;
 		this.currentSegment = segment;
 		switch (segment.getType()) {
@@ -39,7 +43,6 @@ public class Controllerv1 extends Controller {
 			database.Flows.remove(segment.getSrcHostID());
 			break;
 		default:
-			log.generalLog("Controllerv1.recvSegment()::Invalid segment type has been received.");
 			break;
 		}
 		handleCongestionControl();
@@ -56,8 +59,10 @@ public class Controllerv1 extends Controller {
 	/* =========================================== */
 	private void handleCongestionControl() {
 		updateBigRTT();
+		Debugger.debug("Controller BigRtt: " + bigRTT);
 		updateInterFlowDelay();
 		updateSWnd();
+		Debugger.debug("Controller SWnd: " + sWnd);
 		updateNumberOfSendingCycles();
 		notifyHosts();
 		notifyAccessSwitch(prepareMessage());
@@ -133,11 +138,12 @@ public class Controllerv1 extends Controller {
 	private void notifyHosts() {
 		// TODO this is for one accessSwitch assumption
 		// TODO must be updated for more than access switches
-		Segment segmentToHosts = new Segment(Keywords.ControllerFLowID, Keywords.CTRL, -1, Keywords.CTRLSegSize,
-				Keywords.ControllerID, Keywords.BroadcastDestination);
+		Segment segmentToHosts = new Segment(Keywords.ControllerFLowID, Keywords.CTRL, Keywords.CTRLSeqNum,
+				Keywords.CTRLSegSize, this.getID(), Keywords.BroadcastDestination);
 		segmentToHosts.bigRTT_ = this.bigRTT;
 		segmentToHosts.sWnd_ = this.sWnd;
-		sendSegmentToAccessSwitches(segmentToHosts);
+		// sendSegmentToAccessSwitches(segmentToHosts);
+		sendSegmentToSwitch(this.currentSwitchID, segmentToHosts);
 	}
 
 }

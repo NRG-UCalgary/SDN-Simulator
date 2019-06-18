@@ -1,8 +1,8 @@
 package entities;
 
-import system.Keywords;
 import system.Main;
 import system.Network;
+import utilities.Keywords;
 
 public class Host extends Node {
 	/* Each host should be connected to an access SDNSwitch */
@@ -14,7 +14,7 @@ public class Host extends Node {
 	public String label;
 
 	public Host(int ID) {
-		super(ID);
+		super(ID, Keywords.Host);
 	}
 
 	/* --------------------------------------------------- */
@@ -37,7 +37,7 @@ public class Host extends Node {
 	/* ########## Public ################################# */
 	// TODO this method must be called for initialization
 	public Network initialize(Network net) {
-		return transportAgent.start(net);
+		return transportAgent.sendSYN(net);
 	}
 
 	public double getAccessLinkDelay(int segmentSize) {

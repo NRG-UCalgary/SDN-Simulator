@@ -3,6 +3,8 @@ package entities;
 import java.util.HashMap;
 
 import buffers.Bufferv1;
+import utilities.Debugger;
+import utilities.Keywords;
 
 /** Links are attributes of Switch and Host **/
 /** There are two types of link: 1.accessLink 2.networkLink **/
@@ -25,7 +27,7 @@ public class Link extends Entity {
 	public Link(int ID, int sourceID, int destinationID, double propagationDelay, int band, int bufferSize,
 			int bufferPolicy) {
 		super(ID);
-		this.bandwidth = (int) (band * (int) Math.pow(10, 3)); // bits/millisecond
+		this.bandwidth = band;// bits/millisecond
 		this.propDelay = propagationDelay; // millisecond
 		this.srcNodeID = sourceID;
 		this.dstNodeID = destinationID;

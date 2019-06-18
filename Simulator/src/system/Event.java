@@ -3,15 +3,17 @@ package system;
 import entities.*;
 
 public abstract class Event {
-	public String name; // Used for debugging only
-	protected double currentTime;
-	protected Segment currentSegment;
-	protected int currentNodeID;
+	public final String type; // Used for debugging only
+	protected double time;
+	protected Segment segment;
+	protected int nodeID;
+	protected CtrlMessage ctrlMessage;
 
-	public Event(double startTime, int nodeID, Segment segment) {
-		this.currentTime = startTime;
-		this.currentSegment = segment;
-		this.currentNodeID = nodeID;
+	public Event(String type, double startTime, int nodeID, Segment segment) {
+		this.time = startTime;
+		this.segment = segment;
+		this.nodeID = nodeID;
+		this.type = type;
 	}
 
 	/* --------------------------------------------------- */

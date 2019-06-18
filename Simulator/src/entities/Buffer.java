@@ -27,7 +27,8 @@ public abstract class Buffer extends Entity {
 	/* --------------------------------------------------- */
 	public abstract void updateTokenList(ArrayList<BufferToken> tokens);
 
-	public abstract double getBufferTime(double currentTime, int segmentType, double segmentTransmissionDelay);
+	public abstract double getBufferTime(double currentTime, int segmentType, double segmentTransmissionDelay,
+			boolean isHodlingACK);
 
 	public abstract double getACKWaitTime(double currentTime, double transmissionTime);
 

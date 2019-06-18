@@ -1,5 +1,7 @@
 package system;
 
+import utilities.Debugger;
+import utilities.Keywords;
 import utilities.Logger;
 
 public class Main {
@@ -14,9 +16,9 @@ public class Main {
 
 		/** Defining Topology **/
 		/* createNode: 1.String label 2.PropagationDelay 3.Bandwidth */
-		sim.createSwitch("sw0", 5, 10);
-		sim.createSwitch("sw1", 5, 10);
-		sim.createSwitch("sw2", 5, 10);
+		sim.createSwitch("sw0", 5, 8);
+		sim.createSwitch("sw1", 5, 8);
+		sim.createSwitch("sw2", 5, 8);
 		sim.createHost("h0");
 		sim.createHost("h1");
 
@@ -24,10 +26,10 @@ public class Main {
 		 * createLink: 1.String src_label 2.String dst_label 3.Double delay_prob
 		 * 4.Double bandwidth 5.Integer buffer_size 6.String buffer_policy)
 		 */
-		sim.createAccessLink("al0", "h0", "sw0", 10, 10, 10, Keywords.FIFO);
-		sim.createLink("l0", "sw0", "sw1", 10, 10, 10, Keywords.FIFO);
-		sim.createLink("l1", "sw1", "sw2", 10, 10, 10, Keywords.FIFO);
-		sim.createAccessLink("al1", "h1", "sw2", 10, 10, 10, Keywords.FIFO);
+		sim.createAccessLink("al0", "h0", "sw0", 10, 0.8, 10, Keywords.FIFO);
+		sim.createLink("l0", "sw0", "sw1", 10, 0.8, 10, Keywords.FIFO);
+		sim.createLink("l1", "sw1", "sw2", 10, 0.80, 10, Keywords.FIFO);
+		sim.createAccessLink("al1", "h1", "sw2", 10, 0.8, 10, Keywords.FIFO);
 
 		/* Controller must be defined after the topology is complete */
 		sim.createController("c0", Keywords.Dijkstra);
@@ -44,17 +46,13 @@ public class Main {
 
 		/** Getting Results **/
 		// TODO Come up with some solution to get the results and report it
+
+		// Debugger Output
+		Debugger.debugOutPut();
 	}
 
 	public static void print(Object o) {
 		System.out.println(o);
-	}
-
-	public static void debug(Object o) {
-		boolean DEB = true;
-		if (DEB) {
-			System.out.println("Debug:" + o);
-		}
 	}
 
 }

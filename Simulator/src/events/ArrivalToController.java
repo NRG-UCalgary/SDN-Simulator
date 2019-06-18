@@ -1,22 +1,22 @@
 package events;
 
 import system.*;
+import utilities.*;
 import entities.*;
 
 public class ArrivalToController extends Event {
 
 	public ArrivalToController(double startTime, int nodeID, Segment segment) {
-		super(startTime, nodeID, segment);
-		name = "Arrival to Controller";
+		super(Keywords.ArrivalToController, startTime, nodeID, segment);
 	}
 
 	/* --------------------------------------------------- */
 	/* ---------- Inherited methods (from Event) --------- */
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
-		net.updateTime(currentTime);
-		Main.debug("ArrivalToController.execute()::Controller ID = " + this.currentNodeID);
-		return net.controller.recvSegment(net, currentNodeID, currentSegment);
+		//Debugger.event(this.type, this.time, this.nodeID, this.segment, null);
+		net.updateTime(time);
+		return net.controller.recvSegment(net, nodeID, segment);
 	}
 
 }

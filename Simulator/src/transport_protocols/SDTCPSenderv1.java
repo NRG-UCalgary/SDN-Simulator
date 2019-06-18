@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import entities.*;
 import events.ArrivalToSwitch;
 import system.*;
+import utilities.*;
 
 public class SDTCPSenderv1 extends Agent {
 
@@ -13,32 +14,34 @@ public class SDTCPSenderv1 extends Agent {
 	/* Sending Window */
 	private int sWnd_;
 
-	/* rtt_ introduced by the controller using SYNACK */
-	private double rtt_;
-
 	/* Bytes remained to send */
-	private int segsToSend_;
+	private int remainingSegments;
 
 	/* Sequence number indicator */
-	// indicates the sequence number for latest unACKed segment
-	private int seqNo_;
+	// indicates the sequence number for latest sent segment
+	private int seqNum;
 	// indicates the sequence number of the latest received ACK
-	private int ackSeqNo_;
-	// indicates the in-flight (unACKed) segments
-	private int inFlight_;
+	private int ACKedSeqNum; // Do we need this?! yes!
+	// indicates the in-flight (unACKed) segmentsToSend
+	private int inFlight;
+
+	private int toSend;
+	private ArrayList<Segment> segmentsToSend;
 
 	public SDTCPSenderv1(Flow flow) {
 		super(flow);
 		this.srcHostID = flow.getSrcID();
 		this.dstHostID = flow.getDstID();
-		segsToSend_ = flow.getSize();
+		remainingSegments = flow.getSize();
+		Debugger.debug("This is flow size: " + remainingSegments);
 
 		/* initializing the state variables of the sender */
-		sWnd_ = 1;
-		rtt_ = 0;
-		seqNo_ = Keywords.SYNSeqNum;
-		ackSeqNo_ = -2;
-		inFlight_ = 0;
+		sWnd_ = 0;
+		seqNum = 0;
+		ACKedSeqNum = 0;
+		inFlight = 0;
+		toSend = 0;
+		segmentsToSend = new ArrayList<Segment>();
 	}
 
 	/* --------------------------------------------------- */
@@ -46,7 +49,7 @@ public class SDTCPSenderv1 extends Agent {
 	/* --------------------------------------------------- */
 
 	/* ########## Public ################################# */
-	public Network start(Network net) {
+	public Network sendSYN(Network net) {
 		Segment synSegment = genSYN();
 		double nextTime = flow.arrivalTime + net.hosts.get(srcHostID).accessLink.getTotalDelay(synSegment.getSize());
 		net.eventList
@@ -54,48 +57,35 @@ public class SDTCPSenderv1 extends Agent {
 		return net;
 	}
 
-	public Network recvSegment(Network net, Segment recvdSegment) {
-		ArrayList<Segment> segments;
-		switch (recvdSegment.getType()) {
+	public Network recvSegment(Network net, Segment segment) {
+		segmentsToSend.clear();
+		switch (segment.getType()) {
 		case Keywords.CTRL:
 			/* Update the congestion control variables */
-			// TODO what is the difference between this.flow.ID()
-			this.sWnd_ = recvdSegment.sWnd_;
-			this.bigrtt_ = recvdSegment.bigRTT_;
-			this.rtt_ = recvdSegment.rtt_;
+			this.sWnd_ = segment.sWnd_;
+			// this.sWnd_ = 4;
+			this.bigrtt_ = segment.bigRTT_;
 			break;
 		case Keywords.ACK:
+			Debugger.debug("----- The ACKNum: " + segment.getSeqNum() + " received at: " + net.getCurrentTime());
 			/** ===== Statistical Counters ===== **/
-			this.flow.ackSeqNumArrivalTimes.put(recvdSegment.getSeqNum(), net.getCurrentTime());
+			this.flow.ackSeqNumArrivalTimes.put(segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
-
-			if (recvdSegment.getSeqNum() == ackSeqNo_ + 1) {
-				ackSeqNo_ = recvdSegment.getSeqNum();
-				inFlight_--;
+			if (isACKNumExpected(segment.getSeqNum())) {
+				prepareSegmentsToSend();
+				net = sendMultipleSegments(net, segmentsToSend);
+			} else {
+				// This is the case that the receiver is demanding something else
 			}
-			int toSend = sWnd_ - inFlight_;
-			segments = new ArrayList<Segment>();
-			for (int i = 0; i < toSend; i++) {
-				segments.add(genDATASegment());
-			}
-			net = sendMultipleSegments(net, segments);
-
-			ackSeqNo_ = recvdSegment.getSeqNum();
-			inFlight_ = seqNo_ - ackSeqNo_ + 1;
-
 			break;
 		case Keywords.SYNACK:
 			/** ===== Statistical Counters ===== **/
 			this.flow.dataSendingStartTime = net.getCurrentTime();
+			this.flow.ackSeqNumArrivalTimes.put(segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
-
-			segments = new ArrayList<Segment>();
-			for (int i = 0; i < sWnd_; i++) {
-				seqNo_ += i;
-				segments.add(genDATASegment());
-				inFlight_ = i + 1;
-			}
-			net = sendMultipleSegments(net, segments);
+			ACKedSeqNum = segment.getSeqNum();
+			prepareSegmentsToSend();
+			net = sendMultipleSegments(net, segmentsToSend);
 			break;
 		/* ==================================== */
 		/* Not applicable for now */
@@ -114,6 +104,26 @@ public class SDTCPSenderv1 extends Agent {
 	/* ########## Private ################################ */
 
 	/* =========== Segment creation methods=============== */
+	private void prepareSegmentsToSend() {
+		segmentsToSend.clear();
+		toSend = Mathematics.minInteger(sWnd_ - inFlight, remainingSegments);
+		for (int i = 0; i < toSend; i++) {
+			seqNum++;
+			segmentsToSend.add(genDATASegment());
+			inFlight += 1;
+		}
+	}
+
+	private boolean isACKNumExpected(int receivedACKNum) {
+		if (receivedACKNum == ACKedSeqNum + 1) {
+			ACKedSeqNum = receivedACKNum;
+			inFlight--;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	private Segment genSYN() {
 		Segment seg = new Segment(this.flow.getID(), Keywords.SYN, Keywords.SYNSeqNum, Keywords.SYNSegSize,
 				this.srcHostID, this.dstHostID);
@@ -121,21 +131,21 @@ public class SDTCPSenderv1 extends Agent {
 	}
 
 	private Segment genDATASegment() {
-		if (segsToSend_ > 0) {
-			Segment seg = new Segment(this.flow.getID(), Keywords.DATA, seqNo_, Keywords.DataSegSize, this.srcHostID,
+		if (remainingSegments > 0) {
+			Segment seg = new Segment(this.flow.getID(), Keywords.DATA, seqNum, Keywords.DataSegSize, this.srcHostID,
 					this.dstHostID);
-			segsToSend_--;
-
+			remainingSegments--;
 			return seg;
+		} else if (remainingSegments == 0) {
+			return null;
 		} else {
-			Main.print("The segsToSend is 0.");
-			return genFIN();
+			return null;
 		}
 	}
 
 	private Segment genFIN() {
-		Segment seg = new Segment(this.flow.getID(), Keywords.FIN, Keywords.SYNSeqNum, Keywords.FINSegSize,
-				this.srcHostID, this.dstHostID);
+		Segment seg = new Segment(this.flow.getID(), Keywords.FIN, seqNum, Keywords.FINSegSize, this.srcHostID,
+				this.dstHostID);
 		return seg;
 	}
 

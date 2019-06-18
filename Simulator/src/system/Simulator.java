@@ -8,6 +8,9 @@ import utilities.*;
 
 public class Simulator {
 
+	public final boolean OUTPUT = true;
+	public OutputHandler outputHandle = new OutputHandler();
+
 	/** ############### Default Variables ############### **/
 	/* Controller */
 	private final double CONTROLLER_RTT_DEALAY = 1.0;
@@ -33,7 +36,6 @@ public class Simulator {
 
 	/** ############### Variables ############### **/
 
-	private Logger log;
 	private Network net;
 	public Statistics stats;
 
@@ -50,58 +52,47 @@ public class Simulator {
 		controllerCounter = 0;
 		flowCounter = 0;
 
-		log = new Logger();
 		net = new Network();
 	}
 
 	/********** Run **********/
 	public void run(Double start_time, Double end_time) {
-		Main.debug("---------------------------");
-		Main.debug("Simulator.run()");
-		for (SDNSwitch s : net.switches.values()) {
-			Main.debug("=======================");
-			Main.debug("The switch ID = " + s.getID());
-			Main.debug(" These are the access links: ");
-			for (Link l : s.accessLinks.values()) {
-				Main.debug("  link ID: " + l.getID() + " connected to hostID: " + l.getDstID());
-			}
-			Main.debug(" These are the network links: ");
-			for (Link l : s.networkLinks.values()) {
-				Main.debug("  link ID: " + l.getID() + " connected to switchID: " + l.getDstID());
-			}
-			Main.debug("=======================");
-		}
-		Main.debug("---------------------------");
 
-		log.entranceToMethod("Simulator", "run");
+		Debugger.connectivity(net);
 		/* Other Default settings of the Simulator */
 
 		/* Reading the first Event from Network Event List */
-		log.endOfPhase("Initialization done.");
-		int loopCounter = 0;
 		/* Main Loop */
-		while (net.getCurrentTime() <= end_time) {
-			log.startOfLoop("Simulator::Main Loop", loopCounter);
+		double timeCheck = 0;
+		while (net.getCurrentTime() <= end_time && net.eventList.size() > 0) {
+			if (net.getCurrentTime() < timeCheck) {
+				Debugger.debug("Error in simulator Time management: " + net.getCurrentTime());
+			}
 			/* Running the Current Event and Updating the net */
 			net = net.eventList.getEvent().execute(net);
-
-			loopCounter++;
-
+			timeCheck = net.getCurrentTime();
 		}
 		stats = new Statistics(net);
+		Debugger.debug("Size of SeqNumbers: " + stats.flows.get(0).dataSeqNumSendingTimes.size());
+		Debugger.debug("Size of ACKNumbers: " + stats.flows.get(0).ackSeqNumArrivalTimes.size());
+
+		// Generating output files (Temporary)
+		if (OUTPUT) {
+			outputHandle.outOneFlow(stats);
+		}
 	}
 
 	/********** Topology Creation methods ***********/
 
 	/*-------------------------------------------------------*/
 	/* Switch Creation Method */
-	public void createSwitch(String label, double ctrlLinkPropagationDelay, int ctrlLinkBandwidth) {
+	public void createSwitch(String label, double ctrlLinkPropagationDelay, double ctrlLinkBandwidth) {
 		// Note that here we are assuming that we only use SDN switches.
 		// Later, if needed, a mechanism for choosing type of switch should be
 		// implemented
-
 		Link controlLink = new Link(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
-				ctrlLinkPropagationDelay, ctrlLinkBandwidth, 10, Keywords.FIFO);
+				ctrlLinkPropagationDelay, Mathematics.MegabitPerSecondTobitPerMsecond(ctrlLinkBandwidth), 10,
+				Keywords.FIFO);
 		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
 		net.switches.put(switchCounter, sw);
 
@@ -124,18 +115,18 @@ public class Simulator {
 
 	/*-------------------------------------------------------*/
 	/* Link Creation Method */
-	public void createLink(String label, String src, String dst, double propDelay, int bandwidth, int bufferSize,
+	public void createLink(String label, String src, String dst, double propDelay, double bandwidth, int bufferSize,
 			int bufferPolicy) {
 		// The link from SRC to DST
-		Link link = new Link(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay, bandwidth,
-				bufferSize, bufferPolicy);
+		Link link = new Link(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay,
+				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
 		// Handling Labeling
 		linkLabels.put(linkCounter, label);
 
 		// The link from DST to SRC
-		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), switchLabels.getKey(src), propDelay, bandwidth,
-				bufferSize, bufferPolicy);
+		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), switchLabels.getKey(src), propDelay,
+				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).networkLinks.put(switchLabels.getKey(src), link);
 
 		// Handling Labeling
@@ -145,19 +136,19 @@ public class Simulator {
 	}
 
 	/* Access link creation method */
-	public void createAccessLink(String label, String src, String dst, double propDelay, int bandwidth, int bufferSize,
-			int bufferPolicy) {
+	public void createAccessLink(String label, String src, String dst, double propDelay, double bandwidth,
+			int bufferSize, int bufferPolicy) {
 		// The link from host to switch
-		Link link = new Link(linkCounter, hostLabels.getKey(src), switchLabels.getKey(dst), propDelay, bandwidth,
-				bufferSize, bufferPolicy);
+		Link link = new Link(linkCounter, hostLabels.getKey(src), switchLabels.getKey(dst), propDelay,
+				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
 		net.hosts.get(hostLabels.getKey(src)).connectToNetwork(switchLabels.getKey(dst), link);
 
 		// Handling Labeling
 		linkLabels.put(linkCounter, label);
 
 		// The link from switch to host
-		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay, bandwidth,
-				bufferSize, bufferPolicy);
+		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay,
+				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
 		net.switches.get(switchLabels.getKey(dst)).isAccessSwitch = true;
 
@@ -192,13 +183,12 @@ public class Simulator {
 	/********* Flow Generation Methods **************/
 
 	public void generateFlow(String label, String type, String src, String dst, int size, double arrival_time) {
-		log.entranceToMethod("Simulator", "generateFlow");
 
 		Flow flow = new Flow(flowCounter, net.hosts.get(hostLabels.getKey(src)), net.hosts.get(hostLabels.getKey(dst)),
 				size, arrival_time);
 		// Handling Labeling
 		flowLabels.put(flowCounter, label);
-		flowCounter++;
+
 		Agent src_agent = null;
 		Agent dst_agent = null;
 
@@ -206,7 +196,6 @@ public class Simulator {
 		case Keywords.TCP:
 			break;
 		case Keywords.SDTCP:
-			log.generalLog("Simulator.generateFlow()::SDTCP sender and receiver are going to be created.");
 			src_agent = new SDTCPSenderv1(flow);
 			flow = new Flow(ACKStreamID(flowCounter), net.hosts.get(hostLabels.getKey(dst)),
 					net.hosts.get(hostLabels.getKey(src)), size, arrival_time);
@@ -215,10 +204,11 @@ public class Simulator {
 		case Keywords.RBTCP:
 			break;
 		default:
-			System.out.println("Simulator.generateFlow()::Invalid type for flow.");
+			Debugger.debug("Simulator.generateFlow()::Invalid type for flow.");
 			break;
 		}
 
+		flowCounter++;
 		// Net update
 		net.hosts.get(hostLabels.getKey(src)).transportAgent = src_agent;
 		net.hosts.get(hostLabels.getKey(dst)).transportAgent = dst_agent;
@@ -229,7 +219,8 @@ public class Simulator {
 	}
 
 	/********* General Programming Methods **********/
+
 	public static int ACKStreamID(int dataStreamID) {
-		return (-1) * dataStreamID;
+		return dataStreamID + 10000;
 	}
 }

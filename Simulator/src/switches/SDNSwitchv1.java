@@ -1,8 +1,6 @@
 package switches;
 
-import entities.CtrlMessage;
-import entities.Link;
-import entities.SDNSwitch;
+import entities.*;
 import system.Network;
 
 public class SDNSwitchv1 extends SDNSwitch {
@@ -16,7 +14,7 @@ public class SDNSwitchv1 extends SDNSwitch {
 	/* ---------- Inherited methods (from SDNSwitch) ----- */
 	/* --------------------------------------------------- */
 	public Network recvCtrlMessage(Network net, CtrlMessage message) {
-		for (int hostID : message.tokens.keySet()) {
+		for (int hostID : accessLinks.keySet()) {
 			accessLinks.get(hostID).buffer.updateTokenList(message.tokens.get(hostID));
 		}
 		return net;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import entities.Buffer;
 import entities.BufferToken;
-import system.Keywords;
+import utilities.Keywords;
 
 public class Bufferv1 extends Buffer {
 
@@ -16,13 +16,19 @@ public class Bufferv1 extends Buffer {
 	/* ---------- Inherited methods (from Buffer) -------- */
 	/* --------------------------------------------------- */
 
-	public double getBufferTime(double currentTime, int segmentType, double segmentTransmissionDelay) {
+	public double getBufferTime(double currentTime, int segmentType, double segmentTransmissionDelay,
+			boolean isHoldingACK) {
 		if (isFull()) {
 			return Double.NEGATIVE_INFINITY;
 		} else {
 			switch (segmentType) {
 			case Keywords.ACK:
-				return getACKWaitTime(currentTime, segmentTransmissionDelay);
+				if (isHoldingACK) {
+					return getACKWaitTime(currentTime, segmentTransmissionDelay);
+				} else {
+					return getWaitTime(currentTime, segmentTransmissionDelay);
+				}
+
 			default:
 				return getWaitTime(currentTime, segmentTransmissionDelay);
 			}
