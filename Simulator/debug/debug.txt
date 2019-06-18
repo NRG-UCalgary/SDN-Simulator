@@ -1,0 +1,133 @@
+This is flow size: 100
+####################	Connectivity	####################
+=======================
+The switch ID = 0
+ These are the access links: 
+  link ID: 10000 connected to hostID: 0
+ These are the network links: 
+  link ID: 1 connected to switchID: 1
+=======================
+=======================
+The switch ID = 1
+ These are the access links: 
+ These are the network links: 
+  link ID: 10001 connected to switchID: 0
+  link ID: 2 connected to switchID: 2
+=======================
+=======================
+The switch ID = 2
+ These are the access links: 
+  link ID: 10003 connected to hostID: 1
+ These are the network links: 
+  link ID: 10002 connected to switchID: 1
+=======================
+############################################################
+Controller BigRtt: 85
+Controller SWnd: 85
+The SeqNum: 1 is sent at: 90.32799999999997
+The SeqNum: 2 is sent at: 91.32799999999997
+The SeqNum: 3 is sent at: 92.32799999999997
+The SeqNum: 4 is sent at: 93.32799999999997
+The SeqNum: 5 is sent at: 94.32799999999997
+The SeqNum: 6 is sent at: 95.32799999999997
+The SeqNum: 7 is sent at: 96.32799999999997
+The SeqNum: 8 is sent at: 97.32799999999997
+The SeqNum: 9 is sent at: 98.32799999999997
+The SeqNum: 10 is sent at: 99.32799999999997
+The SeqNum: 11 is sent at: 100.32799999999997
+The SeqNum: 12 is sent at: 101.32799999999997
+The SeqNum: 13 is sent at: 102.32799999999997
+The SeqNum: 14 is sent at: 103.32799999999997
+The SeqNum: 15 is sent at: 104.32799999999997
+The SeqNum: 16 is sent at: 105.32799999999997
+The SeqNum: 17 is sent at: 106.32799999999997
+The SeqNum: 18 is sent at: 107.32799999999997
+The SeqNum: 19 is sent at: 108.32799999999997
+The SeqNum: 20 is sent at: 109.32799999999997
+The SeqNum: 21 is sent at: 110.32799999999997
+The SeqNum: 22 is sent at: 111.32799999999997
+The SeqNum: 23 is sent at: 112.32799999999997
+The SeqNum: 24 is sent at: 113.32799999999997
+The SeqNum: 25 is sent at: 114.32799999999997
+The SeqNum: 26 is sent at: 115.32799999999997
+The SeqNum: 27 is sent at: 116.32799999999997
+The SeqNum: 28 is sent at: 117.32799999999997
+The SeqNum: 29 is sent at: 118.32799999999997
+The SeqNum: 30 is sent at: 119.32799999999997
+The SeqNum: 31 is sent at: 120.32799999999997
+The SeqNum: 32 is sent at: 121.32799999999997
+The SeqNum: 33 is sent at: 122.32799999999997
+The SeqNum: 34 is sent at: 123.32799999999997
+The SeqNum: 35 is sent at: 124.32799999999997
+The SeqNum: 36 is sent at: 125.32799999999997
+The SeqNum: 37 is sent at: 126.32799999999997
+The SeqNum: 38 is sent at: 127.32799999999997
+The SeqNum: 39 is sent at: 128.32799999999997
+The SeqNum: 40 is sent at: 129.32799999999997
+The SeqNum: 41 is sent at: 130.32799999999997
+The SeqNum: 42 is sent at: 131.32799999999997
+The SeqNum: 43 is sent at: 132.32799999999997
+The SeqNum: 44 is sent at: 133.32799999999997
+The SeqNum: 45 is sent at: 134.32799999999997
+The SeqNum: 46 is sent at: 135.32799999999997
+The SeqNum: 47 is sent at: 136.32799999999997
+The SeqNum: 48 is sent at: 137.32799999999997
+The SeqNum: 49 is sent at: 138.32799999999997
+The SeqNum: 50 is sent at: 139.32799999999997
+The SeqNum: 51 is sent at: 140.32799999999997
+The SeqNum: 52 is sent at: 141.32799999999997
+The SeqNum: 53 is sent at: 142.32799999999997
+The SeqNum: 54 is sent at: 143.32799999999997
+The SeqNum: 55 is sent at: 144.32799999999997
+The SeqNum: 56 is sent at: 145.32799999999997
+The SeqNum: 57 is sent at: 146.32799999999997
+The SeqNum: 58 is sent at: 147.32799999999997
+The SeqNum: 59 is sent at: 148.32799999999997
+The SeqNum: 60 is sent at: 149.32799999999997
+The SeqNum: 61 is sent at: 150.32799999999997
+The SeqNum: 62 is sent at: 151.32799999999997
+The SeqNum: 63 is sent at: 152.32799999999997
+The SeqNum: 64 is sent at: 153.32799999999997
+The SeqNum: 65 is sent at: 154.32799999999997
+The SeqNum: 66 is sent at: 155.32799999999997
+The SeqNum: 67 is sent at: 156.32799999999997
+The SeqNum: 68 is sent at: 157.32799999999997
+The SeqNum: 69 is sent at: 158.32799999999997
+The SeqNum: 70 is sent at: 159.32799999999997
+The SeqNum: 71 is sent at: 160.32799999999997
+The SeqNum: 72 is sent at: 161.32799999999997
+The SeqNum: 73 is sent at: 162.32799999999997
+The SeqNum: 74 is sent at: 163.32799999999997
+The SeqNum: 75 is sent at: 164.32799999999997
+The SeqNum: 76 is sent at: 165.32799999999997
+The SeqNum: 77 is sent at: 166.32799999999997
+The SeqNum: 78 is sent at: 167.32799999999997
+The SeqNum: 79 is sent at: 168.32799999999997
+The SeqNum: 80 is sent at: 169.32799999999997
+The SeqNum: 81 is sent at: 170.32799999999997
+The SeqNum: 82 is sent at: 171.32799999999997
+The SeqNum: 83 is sent at: 172.32799999999997
+The SeqNum: 84 is sent at: 173.32799999999997
+The SeqNum: 85 is sent at: 174.32799999999997
+----- The ACKNum: 1 received at: 174.48799999999994
+The SeqNum: 86 is sent at: 174.48799999999994
+----- The ACKNum: 2 received at: 175.48799999999994
+The SeqNum: 87 is sent at: 175.48799999999994
+----- The ACKNum: 3 received at: 176.48799999999994
+The SeqNum: 88 is sent at: 176.48799999999994
+----- The ACKNum: 4 received at: 177.48799999999994
+The SeqNum: 89 is sent at: 177.48799999999994
+----- The ACKNum: 5 received at: 178.48799999999994
+The SeqNum: 90 is sent at: 178.48799999999994
+----- The ACKNum: 6 received at: 179.48799999999994
+The SeqNum: 91 is sent at: 179.48799999999994
+----- The ACKNum: 7 received at: 180.48799999999994
+The SeqNum: 92 is sent at: 180.48799999999994
+----- The ACKNum: 8 received at: 181.48799999999994
+The SeqNum: 93 is sent at: 181.48799999999994
+----- The ACKNum: 9 received at: 182.48799999999994
+The SeqNum: 94 is sent at: 182.48799999999994
+----- The ACKNum: 10 received at: 183.48799999999994
+The SeqNum: 95 is sent at: 183.48799999999994
+Size of SeqNumbers: 95
+Size of ACKNumbers: 11
