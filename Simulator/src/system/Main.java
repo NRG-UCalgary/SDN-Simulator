@@ -1,8 +1,8 @@
 package system;
 
-import utilities.Debugger;
-import utilities.Keywords;
-import utilities.Logger;
+import system.utility.Debugger;
+import system.utility.Keywords;
+import system.utility.Logger;
 
 public class Main {
 	private static Logger log;

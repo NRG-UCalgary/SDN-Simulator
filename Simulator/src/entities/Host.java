@@ -1,8 +1,9 @@
 package entities;
 
+import entities.Agents.Agent;
 import system.Main;
 import system.Network;
-import utilities.Keywords;
+import system.utility.Keywords;
 
 public class Host extends Node {
 	/* Each host should be connected to an access SDNSwitch */

@@ -3,6 +3,8 @@ package entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import entities.buffers.BufferToken;
+
 public class CtrlMessage extends Entity {
 
 	public int switchID;

@@ -1,10 +1,10 @@
 package system;
 
-import switches.*;
-import controllers.*;
 import entities.*;
-import transport_protocols.*;
-import utilities.*;
+import entities.Agents.*;
+import entities.controllers.*;
+import entities.switches.*;
+import system.utility.*;
 
 public class Simulator {
 

@@ -1,9 +1,9 @@
 package entities;
 
-import switches.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import entities.switches.SDNSwitchv1;
 
 public class Flow extends Entity {
 

@@ -2,7 +2,8 @@ package entities;
 
 import java.util.HashMap;
 
-import buffers.Bufferv1;
+import entities.buffers.Buffer;
+import entities.buffers.Bufferv1;
 
 /** Links are attributes of Switch and Host **/
 /** There are two types of link: 1.accessLink 2.networkLink **/

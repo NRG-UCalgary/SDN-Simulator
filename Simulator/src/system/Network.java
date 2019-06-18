@@ -3,6 +3,8 @@ package system;
 import java.util.HashMap;
 
 import entities.*;
+import entities.controllers.Controller;
+import entities.switches.SDNSwitch;
 
 public class Network {
 
