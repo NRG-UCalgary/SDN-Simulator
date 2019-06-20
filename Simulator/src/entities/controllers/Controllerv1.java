@@ -62,6 +62,7 @@ public class Controllerv1 extends Controller {
 		updateBigRTT();
 		Debugger.debug("Controller BigRtt: " + bigRTT);
 		updateInterFlowDelay();
+		Debugger.debug("This is the interFlowDelay: " + interFlowDelay);
 		updateSWnd();
 		Debugger.debug("Controller SWnd: " + sWnd);
 		updateNumberOfSendingCycles();
@@ -85,7 +86,11 @@ public class Controllerv1 extends Controller {
 	private void updateInterFlowDelay() {
 		// TODO this is for one access Switch only
 		// TODO must be updated accordingly later
-		interFlowDelay = bigRTT / database.Flows.size();
+		if (database.Flows.size() > 1) {
+			interFlowDelay = bigRTT / database.Flows.size();
+		} else {
+			interFlowDelay = 0;
+		}
 	}
 
 	private void updateSWnd() {
@@ -100,7 +105,7 @@ public class Controllerv1 extends Controller {
 
 	private void updateNumberOfSendingCycles() {
 		// TODO what should the number of sending cycles be?
-		numberOfSendingCycles = 100;
+		numberOfSendingCycles = 10;
 	}
 
 	private HashMap<Integer, CtrlMessage> prepareMessage() {
@@ -112,12 +117,25 @@ public class Controllerv1 extends Controller {
 		// a CtrlMessage for each accessSwitches in the network
 		for (int accessSwitchID : database.AccessSwitchIDs) {
 			// The flow ID index
-			int i = 1;
+			int i = 0;
+			double accessLinkDelayOfFlowZero = 0;
+			double inter_flow_delay = 0;
 			eachAccessBufferTokens = new ArrayList<BufferToken>();
 			for (int hostID : currentNetwork.switches.get(accessSwitchID).accessLinks.keySet()) {
+				if (i == 0) {
+					inter_flow_delay = 0;
+					accessLinkDelayOfFlowZero = currentNetwork.hosts.get(hostID).getAccessLinkRTT();
+				} else {
+					inter_flow_delay = i * interFlowDelay
+							+ (accessLinkDelayOfFlowZero - currentNetwork.hosts.get(hostID).getAccessLinkRTT());
+				}
 				for (int j = 0; j <= numberOfSendingCycles; j++) {
-					double t = (i * interFlowDelay) - currentNetwork.hosts.get(hostID).getAccessLinkRTT() + j * bigRTT;
-					token = new BufferToken(t, previousSWnd);
+					double tokenWaitTime = inter_flow_delay;
+					if (j > 0 && database.Flows.size() > 1) {
+						tokenWaitTime += bigRTT;
+					}
+					Debugger.debug("Token wait: " + tokenWaitTime + "Swnd:" + previousSWnd);
+					token = new BufferToken(tokenWaitTime, previousSWnd);
 					eachAccessBufferTokens.add(token);
 				}
 				preparedTokens.put(hostID, eachAccessBufferTokens);

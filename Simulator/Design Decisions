@@ -42,5 +42,10 @@
 			+ Average segment buffer time for each flow:
 				* Total buffer time for each segment of each flow
 		- 
+##########################################################################################################################
+	- Output Rules:
+		+ Each Excel file must be flushed 
+		
+		
 		
 		

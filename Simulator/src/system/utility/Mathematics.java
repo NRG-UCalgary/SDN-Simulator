@@ -8,7 +8,7 @@ public class Mathematics {
 	}
 
 	public static int MegabitPerSecondTobitPerMsecond(double band) {
-		return (int) (band * (int) Math.pow(10, 4));
+		return (int) (band * (int) Math.pow(10, 3));
 	}
 
 	public static double Max(double a, double b) {

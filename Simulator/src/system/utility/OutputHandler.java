@@ -1,48 +1,32 @@
 package system.utility;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 
+import entities.Flow;
+import system.utility.dataStructures.SeqNumData;
 
 public class OutputHandler {
-	private final String seqNums = "output/SeqNumbers.txt";
-	private final String seqTimes = "output/SeqTimes.txt";
-	private final String ACKNums = "output/ACKNums.txt";
-	private final String ACKTimes = "output/ACKTimes.txt";
+
+	private ExcelHandler excel = new ExcelHandler();
 
 	public OutputHandler() {
 	}
 
-	public void outOneFlow(Statistics stat) {
-		ArrayList<String> output = new ArrayList<String>();
-		for (int seqNum : stat.flows.get(0).dataSeqNumSendingTimes.keySet()) {
-			output.add(Integer.toString(seqNum));
+	public void outSeqNumExcelFile(Statistics stat) throws IOException {
+		ArrayList<SeqNumData> dataOfFlows = new ArrayList<SeqNumData>();
+		SeqNumData flowData = new SeqNumData();
+		for (Flow flow : stat.flows.values()) {
+			flowData.ackNumbers = flow.ackSeqNumArrivalTimes;
+			flowData.seqNumbers = flow.dataSeqNumSendingTimes;
+			flowData.flowName = "Flow " + Integer.toString(flow.getID());
+			dataOfFlows.add(flowData);
 		}
-		outOneCollum(output, seqNums);
-		output = new ArrayList<String>();
-		for (Double seqNumTime : stat.flows.get(0).dataSeqNumSendingTimes.values()) {
-			output.add(Double.toString(seqNumTime));
-		}
-		outOneCollum(output, seqTimes);
-		output = new ArrayList<String>();
-		for (int ACKNum : stat.flows.get(0).ackSeqNumArrivalTimes.keySet()) {
-			output.add(Integer.toString(ACKNum));
-		}
-		outOneCollum(output, ACKNums);
-		output = new ArrayList<String>();
-
-		for (Double ACKTime : stat.flows.get(0).ackSeqNumArrivalTimes.values()) {
-			output.add(Double.toString(ACKTime));
-		}
-		outOneCollum(output, ACKTimes);
-		output = new ArrayList<String>();
+		excel.createSeqNumOutput("SeqNumberGraph", dataOfFlows);
 
 	}
 
-	public void outOneCollum(ArrayList<String> output, String address) {
+	public void outOneCollumTextFile(ArrayList<String> output, String address) {
 
 		FileWriter file_writer;
 		BufferedWriter buffered_writer;
@@ -60,9 +44,7 @@ public class OutputHandler {
 			file_writer.close();
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 }

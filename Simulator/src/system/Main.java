@@ -26,10 +26,10 @@ public class Main {
 		 * createLink: 1.String src_label 2.String dst_label 3.Double delay_prob
 		 * 4.Double bandwidth 5.Integer buffer_size 6.String buffer_policy)
 		 */
-		sim.createAccessLink("al0", "h0", "sw0", 10, 0.8, 1000, Keywords.FIFO);
-		sim.createLink("l0", "sw0", "sw1", 10, 0.8, 1000, Keywords.FIFO);
-		sim.createLink("l1", "sw1", "sw2", 10, 0.80, 1000, Keywords.FIFO);
-		sim.createAccessLink("al1", "h1", "sw2", 10, 0.8, 1000, Keywords.FIFO);
+		sim.createAccessLink("al0", "h0", "sw0", 10, 8, 1000, Keywords.FIFO);
+		sim.createLink("l0", "sw0", "sw1", 10, 8, 1000, Keywords.FIFO);
+		sim.createLink("l1", "sw1", "sw2", 10, 8, 1000, Keywords.FIFO);
+		sim.createAccessLink("al1", "h1", "sw2", 10, 8, 1000, Keywords.FIFO);
 
 		/* Controller must be defined after the topology is complete */
 		sim.createController("c0", Keywords.Dijkstra);

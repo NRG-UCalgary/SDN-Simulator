@@ -1,10 +1,14 @@
 package system;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import entities.*;
 import entities.Agents.*;
 import entities.controllers.*;
 import entities.switches.*;
 import system.utility.*;
+import system.utility.dataStructures.OneToOneMap;
 
 public class Simulator {
 
@@ -73,12 +77,14 @@ public class Simulator {
 			timeCheck = net.getCurrentTime();
 		}
 		stats = new Statistics(net);
-		Debugger.debug("Size of SeqNumbers: " + stats.flows.get(0).dataSeqNumSendingTimes.size());
-		Debugger.debug("Size of ACKNumbers: " + stats.flows.get(0).ackSeqNumArrivalTimes.size());
-
 		// Generating output files (Temporary)
 		if (OUTPUT) {
-			outputHandle.outOneFlow(stats);
+			try {
+				outputHandle.outSeqNumExcelFile(stats);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

@@ -122,6 +122,9 @@ public abstract class SDNSwitch extends Node {
 				segment.getType(), accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()),
 				true);
 		double nextTime = net.getCurrentTime() + bufferTime;
+		if (segment.getType() == Keywords.ACK) {
+			Debugger.debug("The ACK number: " + segment.getSeqNum() + " will be held: " + bufferTime);
+		}
 		if (nextTime > 0) {
 			Event nextEvent = new Departure(nextTime, this.ID, segment);
 			net.eventList.addEvent(nextEvent);

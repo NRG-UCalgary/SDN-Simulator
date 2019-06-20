@@ -2,6 +2,7 @@ package entities.buffers;
 
 import java.util.ArrayList;
 
+import system.utility.Debugger;
 import system.utility.Keywords;
 
 public class Bufferv1 extends Buffer {
@@ -49,20 +50,26 @@ public class Bufferv1 extends Buffer {
 
 			if (mostRecentACKDeparture > currentTime) {
 				timeToEmpty = mostRecentACKDeparture - currentTime;
+			} else {
+				timeToEmpty = 0;
 			}
 			if (this.releaseTokens.get(0).ACKsToGo > 0) {
 				if (releaseTokens.get(0).isFirst) {
 					waitTime = releaseTokens.get(0).waitTime;
 					releaseTokens.get(0).isFirst = false;
+				} else {
+					waitTime += timeToEmpty;
 				}
-				waitTime += timeToEmpty;
 				(this.releaseTokens.get(0).ACKsToGo)--;
-			} else {
+			} else if (this.releaseTokens.get(0).ACKsToGo == 0) {
 				releaseTokens.remove(0);
 				waitTime = getACKWaitTime(currentTime, transmissionDelay);
+			} else {
+				Debugger.debugToConsole("ERROE");
 			}
-			mostRecentACKDeparture = currentTime + waitTime + transmissionDelay;
+
 		}
+		mostRecentACKDeparture = currentTime + waitTime + transmissionDelay;
 		return waitTime;
 	}
 

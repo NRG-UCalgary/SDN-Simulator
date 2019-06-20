@@ -15,6 +15,7 @@ public class Statistics {
 		links = new HashMap<Integer, Link>();
 		switches = new HashMap<Integer, SDNSwitch>();
 		flows = new HashMap<Integer, Flow>();
+
 		this.switches = net.switches;
 		for (SDNSwitch sdnSwitch : net.switches.values()) {
 			for (Link link : sdnSwitch.networkLinks.values()) {
@@ -22,7 +23,10 @@ public class Statistics {
 			}
 		}
 		for (Host host : net.hosts.values()) {
-			this.flows.put(host.transportAgent.flow.getID(), host.transportAgent.flow);
+			if (host.transportAgent.flow.getID() < 10000) {
+				this.flows.put(host.transportAgent.flow.getID(), host.transportAgent.flow);
+				Debugger.debugToConsole("Flow ID: " + host.transportAgent.flow.getID());
+			}
 		}
 
 	}

@@ -67,11 +67,10 @@ public class SDTCPSenderv1 extends Agent {
 		case Keywords.CTRL:
 			/* Update the congestion control variables */
 			this.sWnd_ = segment.sWnd_;
-			this.sWnd_ = 4;
+			// this.sWnd_ = 10;
 			this.bigrtt_ = segment.bigRTT_;
 			break;
 		case Keywords.ACK:
-			Debugger.debug("----- The ACKNum: " + segment.getSeqNum() + " received at: " + net.getCurrentTime());
 			/** ===== Statistical Counters ===== **/
 			this.flow.ackSeqNumArrivalTimes.put(segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
