@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.charts.ScatterChartData;
 import org.apache.poi.ss.usermodel.charts.ValueAxis;
 import org.apache.poi.xssf.usermodel.charts.XSSFChartLegend;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xddf.usermodel.chart.LegendPosition;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
@@ -25,6 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import system.utility.dataStructures.SeqNumData;
 
+@SuppressWarnings({ "deprecation" })
 public class ExcelHandler {
 
 	public final String outputFolderPath;
