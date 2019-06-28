@@ -53,7 +53,6 @@ public abstract class SDNSwitch extends Node {
 		int nextNodeID;
 		double nextTime;
 		Event nextEvent;
-		;
 		double linkUtilizationTime;
 
 		if (isConnectedToHost(segment.getDstHostID())) { // The next node is a Host
@@ -108,7 +107,7 @@ public abstract class SDNSwitch extends Node {
 			nextTime = net.getCurrentTime() + bufferTime;
 			if (nextTime > 0) {
 				segment.setDstHostID(hostID);
-				Event nextEvent = new Departure(nextTime, this.ID, segment);
+				Event nextEvent = new DepartureFromSwitch(nextTime, this.ID, segment);
 				net.eventList.addEvent(nextEvent);
 			} else {
 				// TODO segment drop happens here
@@ -122,11 +121,8 @@ public abstract class SDNSwitch extends Node {
 				segment.getType(), accessLinks.get(segment.getDstHostID()).getTransmissionDelay(segment.getSize()),
 				true);
 		double nextTime = net.getCurrentTime() + bufferTime;
-		if (segment.getType() == Keywords.ACK) {
-			Debugger.debug("The ACK number: " + segment.getSeqNum() + " will be held: " + bufferTime);
-		}
 		if (nextTime > 0) {
-			Event nextEvent = new Departure(nextTime, this.ID, segment);
+			Event nextEvent = new DepartureFromSwitch(nextTime, this.ID, segment);
 			net.eventList.addEvent(nextEvent);
 		} else {
 			// TODO segment drop happens here
@@ -144,7 +140,7 @@ public abstract class SDNSwitch extends Node {
 				networkLinks.get(getNextSwitchID(segment.getFlowID())).getTransmissionDelay(segment.getSize()), false);
 		double nextTime = net.getCurrentTime() + bufferTime;
 		if (nextTime > 0) {
-			Event nextEvent = new Departure(nextTime, this.getID(), segment);
+			Event nextEvent = new DepartureFromSwitch(nextTime, this.getID(), segment);
 			net.eventList.addEvent(nextEvent);
 		} else {
 			// TODO segment drop happens here

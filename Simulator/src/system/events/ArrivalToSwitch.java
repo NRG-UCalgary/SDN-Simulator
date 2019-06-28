@@ -16,7 +16,7 @@ public class ArrivalToSwitch extends Event {
 	/* ---------- Inherited methods (from Event) --------- */
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
-		net.updateTime(time);
+		net.updateTime(eventTime);
 		if (ctrlMessage != null) {
 			//Debugger.event(this.type, this.time, this.nodeID, null, ctrlMessage);
 			return net.switches.get(this.nodeID).recvCtrlMessage(net, ctrlMessage);

@@ -6,7 +6,8 @@ public interface Keywords {
 	public static final String ArrivalToController = "Arrival to Controller";
 	public static final String ArrivalToSwitch = "Arrival to Switch";
 	public static final String ArrivalToHost = "Arrival to Host";
-	public static final String Departure = "Departure from Switch";
+	public static final String DepartureFromSwitch = "Departure from Switch";
+	public static final String DepartureFromHost = "Departure from Host";
 	public static final String FlowPathSetup = "Flow Path Setup on Switch";
 	/* Special addresses */
 	public static final int ControllerID = -1;
@@ -69,6 +70,7 @@ public interface Keywords {
 	public static final double CONTROLLER_RTT_DELAY = 1.0;
 	public static final double CONTROLLER_PROCESS_DELAY = 1.0;
 	public static final double NODE_PROCESS_DELAY = 1.0;
+	public static final double HostProcessDelay = 0.0;
 	/*-----------------------------------------------------------------------*/
 
 }

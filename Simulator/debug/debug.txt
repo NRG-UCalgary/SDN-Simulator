@@ -1,249 +1,35 @@
 This is flow size: 200
+This is flow size: 200
 ####################	Connectivity	####################
 =======================
 The switch ID = 0
  These are the access links: 
   link ID: 10000 connected to hostID: 0
+  link ID: 10001 connected to hostID: 1
  These are the network links: 
-  link ID: 1 connected to switchID: 1
+  link ID: 2 connected to switchID: 1
 =======================
 =======================
 The switch ID = 1
  These are the access links: 
  These are the network links: 
-  link ID: 10001 connected to switchID: 0
-  link ID: 2 connected to switchID: 2
+  link ID: 10002 connected to switchID: 0
+  link ID: 3 connected to switchID: 2
 =======================
 =======================
 The switch ID = 2
  These are the access links: 
-  link ID: 10003 connected to hostID: 1
+  link ID: 10004 connected to hostID: 2
+  link ID: 10005 connected to hostID: 3
  These are the network links: 
-  link ID: 10002 connected to switchID: 1
+  link ID: 10003 connected to switchID: 1
 =======================
 ############################################################
+SYN of flow: 0 arrived at: 15.079999999999998
 Controller BigRtt: 85
 This is the interFlowDelay: 0.0
 Controller SWnd: 85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-Token wait: 0.0Swnd:85
-The ACK number: 1 will be held: 0.0
-The ACK number: 2 will be held: 0.0
-The ACK number: 3 will be held: 0.0
-The ACK number: 4 will be held: 0.0
-The ACK number: 5 will be held: 0.0
-The ACK number: 6 will be held: 0.0
-The ACK number: 7 will be held: 0.0
-The ACK number: 8 will be held: 0.0
-The ACK number: 9 will be held: 0.0
-The ACK number: 10 will be held: 0.0
-The ACK number: 11 will be held: 0.0
-The ACK number: 12 will be held: 0.0
-The ACK number: 13 will be held: 0.0
-The ACK number: 14 will be held: 0.0
-The ACK number: 15 will be held: 0.0
-The ACK number: 16 will be held: 0.0
-The ACK number: 17 will be held: 0.0
-The ACK number: 18 will be held: 0.0
-The ACK number: 19 will be held: 0.0
-The ACK number: 20 will be held: 0.0
-The ACK number: 21 will be held: 0.0
-The ACK number: 22 will be held: 0.0
-The ACK number: 23 will be held: 0.0
-The ACK number: 24 will be held: 0.0
-The ACK number: 25 will be held: 0.0
-The ACK number: 26 will be held: 0.0
-The ACK number: 27 will be held: 0.0
-The ACK number: 28 will be held: 0.0
-The ACK number: 29 will be held: 0.0
-The ACK number: 30 will be held: 0.0
-The ACK number: 31 will be held: 0.0
-The ACK number: 32 will be held: 0.0
-The ACK number: 33 will be held: 0.0
-The ACK number: 34 will be held: 0.0
-The ACK number: 35 will be held: 0.0
-The ACK number: 36 will be held: 0.0
-The ACK number: 37 will be held: 0.0
-The ACK number: 38 will be held: 0.0
-The ACK number: 39 will be held: 0.0
-The ACK number: 40 will be held: 0.0
-The ACK number: 41 will be held: 0.0
-The ACK number: 42 will be held: 0.0
-The ACK number: 43 will be held: 0.0
-The ACK number: 44 will be held: 0.0
-The ACK number: 45 will be held: 0.0
-The ACK number: 46 will be held: 0.0
-The ACK number: 47 will be held: 0.0
-The ACK number: 48 will be held: 0.0
-The ACK number: 49 will be held: 0.0
-The ACK number: 50 will be held: 0.0
-The ACK number: 51 will be held: 0.0
-The ACK number: 52 will be held: 0.0
-The ACK number: 53 will be held: 0.0
-The ACK number: 54 will be held: 0.0
-The ACK number: 55 will be held: 0.0
-The ACK number: 56 will be held: 0.0
-The ACK number: 57 will be held: 0.0
-The ACK number: 58 will be held: 0.0
-The ACK number: 59 will be held: 0.0
-The ACK number: 60 will be held: 0.0
-The ACK number: 61 will be held: 0.0
-The ACK number: 62 will be held: 0.0
-The ACK number: 63 will be held: 0.0
-The ACK number: 64 will be held: 0.0
-The ACK number: 65 will be held: 0.0
-The ACK number: 66 will be held: 0.0
-The ACK number: 67 will be held: 0.0
-The ACK number: 68 will be held: 0.0
-The ACK number: 69 will be held: 0.0
-The ACK number: 70 will be held: 0.0
-The ACK number: 71 will be held: 0.0
-The ACK number: 72 will be held: 0.0
-The ACK number: 73 will be held: 0.0
-The ACK number: 74 will be held: 0.0
-The ACK number: 75 will be held: 0.0
-The ACK number: 76 will be held: 0.0
-The ACK number: 77 will be held: 0.0
-The ACK number: 78 will be held: 0.0
-The ACK number: 79 will be held: 0.0
-The ACK number: 80 will be held: 0.0
-The ACK number: 81 will be held: 0.0
-The ACK number: 82 will be held: 0.0
-The ACK number: 83 will be held: 0.0
-The ACK number: 84 will be held: 0.0
-The ACK number: 85 will be held: 0.0
-The ACK number: 86 will be held: 0.0
-The ACK number: 87 will be held: 0.0
-The ACK number: 88 will be held: 0.0
-The ACK number: 89 will be held: 0.0
-The ACK number: 90 will be held: 0.0
-The ACK number: 91 will be held: 0.0
-The ACK number: 92 will be held: 0.0
-The ACK number: 93 will be held: 0.0
-The ACK number: 94 will be held: 0.0
-The ACK number: 95 will be held: 0.0
-The ACK number: 96 will be held: 0.0
-The ACK number: 97 will be held: 0.0
-The ACK number: 98 will be held: 0.0
-The ACK number: 99 will be held: 0.0
-The ACK number: 100 will be held: 0.0
-The ACK number: 101 will be held: 0.0
-The ACK number: 102 will be held: 0.0
-The ACK number: 103 will be held: 0.0
-The ACK number: 104 will be held: 0.0
-The ACK number: 105 will be held: 0.0
-The ACK number: 106 will be held: 0.0
-The ACK number: 107 will be held: 0.0
-The ACK number: 108 will be held: 0.0
-The ACK number: 109 will be held: 0.0
-The ACK number: 110 will be held: 0.0
-The ACK number: 111 will be held: 0.0
-The ACK number: 112 will be held: 0.0
-The ACK number: 113 will be held: 0.0
-The ACK number: 114 will be held: 0.0
-The ACK number: 115 will be held: 0.0
-The ACK number: 116 will be held: 0.0
-The ACK number: 117 will be held: 0.0
-The ACK number: 118 will be held: 0.0
-The ACK number: 119 will be held: 0.0
-The ACK number: 120 will be held: 0.0
-The ACK number: 121 will be held: 0.0
-The ACK number: 122 will be held: 0.0
-The ACK number: 123 will be held: 0.0
-The ACK number: 124 will be held: 0.0
-The ACK number: 125 will be held: 0.0
-The ACK number: 126 will be held: 0.0
-The ACK number: 127 will be held: 0.0
-The ACK number: 128 will be held: 0.0
-The ACK number: 129 will be held: 0.0
-The ACK number: 130 will be held: 0.0
-The ACK number: 131 will be held: 0.0
-The ACK number: 132 will be held: 0.0
-The ACK number: 133 will be held: 0.0
-The ACK number: 134 will be held: 0.0
-The ACK number: 135 will be held: 0.0
-The ACK number: 136 will be held: 0.0
-The ACK number: 137 will be held: 0.0
-The ACK number: 138 will be held: 0.0
-The ACK number: 139 will be held: 0.0
-The ACK number: 140 will be held: 0.0
-The ACK number: 141 will be held: 0.0
-The ACK number: 142 will be held: 0.0
-The ACK number: 143 will be held: 0.0
-The ACK number: 144 will be held: 0.0
-The ACK number: 145 will be held: 0.0
-The ACK number: 146 will be held: 0.0
-The ACK number: 147 will be held: 0.0
-The ACK number: 148 will be held: 0.0
-The ACK number: 149 will be held: 0.0
-The ACK number: 150 will be held: 0.0
-The ACK number: 151 will be held: 0.0
-The ACK number: 152 will be held: 0.0
-The ACK number: 153 will be held: 0.0
-The ACK number: 154 will be held: 0.0
-The ACK number: 155 will be held: 0.0
-The ACK number: 156 will be held: 0.0
-The ACK number: 157 will be held: 0.0
-The ACK number: 158 will be held: 0.0
-The ACK number: 159 will be held: 0.0
-The ACK number: 160 will be held: 0.0
-The ACK number: 161 will be held: 0.0
-The ACK number: 162 will be held: 0.0
-The ACK number: 163 will be held: 0.0
-The ACK number: 164 will be held: 0.0
-The ACK number: 165 will be held: 0.0
-The ACK number: 166 will be held: 0.0
-The ACK number: 167 will be held: 0.0
-The ACK number: 168 will be held: 0.0
-The ACK number: 169 will be held: 0.0
-The ACK number: 170 will be held: 0.0
-The ACK number: 171 will be held: 0.0
-The ACK number: 172 will be held: 0.0
-The ACK number: 173 will be held: 0.0
-The ACK number: 174 will be held: 0.0
-The ACK number: 175 will be held: 0.0
-The ACK number: 176 will be held: 0.0
-The ACK number: 177 will be held: 0.0
-The ACK number: 178 will be held: 0.0
-The ACK number: 179 will be held: 0.0
-The ACK number: 180 will be held: 0.0
-The ACK number: 181 will be held: 0.0
-The ACK number: 182 will be held: 0.0
-The ACK number: 183 will be held: 0.0
-The ACK number: 184 will be held: 0.0
-The ACK number: 185 will be held: 0.0
-The ACK number: 186 will be held: 0.0
-The ACK number: 187 will be held: 0.0
-The ACK number: 188 will be held: 0.0
-The ACK number: 189 will be held: 0.0
-The ACK number: 190 will be held: 0.0
-The ACK number: 191 will be held: 0.0
-The ACK number: 192 will be held: 0.0
-The ACK number: 193 will be held: 0.0
-The ACK number: 194 will be held: 0.0
-The ACK number: 195 will be held: 0.0
-The ACK number: 196 will be held: 0.0
-The ACK number: 197 will be held: 0.0
-The ACK number: 198 will be held: 0.0
-The ACK number: 199 will be held: 0.0
-The ACK number: 200 will be held: 0.0
+SYN of flow: 1 arrived at: 15.079999999999998
+Controller BigRtt: 85
+This is the interFlowDelay: 42.0
+Controller SWnd: 42

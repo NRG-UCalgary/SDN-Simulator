@@ -1,9 +1,9 @@
 package entities;
 
-import entities.Agents.Agent;
-import system.Main;
-import system.Network;
-import system.utility.Keywords;
+import entities.Agents.*;
+import system.*;
+import system.events.ArrivalToSwitch;
+import system.utility.*;
 
 public class Host extends Node {
 	/* Each host should be connected to an access SDNSwitch */
@@ -27,7 +27,19 @@ public class Host extends Node {
 	}
 
 	public Network releaseSegment(Network net, Segment segment) {
-		Main.print("We shall never get here for now");
+
+		this.accessLink.buffer.deQueue();
+		int nextNodeID = this.accessSwitchID;
+		double nextTime = net.getCurrentTime() + this.getAccessLinkDelay(segment.getSize());
+		net.eventList.addEvent(new ArrivalToSwitch(nextTime, nextNodeID, segment, null));
+		if (segment.getType() == Keywords.DATA) {
+			/** ===== Statistical Counters ===== **/
+			this.transportAgent.flow.totalSentSegments++;
+			this.transportAgent.flow.dataSeqNumSendingTimes.put(segment.getSeqNum(),
+					Keywords.HostProcessDelay + net.getCurrentTime());
+			/** ================================ **/
+		}
+
 		return net;
 	}
 

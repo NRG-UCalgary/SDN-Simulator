@@ -12,7 +12,10 @@ public abstract class Buffer extends Entity {
 	public double mostRecentSegmentDepartureTime;
 	public double mostRecentACKDeparture;
 
+	// Solution A
 	public ArrayList<BufferToken> releaseTokens;
+	// Solution B
+	public BufferToken congestionControlToken;
 
 	public Buffer(int cap, int policy) {
 		super(-1);
@@ -39,24 +42,22 @@ public abstract class Buffer extends Entity {
 	/* --------------------------------------------------- */
 	public double getWaitTime(double currentTime, double transmissionTime) {
 		occupancy++;
-		double waitTime;
-		double timeToEmpty = 0;
+		double timeToEmpty;
 		if (mostRecentSegmentDepartureTime > currentTime) { // TODO probably is not needed
 			timeToEmpty = mostRecentSegmentDepartureTime - currentTime;
-		}
-
-		if (occupancy == 1) {
-			waitTime = 0;
 		} else {
-			waitTime = timeToEmpty;
+			timeToEmpty = 0;
 		}
-		mostRecentSegmentDepartureTime = currentTime + waitTime + transmissionTime;
-		return waitTime;
+		mostRecentSegmentDepartureTime = currentTime + timeToEmpty + transmissionTime;
+		return timeToEmpty;
 	}
 
 	public void deQueue() {
 		if (occupancy > 0) {
 			occupancy--;
+			if (occupancy == 0) {
+				mostRecentSegmentDepartureTime = 0;
+			}
 		} else if (occupancy < 0) {
 			System.out.println("Error Class::Buffer--Invalid buffer occupancy(" + occupancy + ").");
 		}

@@ -15,8 +15,8 @@ public class OutputHandler {
 
 	public void outSeqNumExcelFile(Statistics stat) throws IOException {
 		ArrayList<SeqNumData> dataOfFlows = new ArrayList<SeqNumData>();
-		SeqNumData flowData = new SeqNumData();
 		for (Flow flow : stat.flows.values()) {
+			SeqNumData flowData = new SeqNumData();
 			flowData.ackNumbers = flow.ackSeqNumArrivalTimes;
 			flowData.seqNumbers = flow.dataSeqNumSendingTimes;
 			flowData.flowName = "Flow " + Integer.toString(flow.getID());

@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.charts.ChartDataSource;
 import org.apache.poi.ss.usermodel.charts.DataSources;
 import org.apache.poi.ss.usermodel.charts.ScatterChartData;
 import org.apache.poi.ss.usermodel.charts.ValueAxis;
+import org.apache.poi.xssf.usermodel.charts.XSSFChartLegend;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xddf.usermodel.chart.LegendPosition;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -21,7 +22,6 @@ import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.charts.XSSFChartLegend;
 
 import system.utility.dataStructures.SeqNumData;
 
@@ -40,6 +40,8 @@ public class ExcelHandler {
 		int ackNumColNum = 2;
 		int ackTimeColNum = 3;
 		XSSFWorkbook workBook = new XSSFWorkbook();
+
+		FileOutputStream outPutStream = new FileOutputStream(outputFolderPath + workbookName + ".xlsx");
 
 		for (SeqNumData flowData : flows) {
 			HashMap<Pair<Integer, Integer>, Pair<Integer, Integer>> seriesCoordinates = new HashMap<Pair<Integer, Integer>, Pair<Integer, Integer>>();
@@ -83,21 +85,12 @@ public class ExcelHandler {
 			Pair<Integer, Integer> ackTimeData = new Pair<Integer, Integer>(ackRowIndex, ackTimeColNum);
 			Pair<Integer, Integer> ackNumberData = new Pair<Integer, Integer>(ackRowIndex, ackNumColNum);
 			seriesCoordinates.put(ackTimeData, ackNumberData);
-
 			sheet = plotScatterChart(sheet, 6, 2, 200, 200, seriesCoordinates);
 
-			// Writing the workbook on actual excel file
-			try {
-				FileOutputStream outPutStream = new FileOutputStream(outputFolderPath + workbookName + ".xlsx");
-				workBook.write(outPutStream);
-				workBook.close();
-				outPutStream.close();
-			} catch (IOException e) {
-				System.out.println("The Excel File Does Not Exist?!");
-				e.printStackTrace();
-			}
-
 		}
+		workBook.write(outPutStream);
+		workBook.close();
+		outPutStream.close();
 
 	}
 

@@ -30,13 +30,13 @@ public class SDTCPReceiverv1 extends Agent {
 			// TODO late we might want to implement NACK
 			ackSegment = new Segment(flow.getID(), Keywords.ACK, ACKNum, Keywords.ACKSegSize, this.srcHostID,
 					this.dstHostID);
-			net = sendSegment(net, ackSegment, 0);
+			net = sendSegment(net, ackSegment);
 			break;
 		case Keywords.SYN:
 			// SYNACK must be generated and sent to the sender
 			ackSegment = new Segment(flow.getID(), Keywords.SYNACK, ACKNum, Keywords.SYNSegSize, this.srcHostID,
 					this.dstHostID);
-			net = sendSegment(net, ackSegment, 0);
+			net = sendSegment(net, ackSegment);
 			break;
 		/* ==================================== */
 		/* Not applicable for now */

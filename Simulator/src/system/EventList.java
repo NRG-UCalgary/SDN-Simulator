@@ -21,9 +21,9 @@ public class EventList {
 	public static Comparator<Event> timeComparator = new Comparator<Event>() {
 		@Override
 		public int compare(Event e1, Event e2) {
-			if (e1.time < e2.time) {
+			if (e1.eventTime < e2.eventTime) {
 				return -1;
-			} else if (e1.time > e2.time) {
+			} else if (e1.eventTime > e2.eventTime) {
 				return 1;
 			} else {
 				return 0;

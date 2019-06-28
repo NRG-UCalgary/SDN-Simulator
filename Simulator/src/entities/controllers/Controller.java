@@ -3,8 +3,7 @@ package entities.controllers;
 import java.util.HashMap;
 import system.*;
 import system.events.*;
-import system.utility.Debugger;
-import system.utility.Keywords;
+import system.utility.*;
 import entities.*;
 import entities.controllers.routers.*;
 import entities.switches.*;
@@ -66,8 +65,8 @@ public abstract class Controller extends Entity {
 		}
 		rtt += currentNetwork.hosts.get(currentSegment.getSrcHostID()).getAccessLinkRTT();
 		rtt += currentNetwork.hosts.get(currentSegment.getDstHostID()).getAccessLinkRTT();
-		database.BtlBWs.put(currentSegment.getFlowID(), minBW);
-		database.RTTs.put(currentSegment.getFlowID(), rtt);
+		database.btlBwOfFlowID.put(currentSegment.getFlowID(), minBW);
+		database.rttOfFlowID.put(currentSegment.getFlowID(), rtt);
 
 	}
 
@@ -108,13 +107,13 @@ public abstract class Controller extends Entity {
 	}
 
 	protected void sendSegmentToAccessSwitches(Segment segment) {
-		for (int switchID : database.AccessSwitchIDs) {
+		for (int switchID : database.getAccessSwitchIDsSet()) {
 			sendSegmentToSwitch(switchID, segment);
 		}
 	}
 
 	protected void sendControlMessageToAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
-		for (int switchID : database.AccessSwitchIDs) {
+		for (int switchID : database.getAccessSwitchIDsSet()) {
 			sendControlMessageToSwitch(switchID, messages.get(switchID));
 		}
 	}

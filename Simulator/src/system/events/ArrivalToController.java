@@ -15,7 +15,7 @@ public class ArrivalToController extends Event {
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
 		//Debugger.event(this.type, this.time, this.nodeID, this.segment, null);
-		net.updateTime(time);
+		net.updateTime(eventTime);
 		return net.controller.recvSegment(net, nodeID, segment);
 	}
 

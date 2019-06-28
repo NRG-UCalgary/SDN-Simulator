@@ -25,7 +25,6 @@ public class Statistics {
 		for (Host host : net.hosts.values()) {
 			if (host.transportAgent.flow.getID() < 10000) {
 				this.flows.put(host.transportAgent.flow.getID(), host.transportAgent.flow);
-				Debugger.debugToConsole("Flow ID: " + host.transportAgent.flow.getID());
 			}
 		}
 

@@ -4,10 +4,10 @@ import entities.Segment;
 import system.*;
 import system.utility.Keywords;
 
-public class Departure extends Event {
+public class DepartureFromSwitch extends Event {
 
-	public Departure(double startTime, int switchID, Segment segment) {
-		super(Keywords.Departure, startTime, switchID, segment);
+	public DepartureFromSwitch(double startTime, int switchID, Segment segment) {
+		super(Keywords.DepartureFromSwitch, startTime, switchID, segment);
 	}
 
 	/* --------------------------------------------------- */
@@ -15,7 +15,7 @@ public class Departure extends Event {
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
 		//Debugger.event(this.type, this.time, this.nodeID, this.segment, null);
-		net.updateTime(time);
+		net.updateTime(eventTime);
 		net.switches.get(this.nodeID).releaseSegment(net, segment);
 		return net;
 	}

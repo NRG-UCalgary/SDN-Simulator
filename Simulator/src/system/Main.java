@@ -21,15 +21,19 @@ public class Main {
 		sim.createSwitch("sw2", 5, 8);
 		sim.createHost("h0");
 		sim.createHost("h1");
+		sim.createHost("d0");
+		sim.createHost("d1");
 
 		/*
 		 * createLink: 1.String src_label 2.String dst_label 3.Double delay_prob
 		 * 4.Double bandwidth 5.Integer buffer_size 6.String buffer_policy)
 		 */
 		sim.createAccessLink("al0", "h0", "sw0", 10, 8, 1000, Keywords.FIFO);
+		sim.createAccessLink("al1", "h1", "sw0", 10, 8, 1000, Keywords.FIFO);
 		sim.createLink("l0", "sw0", "sw1", 10, 8, 1000, Keywords.FIFO);
 		sim.createLink("l1", "sw1", "sw2", 10, 8, 1000, Keywords.FIFO);
-		sim.createAccessLink("al1", "h1", "sw2", 10, 8, 1000, Keywords.FIFO);
+		sim.createAccessLink("al2", "d0", "sw2", 10, 8, 1000, Keywords.FIFO);
+		sim.createAccessLink("al3", "d1", "sw2", 10, 8, 1000, Keywords.FIFO);
 
 		/* Controller must be defined after the topology is complete */
 		sim.createController("c0", Keywords.Dijkstra);
@@ -39,7 +43,8 @@ public class Main {
 		 * generateFlow: 1.String label 2.String type 3.String src_label 4.String
 		 * dst_label 5.Integer number_packets 6.Double arrival_time
 		 */
-		sim.generateFlow("f1", Keywords.SDTCP, "h0", "h1", 200, 0.0);
+		sim.generateFlow("f0", Keywords.SDTCP, "h0", "d0", 200, 0.0);
+		sim.generateFlow("f1", Keywords.SDTCP, "h1", "d1", 200, 0.0);
 
 		/** Running Simulation: Times are in millisecond **/
 		sim.run(0.0, 200000.0);

@@ -108,6 +108,7 @@ public class SDTCPSenderv1 extends Agent {
 
 	/* =========== Segment creation methods=============== */
 	private void prepareSegmentsToSend() {
+		// TODO could be changed in future
 		segmentsToSend.clear();
 		toSend = Mathematics.minInteger(sWnd_ - inFlight, remainingSegments);
 		for (int i = 0; i < toSend; i++) {
@@ -146,10 +147,11 @@ public class SDTCPSenderv1 extends Agent {
 		}
 	}
 
-	private Segment genFIN() {
-		Segment seg = new Segment(this.flow.getID(), Keywords.FIN, seqNum, Keywords.FINSegSize, this.srcHostID,
-				this.dstHostID);
-		return seg;
-	}
+	// private Segment genFIN() {
+	// Segment seg = new Segment(this.flow.getID(), Keywords.FIN, seqNum,
+	// Keywords.FINSegSize, this.srcHostID,
+	// this.dstHostID);
+	// return seg;
+	// }
 
 }

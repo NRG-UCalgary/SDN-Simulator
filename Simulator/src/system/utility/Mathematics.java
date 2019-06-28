@@ -28,36 +28,54 @@ public class Mathematics {
 	}
 
 	public static int lcm(ArrayList<Integer> vals) {
-		if (vals.size() == 1) {
-			return vals.get(0);
-		} else {
-			return (int) ((int) multiply(vals) / (double) findGCD(vals));
+		long lcm_of_array_elements = 1;
+		int divisor = 2;
+
+		while (true) {
+			int counter = 0;
+			boolean divisible = false;
+
+			for (int i = 0; i < vals.size(); i++) {
+
+				// lcm_of_array_elements (n1, n2, ... 0) = 0.
+				// For negative number we convert into
+				// positive and calculate lcm_of_array_elements.
+
+				if (vals.get(i) == 0) {
+					return 0;
+				} else if (vals.get(i) < 0) {
+					vals.set(i, vals.get(i) * (-1));
+				}
+				if (vals.get(i) == 1) {
+					counter++;
+				}
+
+				// Divide vals by devisor if complete
+				// division i.e. without remainder then replace
+				// number with quotient; used for find next factor
+				if (vals.get(i) % divisor == 0) {
+					divisible = true;
+					vals.set(i, vals.get(i) / divisor);
+				}
+			}
+
+			// If divisor able to completely divide any number
+			// from array multiply with lcm_of_array_elements
+			// and store into lcm_of_array_elements and continue
+			// to same divisor for next factor finding.
+			// else increment divisor
+			if (divisible) {
+				lcm_of_array_elements = lcm_of_array_elements * divisor;
+			} else {
+				divisor++;
+			}
+
+			// Check if all vals is 1 indicate
+			// we found all factors and terminate while loop.
+			if (counter == vals.size()) {
+				return (int) lcm_of_array_elements;
+			}
 		}
 	}
 
-	public static int gcd(int a, int b) {
-		if (a == 0) {
-			return b;
-		} else {
-			return gcd(b % a, a);
-		}
-	}
-
-	public static int findGCD(ArrayList<Integer> vals) {
-
-		int result = vals.get(0);
-		for (int val : vals) {
-			result = gcd(val, result);
-		}
-		return result;
-
-	}
-
-	public static int multiply(ArrayList<Integer> vals) {
-		int sum = 0;
-		for (int value : vals) {
-			sum += value;
-		}
-		return sum;
-	}
 }
