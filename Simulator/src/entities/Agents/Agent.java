@@ -45,8 +45,8 @@ public abstract class Agent {
 				segment.getType(), net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize()), false);
 
 		double nextTime = net.getCurrentTime() + bufferTime + Keywords.HostProcessDelay;
-		int nextNodeID = this.srcHostID;
-		net.eventList.addEvent(new DepartureFromHost(nextTime, nextNodeID, segment));
+		int nextNodeID = net.hosts.get(this.srcHostID).accessSwitchID;
+		net.eventList.addEvent(new DepartureFromHost(nextTime, this.srcHostID, nextNodeID, new Packet(segment, null)));
 		return net;
 	}
 

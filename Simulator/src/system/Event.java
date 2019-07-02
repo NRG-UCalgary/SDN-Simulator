@@ -5,15 +5,14 @@ import entities.*;
 public abstract class Event {
 	public final String type; // Used for debugging only
 	protected double eventTime;
-	protected Segment segment;
+	protected Packet packet;
 	protected int nodeID;
-	protected CtrlMessage ctrlMessage;
 
-	public Event(String type, double startTime, int nodeID, Segment segment) {
+	public Event(String type, double startTime, int nodeID, Packet packet) {
 		this.eventTime = startTime;
-		this.segment = segment;
 		this.nodeID = nodeID;
 		this.type = type;
+		this.packet = packet;
 	}
 
 	/* --------------------------------------------------- */

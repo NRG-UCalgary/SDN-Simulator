@@ -170,12 +170,16 @@ public class Simulator {
 		net.controller = new Controllerv1(controllerCounter, net, routing_alg, alpha);
 
 		// Handling Labeling
+		for (SDNSwitch sdnSwitch : net.switches.values()) {
+			net.controller.connectSwitch(sdnSwitch.getID(), sdnSwitch.controlLink);
+		}
 		controllerLabels.put(controllerCounter, label);
 		controllerCounter++;
 	}
 
 	// Overload
 	public void createController(String label, int routing_alg) {
+
 		createController(label, routing_alg, CONTROLLER_RTT_DEALAY, CONTROLLER_PROCESS_DELAY);
 	}
 

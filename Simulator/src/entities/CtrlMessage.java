@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import entities.buffers.BufferToken;
+import system.utility.*;
 
-public class CtrlMessage extends Entity {
-
+public class CtrlMessage {
+	private int size = Keywords.CtrlMessageSize;
 	public int switchID;
-	//public int bufferMode;
 	public HashMap<Integer, ArrayList<BufferToken>> tokens; // <HostID, tokensForEachBuffer>
 
 	public CtrlMessage() {
-		super(-1);
+	}
+
+	public int getSize() {
+		return this.size;
 	}
 
 }

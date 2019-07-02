@@ -21,21 +21,20 @@ public class Host extends Node {
 	/* --------------------------------------------------- */
 	/* ---------- Inherited methods (from Node) ---------- */
 	/* --------------------------------------------------- */
-	public Network recvSegment(Network net, Segment segment) {
-		net = transportAgent.recvSegment(net, segment);
+	public Network recvPacket(Network net, Packet packet) {
+		net = transportAgent.recvSegment(net, packet.segment);
 		return net;
 	}
 
-	public Network releaseSegment(Network net, Segment segment) {
-
+	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
 		this.accessLink.buffer.deQueue();
-		int nextNodeID = this.accessSwitchID;
-		double nextTime = net.getCurrentTime() + this.getAccessLinkDelay(segment.getSize());
-		net.eventList.addEvent(new ArrivalToSwitch(nextTime, nextNodeID, segment, null));
-		if (segment.getType() == Keywords.DATA) {
+		double nextTime = net.getCurrentTime() + this.getAccessLinkDelay(packet.getSize());
+		Debugger.debugToConsole("This is the switchID: " + dstSwitchID);
+		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
+		if (packet.segment.getType() == Keywords.DATA) {
 			/** ===== Statistical Counters ===== **/
 			this.transportAgent.flow.totalSentSegments++;
-			this.transportAgent.flow.dataSeqNumSendingTimes.put(segment.getSeqNum(),
+			this.transportAgent.flow.dataSeqNumSendingTimes.put(packet.segment.getSeqNum(),
 					Keywords.HostProcessDelay + net.getCurrentTime());
 			/** ================================ **/
 		}

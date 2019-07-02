@@ -6,6 +6,7 @@ public interface Keywords {
 	public static final String ArrivalToController = "Arrival to Controller";
 	public static final String ArrivalToSwitch = "Arrival to Switch";
 	public static final String ArrivalToHost = "Arrival to Host";
+	public static final String DepartureFromController = "Departure From Controller";
 	public static final String DepartureFromSwitch = "Departure from Switch";
 	public static final String DepartureFromHost = "Departure from Host";
 	public static final String FlowPathSetup = "Flow Path Setup on Switch";
@@ -36,6 +37,9 @@ public interface Keywords {
 	public static final String SDTCP = "SDTCP";
 	public static final String RBTCP = "RBTCP";
 
+	/* Packet Types */
+	public static final int Segment = 0;
+	public static final int SDNControl = 1;
 	/* Segment types */
 	public static final int SYN = 0;
 	public static final int SYNACK = 1;
@@ -44,7 +48,6 @@ public interface Keywords {
 	public static final int FIN = 4;
 	public static final int FINACK = 5;
 	public static final int CTRL = 6;
-
 	public static final String ACKFlowExtention = ".ACK";
 
 	/* TCP congestion control states */
@@ -54,6 +57,7 @@ public interface Keywords {
 
 	public static final double ACKGenerationTime = 0.5; // usually is less than 500MS
 
+	public static final int CtrlMessageSize = 40 * 80;
 	public static final int DataSegSize = 1000 * 8;
 	public static final int ACKSegSize = 40 * 8;
 	public static final int SYNSegSize = 40 * 8;

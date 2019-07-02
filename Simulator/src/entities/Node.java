@@ -15,8 +15,8 @@ public abstract class Node extends Entity {
 	/* ---------- Abstract methods ----------------------- */
 	/* --------------------------------------------------- */
 
-	public abstract Network recvSegment(Network net, Segment segment);
+	public abstract Network recvPacket(Network net, Packet packet);
 
-	public abstract Network releaseSegment(Network net, Segment segment);
+	public abstract Network releasePacket(Network net, int dstNodeID, Packet packet);
 
 }

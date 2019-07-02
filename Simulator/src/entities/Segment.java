@@ -1,6 +1,5 @@
 package entities;
 
-
 public class Segment extends Entity {
 
 	/** my protocol variables **/

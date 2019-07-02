@@ -52,8 +52,8 @@ public class SDTCPSenderv1 extends Agent {
 	public Network sendSYN(Network net) {
 		Segment synSegment = genSYN();
 		double nextTime = flow.arrivalTime + net.hosts.get(srcHostID).accessLink.getTotalDelay(synSegment.getSize());
-		net.eventList
-				.addEvent(new ArrivalToSwitch(nextTime, net.hosts.get(srcHostID).accessSwitchID, synSegment, null));
+		net.eventList.addEvent(
+				new ArrivalToSwitch(nextTime, net.hosts.get(srcHostID).accessSwitchID, new Packet(synSegment, null)));
 		/** ===== Statistical Counters ===== **/
 		this.flow.totalSentSegments++;
 		this.flow.dataSeqNumSendingTimes.put(synSegment.getSeqNum(), net.getCurrentTime());

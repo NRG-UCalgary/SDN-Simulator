@@ -31,7 +31,8 @@ public class Controllerv1 extends Controller {
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Inherited methods (from Controller) --------------------------- */
 	/* -------------------------------------------------------------------------- */
-	public Network recvSegment(Network net, int switchID, Segment segment) {
+	public Network recvPacket(Network net, int switchID, Packet packet) {
+		Segment segment = packet.segment;
 		this.currentSwitchID = switchID;
 		this.currentNetwork = net;
 		this.currentSegment = segment;
@@ -51,7 +52,7 @@ public class Controllerv1 extends Controller {
 			break;
 		}
 		handleCongestionControl();
-		sendSegmentToSwitch(switchID, currentSegment);
+		sendPacketToSwitch(switchID, new Packet(currentSegment, null));
 		return currentNetwork;
 	}
 
@@ -170,8 +171,7 @@ public class Controllerv1 extends Controller {
 				Keywords.CTRLSegSize, this.getID(), Keywords.BroadcastDestination);
 		segmentToHosts.bigRTT_ = this.bigRTT;
 		segmentToHosts.sWnd_ = this.sWnd;
-		// sendSegmentToAccessSwitches(segmentToHosts);
-		sendSegmentToSwitch(this.currentSwitchID, segmentToHosts);
+		sendPacketToSwitch(this.currentSwitchID, new Packet(segmentToHosts, null));
 	}
 
 }

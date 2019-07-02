@@ -10,6 +10,9 @@ import entities.switches.*;
 
 public abstract class Controller extends Entity {
 
+	// ControlLinks
+	protected HashMap<Integer, Link> controlLinks; // <SwitchID, Link>
+
 	// Modules
 	protected Router router;
 	protected ControlDatabase database;
@@ -19,6 +22,7 @@ public abstract class Controller extends Entity {
 
 	public Controller(int ID, Network net, int routingAlgorithm) {
 		super(ID);
+		controlLinks = new HashMap<Integer, Link>();
 		database = new ControlDatabase(net);
 		switch (routingAlgorithm) {
 		case Keywords.Dijkstra:
@@ -37,11 +41,18 @@ public abstract class Controller extends Entity {
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Abstract methods ---------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
-	public abstract Network recvSegment(Network net, int switchID, Segment segment);
+	public abstract Network recvPacket(Network net, int switchID, Packet packet);
 
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
+	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
+		this.controlLinks.get(dstSwitchID).buffer.deQueue();
+		double nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).buffer.getWaitTime(
+				currentNetwork.getCurrentTime(), controlLinks.get(dstSwitchID).getTransmissionDelay(packet.getSize()));
+		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
+		return net;
+	}
 
 	protected void handleRouting(SDNSwitch srcAccessSwitch, SDNSwitch dstAccessSwitch) {
 		/* Controller runs the router module to find the path for the flow */
@@ -73,16 +84,10 @@ public abstract class Controller extends Entity {
 	/* =========================================== */
 	/* ========== Switch Communication =========== */
 	/* =========================================== */
-
-	protected void sendSegmentToSwitch(int switchID, Segment segment) {
-		double nextTime = currentNetwork.getCurrentTime() + getControlLinkDelay(switchID, segment.getSize());
-		currentNetwork.eventList.addEvent(new ArrivalToSwitch(nextTime, switchID, segment, null));
-	}
-
-	protected void sendControlMessageToSwitch(int switchID, CtrlMessage controlMessage) {
-		double nextTime = currentNetwork.getCurrentTime() + this.getControlLinkDelay(switchID, Keywords.CTRLSegSize);
-		Event nextEvent = new ArrivalToSwitch(nextTime, switchID, null, controlMessage);
-		currentNetwork.eventList.addEvent(nextEvent);
+	protected void sendPacketToSwitch(int switchID, Packet packet) {
+		double nextTime = currentNetwork.getCurrentTime() + controlLinks.get(switchID).buffer.getWaitTime(
+				currentNetwork.getCurrentTime(), controlLinks.get(switchID).getTransmissionDelay(packet.getSize()));
+		currentNetwork.eventList.addEvent(new DepartureFromController(nextTime, this.getID(), switchID, packet));
 	}
 
 	protected void sendFlowSetupMessage(int switchID, Link egressLink) {
@@ -102,20 +107,25 @@ public abstract class Controller extends Entity {
 		return currentNetwork.switches.get(currentNetwork.hosts.get(hostID).accessSwitchID);
 	}
 
+	// TODO must be updated
 	protected double getControlLinkDelay(int switchID, int segmentSize) {
 		return currentNetwork.switches.get(switchID).controlLink.getTotalDelay(segmentSize);
 	}
 
 	protected void sendSegmentToAccessSwitches(Segment segment) {
 		for (int switchID : database.getAccessSwitchIDsSet()) {
-			sendSegmentToSwitch(switchID, segment);
+			sendPacketToSwitch(switchID, new Packet(segment, null));
 		}
 	}
 
 	protected void sendControlMessageToAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
 		for (int switchID : database.getAccessSwitchIDsSet()) {
-			sendControlMessageToSwitch(switchID, messages.get(switchID));
+			sendPacketToSwitch(switchID, new Packet(null, messages.get(switchID)));
 		}
+	}
+
+	public void connectSwitch(int switchID, Link controlLink) {
+		this.controlLinks.put(switchID, controlLink);
 	}
 
 }

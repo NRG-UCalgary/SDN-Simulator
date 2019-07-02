@@ -17,7 +17,6 @@ public class FlowPathSetup extends Event {
 	}
 
 	public Network execute(Network net) {
-		// Debugger.event(this.type, this.time, this.nodeID, this.segment, null);
 		net.updateTime(eventTime);
 		net.switches.get(this.nodeID).addFlowTableEntry(flowID, neighborID);
 		net.switches.get(neighborID).addFlowTableEntry(Simulator.ACKStreamID(flowID), nodeID);

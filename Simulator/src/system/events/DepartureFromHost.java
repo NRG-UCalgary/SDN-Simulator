@@ -7,15 +7,16 @@ import system.utility.Keywords;
 
 public class DepartureFromHost extends Event {
 
-	public DepartureFromHost(double eventTime, int hostID, Segment segment) {
-		super(Keywords.DepartureFromHost, eventTime, hostID, segment);
+	int dstSwitchID;
+
+	public DepartureFromHost(double eventTime, int hostID, int dstSwitchID, Packet packet) {
+		super(Keywords.DepartureFromHost, eventTime, hostID, packet);
+		this.dstSwitchID = dstSwitchID;
 	}
 
 	public Network execute(Network net) {
-
 		net.updateTime(eventTime);
-		net.hosts.get(this.nodeID).releaseSegment(net, segment);
-
+		net.hosts.get(this.nodeID).releasePacket(net, dstSwitchID, packet);
 		return net;
 	}
 

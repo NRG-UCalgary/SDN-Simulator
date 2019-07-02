@@ -1,15 +1,14 @@
 package system.events;
 
 import system.*;
-import system.utility.Keywords;
+import system.utility.*;
 
 import entities.*;
 
 public class ArrivalToSwitch extends Event {
 
-	public ArrivalToSwitch(double startTime, int switchID, Segment segment, CtrlMessage controlMessage) {
-		super(Keywords.ArrivalToSwitch, startTime, switchID, segment);
-		this.ctrlMessage = controlMessage;
+	public ArrivalToSwitch(double startTime, int switchID, Packet packet) {
+		super(Keywords.ArrivalToSwitch, startTime, switchID, packet);
 	}
 
 	/* --------------------------------------------------- */
@@ -17,13 +16,7 @@ public class ArrivalToSwitch extends Event {
 	/* --------------------------------------------------- */
 	public Network execute(Network net) {
 		net.updateTime(eventTime);
-		if (ctrlMessage != null) {
-			//Debugger.event(this.type, this.time, this.nodeID, null, ctrlMessage);
-			return net.switches.get(this.nodeID).recvCtrlMessage(net, ctrlMessage);
-		} else {
-			//Debugger.event(this.type, this.time, this.nodeID, this.segment, null);
-			return net.switches.get(this.nodeID).recvSegment(net, segment);
-		}
+		return net.switches.get(this.nodeID).recvPacket(net, packet);
 	}
 
 }
