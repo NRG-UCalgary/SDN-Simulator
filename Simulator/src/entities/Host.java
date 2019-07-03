@@ -29,7 +29,6 @@ public class Host extends Node {
 	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
 		this.accessLink.buffer.deQueue();
 		double nextTime = net.getCurrentTime() + this.getAccessLinkDelay(packet.getSize());
-		Debugger.debugToConsole("This is the switchID: " + dstSwitchID);
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
 		if (packet.segment.getType() == Keywords.DATA) {
 			/** ===== Statistical Counters ===== **/
@@ -56,7 +55,7 @@ public class Host extends Node {
 		return accessLink.getTransmissionDelay(segmentSize) + accessLink.getPropagationDelay();
 	}
 
-	public double getAccessLinkRTT() {
+	public double getAccessLinkRtt() {
 		return getAccessLinkDelay(Keywords.ACKSegSize) + getAccessLinkDelay(Keywords.DataSegSize);
 	}
 

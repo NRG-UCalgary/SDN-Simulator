@@ -30,7 +30,7 @@ public class ControlDatabase {
 
 		for (SDNSwitch sdnSwitch : net.switches.values()) {
 			if (sdnSwitch.isAccessSwitch) {
-				flowIDOfHostIDOfAccessSwitchID.put(sdnSwitch.getID(), new HashMap<Integer, Integer>());
+				//flowIDOfHostIDOfAccessSwitchID.put(sdnSwitch.getID(), new HashMap<Integer, Integer>());
 			}
 			controlDelayOfSwitchID.put(sdnSwitch.getID(), sdnSwitch.controlLink.getPropagationDelay());
 		}
@@ -38,7 +38,11 @@ public class ControlDatabase {
 	}
 
 	public void addFlow(int accessSwitchID, int srcHostID, int flowID) {
+		if (!flowIDOfHostIDOfAccessSwitchID.containsKey(accessSwitchID)) {
+			flowIDOfHostIDOfAccessSwitchID.put(accessSwitchID, new HashMap<Integer, Integer>());
+		}
 		flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).put(srcHostID, flowID);
+
 	}
 
 	public void removeFlow(int accessSwitchID, int srcHostID, int flowID) {

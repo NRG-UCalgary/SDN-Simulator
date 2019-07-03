@@ -15,7 +15,7 @@ public class SDNSwitchv1 extends SDNSwitch {
 	/* --------------------------------------------------- */
 	public Network recvCtrlMessage(Network net, CtrlMessage message) {
 		for (int hostID : accessLinks.keySet()) {
-			accessLinks.get(hostID).buffer.updateTokenList(message.tokens.get(hostID));
+			accessLinks.get(hostID).buffer.updateTokenList(net.getCurrentTime(), message.ccTokenOfHostID.get(hostID));
 		}
 		return net;
 	}

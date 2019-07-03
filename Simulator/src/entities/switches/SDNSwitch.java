@@ -100,8 +100,8 @@ public abstract class SDNSwitch extends Node {
 		double nextTime = 0;
 		double bufferTime = 0;
 		for (int hostID : accessLinks.keySet()) {
-			bufferTime = accessLinks.get(hostID).buffer.getBufferTime(net.getCurrentTime(), segment.getType(),
-					accessLinks.get(hostID).getTransmissionDelay(segment.getSize()), false);
+			bufferTime = accessLinks.get(hostID).buffer.getBufferTime(net.getCurrentTime(),
+					accessLinks.get(hostID).getTransmissionDelay(segment.getSize()));
 			nextTime = net.getCurrentTime() + bufferTime;
 			if (nextTime > 0) {
 				segment.setDstHostID(hostID);
@@ -115,8 +115,8 @@ public abstract class SDNSwitch extends Node {
 	}
 
 	protected Network forwardToHost(Network net, int hostID, Segment segment) {
-		double bufferTime = this.accessLinks.get(hostID).buffer.getBufferTime(net.getCurrentTime(), segment.getType(),
-				accessLinks.get(hostID).getTransmissionDelay(segment.getSize()), true);
+		double bufferTime = this.accessLinks.get(hostID).buffer.getBufferTime(net.getCurrentTime(),
+				accessLinks.get(hostID).getTransmissionDelay(segment.getSize()));
 		double nextTime = net.getCurrentTime() + bufferTime;
 		if (nextTime > 0) {
 			Event nextEvent = new DepartureFromSwitch(nextTime, this.ID, hostID, new Packet(segment, null));
@@ -133,7 +133,7 @@ public abstract class SDNSwitch extends Node {
 
 	protected Network forwardToSwitch(Network net, int switchID, Segment segment) {
 		double bufferTime = this.networkLinks.get(switchID).buffer.getBufferTime(net.getCurrentTime(),
-				segment.getType(), networkLinks.get(switchID).getTransmissionDelay(segment.getSize()), false);
+				networkLinks.get(switchID).getTransmissionDelay(segment.getSize()));
 		double nextTime = net.getCurrentTime() + bufferTime;
 		if (nextTime > 0) {
 			Event nextEvent = new DepartureFromSwitch(nextTime, this.getID(), switchID, new Packet(segment, null));
@@ -149,7 +149,7 @@ public abstract class SDNSwitch extends Node {
 	}
 
 	protected Network forwardToController(Network net, Segment segment) {
-		double nextTime = net.getCurrentTime() + controlLink.buffer.getWaitTime(net.getCurrentTime(),
+		double nextTime = net.getCurrentTime() + controlLink.buffer.getBufferTime(net.getCurrentTime(),
 				controlLink.getTransmissionDelay(segment.getSize()));
 		Event nextEvent = new DepartureFromSwitch(nextTime, this.getID(), controllerID, new Packet(segment, null));
 		net.eventList.addEvent(nextEvent);

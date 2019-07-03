@@ -42,7 +42,7 @@ public abstract class Agent {
 
 	protected Network sendSegment(Network net, Segment segment) {
 		double bufferTime = net.hosts.get(srcHostID).accessLink.buffer.getBufferTime(net.getCurrentTime(),
-				segment.getType(), net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize()), false);
+				net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize()));
 
 		double nextTime = net.getCurrentTime() + bufferTime + Keywords.HostProcessDelay;
 		int nextNodeID = net.hosts.get(this.srcHostID).accessSwitchID;

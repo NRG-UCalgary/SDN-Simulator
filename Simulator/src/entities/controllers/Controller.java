@@ -48,7 +48,7 @@ public abstract class Controller extends Entity {
 	/* -------------------------------------------------------------------------- */
 	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
 		this.controlLinks.get(dstSwitchID).buffer.deQueue();
-		double nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).buffer.getWaitTime(
+		double nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).buffer.getBufferTime(
 				currentNetwork.getCurrentTime(), controlLinks.get(dstSwitchID).getTransmissionDelay(packet.getSize()));
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
 		return net;
@@ -74,8 +74,8 @@ public abstract class Controller extends Entity {
 				minBW = link.getBandwidth();
 			}
 		}
-		rtt += currentNetwork.hosts.get(currentSegment.getSrcHostID()).getAccessLinkRTT();
-		rtt += currentNetwork.hosts.get(currentSegment.getDstHostID()).getAccessLinkRTT();
+		rtt += currentNetwork.hosts.get(currentSegment.getSrcHostID()).getAccessLinkRtt();
+		rtt += currentNetwork.hosts.get(currentSegment.getDstHostID()).getAccessLinkRtt();
 		database.btlBwOfFlowID.put(currentSegment.getFlowID(), minBW);
 		database.rttOfFlowID.put(currentSegment.getFlowID(), rtt);
 
@@ -85,7 +85,7 @@ public abstract class Controller extends Entity {
 	/* ========== Switch Communication =========== */
 	/* =========================================== */
 	protected void sendPacketToSwitch(int switchID, Packet packet) {
-		double nextTime = currentNetwork.getCurrentTime() + controlLinks.get(switchID).buffer.getWaitTime(
+		double nextTime = currentNetwork.getCurrentTime() + controlLinks.get(switchID).buffer.getBufferTime(
 				currentNetwork.getCurrentTime(), controlLinks.get(switchID).getTransmissionDelay(packet.getSize()));
 		currentNetwork.eventList.addEvent(new DepartureFromController(nextTime, this.getID(), switchID, packet));
 	}

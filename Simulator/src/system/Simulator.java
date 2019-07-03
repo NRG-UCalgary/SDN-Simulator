@@ -96,7 +96,7 @@ public class Simulator {
 		// Later, if needed, a mechanism for choosing type of switch should be
 		// implemented
 		Link controlLink = new Link(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
-				ctrlLinkPropagationDelay, Mathematics.MegabitPerSecondTobitPerMsecond(ctrlLinkBandwidth), 10,
+				ctrlLinkPropagationDelay, Mathematics.MegabitPerSecondTobitPerMsecond(ctrlLinkBandwidth), 1000,
 				Keywords.FIFO);
 		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
 		net.switches.put(switchCounter, sw);

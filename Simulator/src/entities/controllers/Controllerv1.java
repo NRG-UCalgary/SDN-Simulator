@@ -20,7 +20,7 @@ public class Controllerv1 extends Controller {
 	public int previousSWnd;
 	public int sWnd;
 	public int numberOfSendingCycles;
-	public double interFlowDelay; // The fixed delay between each flow swnd
+	public double interFlowDelayConstant; // The fixed delay between each flow swnd
 
 	public Controllerv1(int ID, Network net, int routingAlgorithm, double alpha) {
 		super(ID, net, routingAlgorithm);
@@ -40,13 +40,10 @@ public class Controllerv1 extends Controller {
 		case Keywords.SYN:
 			Debugger.debug("SYN of flow: " + segment.getFlowID() + " arrived at: " + net.getCurrentTime());
 			database.addFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
-			// database.Flows.put(segment.getSrcHostID(), segment.getFlowID());
 			handleRouting(currentNetwork.switches.get(switchID), this.getAccessSwitch(currentSegment.getDstHostID()));
 			break;
 		case Keywords.FIN:
-			// TODO we might want to remove the flow entries for the completed flow
 			database.removeFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
-			// database.Flows.remove(segment.getSrcHostID());
 			break;
 		default:
 			break;
@@ -66,13 +63,13 @@ public class Controllerv1 extends Controller {
 	private void handleCongestionControl() {
 		updateBigRTT();
 		Debugger.debug("Controller BigRtt: " + bigRTT);
-		updateInterFlowDelay();
-		Debugger.debug("This is the interFlowDelay: " + interFlowDelay);
+		updateInterFlowDelayConstant();
+		Debugger.debug("This is the interFlowDelay: " + interFlowDelayConstant);
 		updateSWnd();
 		Debugger.debug("Controller SWnd: " + sWnd);
 		updateNumberOfSendingCycles();
 		notifyHosts();
-		notifyAccessSwitch(prepareMessage());
+		notifyAccessSwitches(prepareMessage());
 
 	}
 
@@ -90,13 +87,13 @@ public class Controllerv1 extends Controller {
 
 	}
 
-	private void updateInterFlowDelay() {
+	private void updateInterFlowDelayConstant() {
 		// TODO this is for one access Switch only
 		// TODO must be updated accordingly later
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 1) {
-			interFlowDelay = bigRTT / database.getNumberOfFlowsForAccessSwitch(currentSwitchID);
+			interFlowDelayConstant = bigRTT / database.getNumberOfFlowsForAccessSwitch(currentSwitchID);
 		} else {
-			interFlowDelay = 0;
+			interFlowDelayConstant = 0;
 		}
 	}
 
@@ -118,47 +115,40 @@ public class Controllerv1 extends Controller {
 	private HashMap<Integer, CtrlMessage> prepareMessage() {
 		HashMap<Integer, CtrlMessage> messages = new HashMap<Integer, CtrlMessage>();
 		CtrlMessage singleMessage = new CtrlMessage();
-		HashMap<Integer, ArrayList<BufferToken>> preparedTokens = new HashMap<Integer, ArrayList<BufferToken>>();
-		ArrayList<BufferToken> eachAccessBufferTokens;
-		BufferToken token;
+		HashMap<Integer, BufferToken> preparedTokens = new HashMap<Integer, BufferToken>();
+		BufferToken ccTokenForEachBuffer;
+
 		// a CtrlMessage for each accessSwitches in the network
 		for (int accessSwitchID : database.getAccessSwitchIDsSet()) {
 			// The flow ID index
 			int i = 0;
-			double accessLinkDelayOfFlowZero = 0;
-			double inter_flow_delay = 0;
-			eachAccessBufferTokens = new ArrayList<BufferToken>();
-			double initialDelay = 0;
-			double steadyInterTokenDelay = 0;
+			double accessLinkRttOfFlowZero = 0; // d_i
+			double interFlowDelay = 0;
+			ccTokenForEachBuffer = new BufferToken();
+			double initialCycleDelay = 0;
+			double steadyCycleDelay = 0;
 			for (int hostID : database.getHostIDsSetForAccessSwitch(accessSwitchID)) {
-				if (i == 0) {
-					inter_flow_delay = 0;
-					accessLinkDelayOfFlowZero = currentNetwork.hosts.get(hostID).getAccessLinkRTT();
-				} else {
-					inter_flow_delay = i * interFlowDelay
-							+ (accessLinkDelayOfFlowZero - currentNetwork.hosts.get(hostID).getAccessLinkRTT());
+				if (i == 0) { // flow_0
+					interFlowDelay = 0;
+					accessLinkRttOfFlowZero = currentNetwork.hosts.get(hostID).getAccessLinkRtt();
+				} else { // flow_i and i>0
+					interFlowDelay = i * interFlowDelayConstant
+							+ (accessLinkRttOfFlowZero - currentNetwork.hosts.get(hostID).getAccessLinkRtt());
 				}
-				initialDelay = previousBigRTT + inter_flow_delay;
-				steadyInterTokenDelay = bigRTT - database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
-				for (int j = 0; j <= numberOfSendingCycles; j++) {
-					if (j == 0 && database.getNumberOfFlowsForAccessSwitch(currentSwitchID) == 1) {
-						token = new BufferToken(initialDelay, sWnd);
-					} else {
-						token = new BufferToken(steadyInterTokenDelay, previousSWnd);
-					}
-					eachAccessBufferTokens.add(token);
-				}
-				preparedTokens.put(hostID, eachAccessBufferTokens);
+				initialCycleDelay = previousBigRTT + interFlowDelay;
+				steadyCycleDelay = bigRTT - database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
+				ccTokenForEachBuffer.activate(true, true, initialCycleDelay, previousSWnd, steadyCycleDelay, sWnd);
+				preparedTokens.put(hostID, ccTokenForEachBuffer);
 				i++;
 			}
-			singleMessage.tokens = preparedTokens;
+			singleMessage.ccTokenOfHostID = preparedTokens;
 
 			messages.put(accessSwitchID, singleMessage);
 		}
 		return messages;
 	}
 
-	private void notifyAccessSwitch(HashMap<Integer, CtrlMessage> messages) {
+	private void notifyAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
 		// TODO this is for one accessSwitch assumption
 		// TODO must be updated for more than access switches
 		sendControlMessageToAccessSwitches(messages);

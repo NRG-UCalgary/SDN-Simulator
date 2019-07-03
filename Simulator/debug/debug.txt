@@ -1,35 +1,36 @@
-This is flow size: 200
-This is flow size: 200
+This is flow size: 10
 ####################	Connectivity	####################
 =======================
 The switch ID = 0
  These are the access links: 
   link ID: 10000 connected to hostID: 0
-  link ID: 10001 connected to hostID: 1
  These are the network links: 
-  link ID: 2 connected to switchID: 1
+  link ID: 1 connected to switchID: 1
 =======================
 =======================
 The switch ID = 1
  These are the access links: 
  These are the network links: 
-  link ID: 10002 connected to switchID: 0
-  link ID: 3 connected to switchID: 2
+  link ID: 10001 connected to switchID: 0
+  link ID: 2 connected to switchID: 2
 =======================
 =======================
 The switch ID = 2
  These are the access links: 
-  link ID: 10004 connected to hostID: 2
-  link ID: 10005 connected to hostID: 3
+  link ID: 10003 connected to hostID: 1
  These are the network links: 
-  link ID: 10003 connected to switchID: 1
+  link ID: 10002 connected to switchID: 1
 =======================
 ############################################################
 SYN of flow: 0 arrived at: 15.079999999999998
-Controller BigRtt: 85
+Controller BigRtt: 86
 This is the interFlowDelay: 0.0
-Controller SWnd: 85
-SYN of flow: 1 arrived at: 15.079999999999998
-Controller BigRtt: 85
-This is the interFlowDelay: 42.0
-Controller SWnd: 42
+Controller SWnd: 43
+SYN of flow: 0 arrived at: 19.68
+Controller BigRtt: 86
+This is the interFlowDelay: 0.0
+Controller SWnd: 43
+SYN of flow: 0 arrived at: 24.28
+Controller BigRtt: 86
+This is the interFlowDelay: 0.0
+Controller SWnd: 43
