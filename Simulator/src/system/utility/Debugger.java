@@ -34,7 +34,6 @@ public class Debugger {
 
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void debugToConsole(String s) {
@@ -85,8 +84,18 @@ public class Debugger {
 	public static void controlMessage(CtrlMessage message) {
 	}
 
-	public static void segment(Segment segment) {
+	public static void pacekt(Packet packet) {
+		switch (packet.type) {
+		case Keywords.Segment:
+			String segmentType = segmentType(packet.segment.getType());
+			debug("" + segmentType);
+			break;
+		case Keywords.SDNControl:
 
+			break;
+		default:
+			break;
+		}
 	}
 
 	public static void stopFlag() {
@@ -97,7 +106,6 @@ public class Debugger {
 		} catch (Exception e) {
 			System.out.println("Debugger Stop Flag.");
 		}
-
 	}
 
 	/* ======================== Private methods ============================ */
@@ -121,4 +129,5 @@ public class Debugger {
 			return null;
 		}
 	}
+
 }

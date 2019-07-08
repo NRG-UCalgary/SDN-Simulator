@@ -3,13 +3,15 @@ package system.utility;
 public interface Keywords {
 
 	/* Event names */
+	// Arrivals
 	public static final String ArrivalToController = "Arrival to Controller";
 	public static final String ArrivalToSwitch = "Arrival to Switch";
 	public static final String ArrivalToHost = "Arrival to Host";
+	// Departures
 	public static final String DepartureFromController = "Departure From Controller";
 	public static final String DepartureFromSwitch = "Departure from Switch";
 	public static final String DepartureFromHost = "Departure from Host";
-	public static final String FlowPathSetup = "Flow Path Setup on Switch";
+
 	/* Special addresses */
 	public static final int ControllerID = -1;
 	public static final int BroadcastDestination = -2;
@@ -37,9 +39,14 @@ public interface Keywords {
 	public static final String SDTCP = "SDTCP";
 	public static final String RBTCP = "RBTCP";
 
-	/* Packet Types */
+	/* Packet types */
 	public static final int Segment = 0;
 	public static final int SDNControl = 1;
+
+	/* SDN control message types */
+	public static final int BufferTokenUpdate = 0;
+	public static final int FlowSetUp = 1;
+
 	/* Segment types */
 	public static final int SYN = 0;
 	public static final int SYNACK = 1;
@@ -48,14 +55,11 @@ public interface Keywords {
 	public static final int FIN = 4;
 	public static final int FINACK = 5;
 	public static final int CTRL = 6;
-	public static final String ACKFlowExtention = ".ACK";
 
 	/* TCP congestion control states */
 	public static final int SlowStart = 0;
 	public static final int CongAvoidance = 1;
 	public static final int FastRecovery = 2;
-
-	public static final double ACKGenerationTime = 0.5; // usually is less than 500MS
 
 	public static final int CtrlMessageSize = 40 * 80;
 	public static final int DataSegSize = 1000 * 8;

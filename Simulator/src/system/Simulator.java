@@ -61,7 +61,7 @@ public class Simulator {
 	/********** Run **********/
 	public void run(Double start_time, Double end_time) {
 
-		Debugger.connectivity(net);
+		// Debugger.connectivity(net);
 		/* Other Default settings of the Simulator */
 
 		/* Reading the first Event from Network Event List */

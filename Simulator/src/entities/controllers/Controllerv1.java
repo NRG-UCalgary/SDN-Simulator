@@ -19,6 +19,7 @@ public class Controllerv1 extends Controller {
 	// TODO it should be changed to a map <AccessSwitchID, bigRTT> later
 	public int previousSWnd;
 	public int sWnd;
+	public double interSegmentDelay;
 	public int numberOfSendingCycles;
 	public double interFlowDelayConstant; // The fixed delay between each flow swnd
 
@@ -62,14 +63,19 @@ public class Controllerv1 extends Controller {
 	/* =========================================== */
 	private void handleCongestionControl() {
 		updateBigRTT();
+		// bigRTT = 200;
 		Debugger.debug("Controller BigRtt: " + bigRTT);
+		updateInterSegmentDelay();
+		Debugger.debug("Controller interSegmentDelay: " + interSegmentDelay);
 		updateInterFlowDelayConstant();
 		Debugger.debug("This is the interFlowDelay: " + interFlowDelayConstant);
 		updateSWnd();
 		Debugger.debug("Controller SWnd: " + sWnd);
 		updateNumberOfSendingCycles();
 		notifyHosts();
+		// if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 1) {
 		notifyAccessSwitches(prepareMessage());
+		// }
 
 	}
 
@@ -84,6 +90,11 @@ public class Controllerv1 extends Controller {
 			rtts.add((int) Math.ceil(rtt));
 		}
 		bigRTT = Mathematics.lcm(rtts);
+
+	}
+
+	private void updateInterSegmentDelay() {
+		interSegmentDelay = Keywords.DataSegSize / (double) database.btlBwOfFlowID.get(currentSegment.getFlowID());
 
 	}
 
@@ -114,17 +125,15 @@ public class Controllerv1 extends Controller {
 
 	private HashMap<Integer, CtrlMessage> prepareMessage() {
 		HashMap<Integer, CtrlMessage> messages = new HashMap<Integer, CtrlMessage>();
-		CtrlMessage singleMessage = new CtrlMessage();
 		HashMap<Integer, BufferToken> preparedTokens = new HashMap<Integer, BufferToken>();
-		BufferToken ccTokenForEachBuffer;
 
 		// a CtrlMessage for each accessSwitches in the network
 		for (int accessSwitchID : database.getAccessSwitchIDsSet()) {
-			// The flow ID index
-			int i = 0;
+			CtrlMessage singleMessage = new CtrlMessage(Keywords.BufferTokenUpdate);
+			BufferToken ccTokenForEachBuffer = new BufferToken();
+			int i = 0; // The flow ID index
 			double accessLinkRttOfFlowZero = 0; // d_i
 			double interFlowDelay = 0;
-			ccTokenForEachBuffer = new BufferToken();
 			double initialCycleDelay = 0;
 			double steadyCycleDelay = 0;
 			for (int hostID : database.getHostIDsSetForAccessSwitch(accessSwitchID)) {
@@ -136,13 +145,16 @@ public class Controllerv1 extends Controller {
 							+ (accessLinkRttOfFlowZero - currentNetwork.hosts.get(hostID).getAccessLinkRtt());
 				}
 				initialCycleDelay = previousBigRTT + interFlowDelay;
+				Debugger.debugToConsole("This is initialDelay: " + initialCycleDelay);
 				steadyCycleDelay = bigRTT - database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
-				ccTokenForEachBuffer.activate(true, true, initialCycleDelay, previousSWnd, steadyCycleDelay, sWnd);
+				Debugger.debugToConsole("SteadyCycleDelay: " + steadyCycleDelay);
+				ccTokenForEachBuffer.activate(true, interSegmentDelay, initialCycleDelay, previousSWnd,
+						steadyCycleDelay, sWnd);
+
 				preparedTokens.put(hostID, ccTokenForEachBuffer);
 				i++;
 			}
 			singleMessage.ccTokenOfHostID = preparedTokens;
-
 			messages.put(accessSwitchID, singleMessage);
 		}
 		return messages;
@@ -161,6 +173,7 @@ public class Controllerv1 extends Controller {
 				Keywords.CTRLSegSize, this.getID(), Keywords.BroadcastDestination);
 		segmentToHosts.bigRTT_ = this.bigRTT;
 		segmentToHosts.sWnd_ = this.sWnd;
+		segmentToHosts.interSegmentDelay_ = this.interSegmentDelay;
 		sendPacketToSwitch(this.currentSwitchID, new Packet(segmentToHosts, null));
 	}
 

@@ -3,6 +3,7 @@ package entities.controllers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 
 import entities.*;
 import entities.switches.SDNSwitch;
@@ -11,7 +12,7 @@ import system.Network;
 public class ControlDatabase {
 
 	/* Topology related information */
-	public HashMap<Integer, HashMap<Integer, Integer>> flowIDOfHostIDOfAccessSwitchID; // <AccessSwitchID, <HostID,
+	public TreeMap<Integer, HashMap<Integer, Integer>> flowIDOfHostIDOfAccessSwitchID; // <AccessSwitchID, <HostID,
 	// FlowID>>
 	public HashMap<Integer, Double> controlDelayOfSwitchID; // <SwitchID, ControlLinkPropDelay>
 
@@ -21,7 +22,7 @@ public class ControlDatabase {
 	public HashMap<Integer, ArrayList<Link>> pathOfFlowID; // <FlowID, ArrayList<Link>>
 
 	public ControlDatabase(Network net) {
-		flowIDOfHostIDOfAccessSwitchID = new HashMap<Integer, HashMap<Integer, Integer>>();
+		flowIDOfHostIDOfAccessSwitchID = new TreeMap<Integer, HashMap<Integer, Integer>>();
 		controlDelayOfSwitchID = new HashMap<Integer, Double>();
 
 		btlBwOfFlowID = new HashMap<Integer, Integer>();
@@ -30,7 +31,8 @@ public class ControlDatabase {
 
 		for (SDNSwitch sdnSwitch : net.switches.values()) {
 			if (sdnSwitch.isAccessSwitch) {
-				//flowIDOfHostIDOfAccessSwitchID.put(sdnSwitch.getID(), new HashMap<Integer, Integer>());
+				// flowIDOfHostIDOfAccessSwitchID.put(sdnSwitch.getID(), new HashMap<Integer,
+				// Integer>());
 			}
 			controlDelayOfSwitchID.put(sdnSwitch.getID(), sdnSwitch.controlLink.getPropagationDelay());
 		}

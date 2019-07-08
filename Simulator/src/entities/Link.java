@@ -1,6 +1,9 @@
 package entities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import entities.buffers.Buffer;
 import entities.buffers.Bufferv1;
@@ -19,8 +22,9 @@ public class Link extends Entity {
 
 	/** ========== Statistical Counters ========== **/
 	public HashMap<Integer, Double> utilizationTimePerFlow; // <FlowID, utilizationzTime>
-	// in Departure event at releaseSegment in SDNSwitch
+	public Map<Double, Integer> arrivalTimePerFlowID;
 
+	// in Departure event at releaseSegment in SDNSwitch
 	/** ========================================== **/
 
 	public Link(int ID, int sourceID, int destinationID, double propagationDelay, int band, int bufferSize,
@@ -34,6 +38,7 @@ public class Link extends Entity {
 
 		/** ========== Statistical Counters Initialization ========== **/
 		utilizationTimePerFlow = new HashMap<Integer, Double>();
+		arrivalTimePerFlowID = new TreeMap<Double, Integer>();
 		/** ========================================================= **/
 	}
 

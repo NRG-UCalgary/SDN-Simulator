@@ -1,7 +1,7 @@
 package entities;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 import entities.switches.SDNSwitchv1;
 
@@ -21,8 +21,8 @@ public class Flow extends Entity {
 
 	/* Sequence Number */
 	// in Sender Agent
-	public HashMap<Integer, Double> dataSeqNumSendingTimes; // <SeqNum, Time>
-	public HashMap<Integer, Double> ackSeqNumArrivalTimes; // <SeqNum, Time>
+	public TreeMap<Integer, Double> dataSeqNumSendingTimes; // <SeqNum, Time>
+	public TreeMap<Integer, Double> ackSeqNumArrivalTimes; // <SeqNum, Time>
 
 	/** ========================================== **/
 
@@ -44,8 +44,8 @@ public class Flow extends Entity {
 		totalSentSegments = 0;
 		totalBufferTime = 0;
 
-		dataSeqNumSendingTimes = new HashMap<Integer, Double>();
-		ackSeqNumArrivalTimes = new HashMap<Integer, Double>();
+		dataSeqNumSendingTimes = new TreeMap<Integer, Double>();
+		ackSeqNumArrivalTimes = new TreeMap<Integer, Double>();
 		/** ========================================================= **/
 	}
 

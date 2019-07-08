@@ -1,12 +1,12 @@
 package system.utility.dataStructures;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 public class SeqNumData {
 
 	public String flowName;
-	public HashMap<Integer, Double> seqNumbers;
-	public HashMap<Integer, Double> ackNumbers;
+	public TreeMap<Integer, Double> seqNumbers;
+	public TreeMap<Integer, Double> ackNumbers;
 
 	public SeqNumData() {
 	}

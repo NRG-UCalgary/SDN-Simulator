@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import entities.*;
 import system.*;
-import system.events.*;
+import system.events.DepartureFromHost;
 import system.utility.*;
 
 public class SDTCPSenderv1 extends Agent {
@@ -33,7 +33,6 @@ public class SDTCPSenderv1 extends Agent {
 		this.srcHostID = flow.getSrcID();
 		this.dstHostID = flow.getDstID();
 		remainingSegments = flow.getSize();
-		Debugger.debug("This is flow size: " + remainingSegments);
 
 		/* initializing the state variables of the sender */
 		sWnd_ = 0;
@@ -51,9 +50,11 @@ public class SDTCPSenderv1 extends Agent {
 	/* ########## Public ################################# */
 	public Network sendSYN(Network net) {
 		Segment synSegment = genSYN();
-		double nextTime = flow.arrivalTime + net.hosts.get(srcHostID).accessLink.getTotalDelay(synSegment.getSize());
-		net.eventList.addEvent(
-				new ArrivalToSwitch(nextTime, net.hosts.get(srcHostID).accessSwitchID, new Packet(synSegment, null)));
+		double nextTime = flow.arrivalTime + Keywords.HostProcessDelay;
+		int nextNodeID = net.hosts.get(this.srcHostID).accessSwitchID;
+		net.eventList
+				.addEvent(new DepartureFromHost(nextTime, this.srcHostID, nextNodeID, new Packet(synSegment, null)));
+		mostRecentSegmentDepartureTime = nextTime;
 		/** ===== Statistical Counters ===== **/
 		this.flow.totalSentSegments++;
 		this.flow.dataSeqNumSendingTimes.put(synSegment.getSeqNum(), net.getCurrentTime());
@@ -67,8 +68,9 @@ public class SDTCPSenderv1 extends Agent {
 		case Keywords.CTRL:
 			/* Update the congestion control variables */
 			this.sWnd_ = segment.sWnd_;
-			// this.sWnd_ = 10;
+			this.sWnd_ = 200;
 			this.bigrtt_ = segment.bigRTT_;
+			this.interSegmentDelay_ = segment.interSegmentDelay_;
 			break;
 		case Keywords.ACK:
 			/** ===== Statistical Counters ===== **/
@@ -146,12 +148,4 @@ public class SDTCPSenderv1 extends Agent {
 			return null;
 		}
 	}
-
-	// private Segment genFIN() {
-	// Segment seg = new Segment(this.flow.getID(), Keywords.FIN, seqNum,
-	// Keywords.FINSegSize, this.srcHostID,
-	// this.dstHostID);
-	// return seg;
-	// }
-
 }

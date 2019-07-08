@@ -12,6 +12,9 @@ public abstract class Agent {
 	protected int srcHostID;
 	protected int dstHostID;
 
+	protected double mostRecentSegmentDepartureTime;
+	protected double interSegmentDelay_;
+
 	public Flow flow;
 
 	/* Constructor */
@@ -45,8 +48,14 @@ public abstract class Agent {
 				net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize()));
 
 		double nextTime = net.getCurrentTime() + bufferTime + Keywords.HostProcessDelay;
+		if (nextTime < this.interSegmentDelay_ + mostRecentSegmentDepartureTime) {
+			nextTime = this.interSegmentDelay_ + mostRecentSegmentDepartureTime;
+		} else {
+
+		}
 		int nextNodeID = net.hosts.get(this.srcHostID).accessSwitchID;
 		net.eventList.addEvent(new DepartureFromHost(nextTime, this.srcHostID, nextNodeID, new Packet(segment, null)));
+		mostRecentSegmentDepartureTime = nextTime;
 		return net;
 	}
 

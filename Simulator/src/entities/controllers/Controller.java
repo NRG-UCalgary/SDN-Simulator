@@ -47,10 +47,9 @@ public abstract class Controller extends Entity {
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
 	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
-		this.controlLinks.get(dstSwitchID).buffer.deQueue();
-		double nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).buffer.getBufferTime(
-				currentNetwork.getCurrentTime(), controlLinks.get(dstSwitchID).getTransmissionDelay(packet.getSize()));
+		double nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).getTotalDelay(packet.getSize());
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
+		this.controlLinks.get(dstSwitchID).buffer.deQueue();
 		return net;
 	}
 
@@ -61,7 +60,9 @@ public abstract class Controller extends Entity {
 		/* Updating flow path database */
 		/* Controller updates flow tables of all switches in the flow path */
 		for (int switchID : result.keySet()) {
-			sendFlowSetupMessage(switchID, result.get(switchID));
+			CtrlMessage flowSetupMessage = new CtrlMessage(Keywords.FlowSetUp);
+			flowSetupMessage.prepareFlowSetUpMessage(currentSegment.getFlowID(), result.get(switchID));
+			sendPacketToSwitch(switchID, new Packet(null, flowSetupMessage));
 		}
 		// TODO The ACK flow path must be set up too
 
@@ -88,15 +89,6 @@ public abstract class Controller extends Entity {
 		double nextTime = currentNetwork.getCurrentTime() + controlLinks.get(switchID).buffer.getBufferTime(
 				currentNetwork.getCurrentTime(), controlLinks.get(switchID).getTransmissionDelay(packet.getSize()));
 		currentNetwork.eventList.addEvent(new DepartureFromController(nextTime, this.getID(), switchID, packet));
-	}
-
-	protected void sendFlowSetupMessage(int switchID, Link egressLink) {
-		SDNSwitch networkSwitch = currentNetwork.switches.get(switchID);
-		double nextTime = currentNetwork.getCurrentTime()
-				+ this.getControlLinkDelay(networkSwitch.getID(), Keywords.CTRLSegSize);
-		Event nextEvent = new FlowPathSetup(nextTime, networkSwitch.getID(), currentSegment.getFlowID(),
-				egressLink.getDstID());
-		currentNetwork.eventList.addEvent(nextEvent);
 	}
 
 	/* =========================================== */

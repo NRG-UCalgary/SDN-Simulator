@@ -6,6 +6,7 @@ public class Segment extends Entity {
 	public int sWnd_;
 	public double rtt_;
 	public int bigRTT_;
+	public double interSegmentDelay_;
 	/**************************/
 	private int flowID_;
 	private int seq_num;

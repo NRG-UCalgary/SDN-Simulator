@@ -12,6 +12,7 @@ public class BufferToken {
 	public int initialACKsToGo;
 	public int steadyACKsToGo;
 	public int ACKCounter;
+	public double interSegmentDelay;
 
 	public BufferToken() {
 		this.ACKCounter = 0;
@@ -19,14 +20,15 @@ public class BufferToken {
 		this.isActive = false;
 	}
 
-	public void activate(boolean isActive, boolean isFirstCycle, double initialDelay, int initialACKsToGo,
+	public void activate(boolean isFirstCycle, double interSegmentDelay, double initialDelay, int initialACKsToGo,
 			double steadyDelay, int steadyACKsToGo) {
 		this.isActive = true;
-		this.isFirstCycle = true;
+		this.isFirstCycle = isFirstCycle;
 		this.initialCycleDelay = initialDelay;
 		this.initialACKsToGo = initialACKsToGo;
 		this.steadyCycleDelay = steadyDelay;
 		this.steadyACKsToGo = steadyACKsToGo;
+		this.interSegmentDelay = interSegmentDelay;
 	}
 
 	public void setArrivalToBufferTime(double time) {
@@ -36,24 +38,13 @@ public class BufferToken {
 	public double getCongestionControlDelay(double currentTime) {
 		double delay = 0;
 		if (this.isActive) {
-			ACKCounter++;
-			if (isFirstCycle) {
-				if (ACKCounter == 1) {
+			if (isFirstCycle) { // First cycle
+				isFirstCycle = false;
+				if (initialCycleDelay > (currentTime - arrivalToBufferTime)) {
 					delay = initialCycleDelay - (currentTime - arrivalToBufferTime);
-				} else if (ACKCounter == initialACKsToGo) {
-					isFirstCycle = false;
-					ACKCounter = 0;
-				} else if (ACKCounter > initialACKsToGo) {
-					Debugger.debugToConsole("BufferToken::We should not be here!");
 				}
-			} else {
-				if (ACKCounter == 1) {
-					delay = steadyCycleDelay;
-				} else if (ACKCounter == steadyACKsToGo) {
-					ACKCounter = 0;
-				} else if (ACKCounter > steadyACKsToGo) {
-					Debugger.debugToConsole("BufferToken::We should not be here!");
-				}
+			} else { // After first cycle
+				delay = steadyCycleDelay;
 			}
 		}
 		return delay;
