@@ -46,6 +46,7 @@ public interface Keywords {
 	/* SDN control message types */
 	public static final int BufferTokenUpdate = 0;
 	public static final int FlowSetUp = 1;
+	public static final int FlowRemoval = 2;
 
 	/* Segment types */
 	public static final int SYN = 0;
@@ -55,6 +56,7 @@ public interface Keywords {
 	public static final int FIN = 4;
 	public static final int FINACK = 5;
 	public static final int CTRL = 6;
+	public static final int UncontrolledFIN = 7;
 
 	/* TCP congestion control states */
 	public static final int SlowStart = 0;

@@ -1,7 +1,5 @@
 package entities.buffers;
 
-import system.utility.Debugger;
-
 public class BufferToken {
 
 	public boolean isActive;

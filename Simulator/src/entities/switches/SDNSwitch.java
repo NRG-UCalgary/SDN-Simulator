@@ -1,9 +1,6 @@
 package entities.switches;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.apache.poi.hpsf.Array;
 
 import entities.*;
 import system.*;
@@ -17,8 +14,7 @@ public abstract class SDNSwitch extends Node {
 
 	public HashMap<Integer, Link> accessLinks; // <HostID, Link>
 	public HashMap<Integer, Link> networkLinks; // <SwitchID, Link>
-	public HashMap<Integer, Integer> flowTable; // <FlowID, SwitchID(neighbors)>
-	public boolean isAccessSwitch;
+	private HashMap<Integer, Integer> flowTable; // <FlowID, SwitchID(neighbors)>
 
 	public SDNSwitch(int ID, Link controlLink) {
 		super(ID, Keywords.Switch);
@@ -38,20 +34,23 @@ public abstract class SDNSwitch extends Node {
 	/* --------------------------------------------------- */
 	public Network recvPacket(Network net, Packet packet) {
 		Segment segment = packet.segment;
+
+		if (segment != null && segment.getType() == Keywords.FIN) {
+			Debugger.debugToConsole("FIN received at Switch_" + this.ID + " at:" + net.getCurrentTime());
+		}
+
 		if (packet.type == Keywords.SDNControl) {
 			return recvCtrlMessage(net, packet.controlMessage);
 		} else if (segment.getDstHostID() == Keywords.BroadcastDestination) {
-			Debugger.debugToConsole("The broadcast arrived at: " + net.getCurrentTime());
 			return broadcastToHosts(net, segment);
 		} else if (this.isConnectedToHost(segment.getDstHostID())) {
-			if(this.ID == 0) {
-			Debugger.debug("------------------------------------------");
-			Debugger.debug(
-					"The Segment arrived at: " + net.getCurrentTime() + " SeqNum: " + segment.getSeqNum());
-			}
 			return forwardToHost(net, segment.getDstHostID(), segment);
 		} else if (this.hasFlowEntry(segment.getFlowID())) {
-			return forwardToSwitch(net, getNextSwitchID(segment.getFlowID()), segment);
+			if (segment.getType() == Keywords.UncontrolledFIN) {
+				return forwardToController(net, segment);
+			} else {
+				return forwardToSwitch(net, getNextSwitchID(segment.getFlowID()), segment);
+			}
 		} else {
 			return forwardToController(net, segment);
 		}
@@ -72,14 +71,20 @@ public abstract class SDNSwitch extends Node {
 					linkUtilizationTime);
 			/** ================================ **/
 		} else if (this.hasFlowEntry(segment.getFlowID())) { // The next node is a Switch
-			linkUtilizationTime = networkLinks.get(dstNodeID).getTransmissionDelay(segment.getSize());
-			nextTime = net.getCurrentTime() + getNetworkLinkTotalDelay(segment.getFlowID(), segment.getSize());
-			nextEvent = new ArrivalToSwitch(nextTime, dstNodeID, packet);
-			deQueueFromNetworkLinkBuffer(segment.getFlowID());
-			/** ===== Statistical Counters ===== **/
-			this.networkLinks.get(getNextSwitchID(segment.getFlowID())).utilizationTimePerFlow.put(segment.getFlowID(),
-					linkUtilizationTime);
-			/** ================================ **/
+			if (segment.getType() == Keywords.UncontrolledFIN) {
+				nextTime = net.getCurrentTime() + controlLink.getTotalDelay(segment.getSize());
+				nextEvent = new ArrivalToController(nextTime, this.getID(), packet);
+				this.controlLink.buffer.deQueue();
+			} else {
+				linkUtilizationTime = networkLinks.get(dstNodeID).getTransmissionDelay(segment.getSize());
+				nextTime = net.getCurrentTime() + getNetworkLinkTotalDelay(segment.getFlowID(), segment.getSize());
+				nextEvent = new ArrivalToSwitch(nextTime, dstNodeID, packet);
+				deQueueFromNetworkLinkBuffer(segment.getFlowID());
+				/** ===== Statistical Counters ===== **/
+				this.networkLinks.get(getNextSwitchID(segment.getFlowID())).utilizationTimePerFlow
+						.put(segment.getFlowID(), linkUtilizationTime);
+				/** ================================ **/
+			}
 		} else { // The next node is the controller
 			nextTime = net.getCurrentTime() + controlLink.getTotalDelay(segment.getSize());
 			nextEvent = new ArrivalToController(nextTime, this.getID(), packet);
@@ -94,6 +99,10 @@ public abstract class SDNSwitch extends Node {
 	/* --------------------------------------------------- */
 
 	/* ########## Protected ############################## */
+	protected void addFlowTableEntry(int flowID, int neighborID) {
+		this.flowTable.put(flowID, neighborID);
+	}
+
 	protected boolean hasFlowEntry(int flowID) {
 		if (flowTable.containsKey(flowID)) {
 			return true;
@@ -191,11 +200,6 @@ public abstract class SDNSwitch extends Node {
 	}
 
 	/* ########## Public ################################# */
-
-	public void addFlowTableEntry(int flowID, int neighborID) {
-		this.flowTable.put(flowID, neighborID);
-	}
-
 	public boolean isAccessSwitch() {
 		if (this.accessLinks.isEmpty()) {
 			return false;
@@ -203,7 +207,6 @@ public abstract class SDNSwitch extends Node {
 			return true;
 		}
 	}
-
 	/* ########## Private ################################# */
 
 }

@@ -50,6 +50,10 @@ public class Segment extends Entity {
 		return type;
 	}
 
+	public void changeType(int newType) {
+		this.type = newType;
+	}
+
 	public int getSize() {
 		return size;
 	}

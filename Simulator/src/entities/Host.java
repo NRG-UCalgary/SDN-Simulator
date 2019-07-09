@@ -30,7 +30,7 @@ public class Host extends Node {
 		this.accessLink.buffer.deQueue();
 		double nextTime = net.getCurrentTime() + this.getAccessLinkDelay(packet.getSize());
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
-		if (packet.segment.getType() == Keywords.DATA) {
+		if (packet.segment.getType() == Keywords.DATA || packet.segment.getType() == Keywords.UncontrolledFIN) {
 			/** ===== Statistical Counters ===== **/
 			this.transportAgent.flow.totalSentSegments++;
 			this.transportAgent.flow.dataSeqNumSendingTimes.put(packet.segment.getSeqNum(),

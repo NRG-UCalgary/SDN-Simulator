@@ -12,7 +12,7 @@ import system.Network;
 public class ControlDatabase {
 
 	/* Topology related information */
-	public TreeMap<Integer, HashMap<Integer, Integer>> flowIDOfHostIDOfAccessSwitchID; // <AccessSwitchID, <HostID,
+	public TreeMap<Integer, TreeMap<Integer, Integer>> flowIDOfHostIDOfAccessSwitchID; // <AccessSwitchID, <HostID,
 	// FlowID>>
 	public HashMap<Integer, Double> controlDelayOfSwitchID; // <SwitchID, ControlLinkPropDelay>
 
@@ -22,7 +22,7 @@ public class ControlDatabase {
 	public HashMap<Integer, ArrayList<Link>> pathOfFlowID; // <FlowID, ArrayList<Link>>
 
 	public ControlDatabase(Network net) {
-		flowIDOfHostIDOfAccessSwitchID = new TreeMap<Integer, HashMap<Integer, Integer>>();
+		flowIDOfHostIDOfAccessSwitchID = new TreeMap<Integer, TreeMap<Integer, Integer>>();
 		controlDelayOfSwitchID = new HashMap<Integer, Double>();
 
 		btlBwOfFlowID = new HashMap<Integer, Integer>();
@@ -30,7 +30,7 @@ public class ControlDatabase {
 		pathOfFlowID = new HashMap<Integer, ArrayList<Link>>();
 
 		for (SDNSwitch sdnSwitch : net.switches.values()) {
-			if (sdnSwitch.isAccessSwitch) {
+			if (sdnSwitch.isAccessSwitch()) {
 				// flowIDOfHostIDOfAccessSwitchID.put(sdnSwitch.getID(), new HashMap<Integer,
 				// Integer>());
 			}
@@ -41,7 +41,7 @@ public class ControlDatabase {
 
 	public void addFlow(int accessSwitchID, int srcHostID, int flowID) {
 		if (!flowIDOfHostIDOfAccessSwitchID.containsKey(accessSwitchID)) {
-			flowIDOfHostIDOfAccessSwitchID.put(accessSwitchID, new HashMap<Integer, Integer>());
+			flowIDOfHostIDOfAccessSwitchID.put(accessSwitchID, new TreeMap<Integer, Integer>());
 		}
 		flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).put(srcHostID, flowID);
 
@@ -74,12 +74,24 @@ public class ControlDatabase {
 		return rttOfFlowID.get(flowID);
 	}
 
-	public Set<Integer> getHostIDsSetForAccessSwitch(int accessSwitch) {
-		return flowIDOfHostIDOfAccessSwitchID.get(accessSwitch).keySet();
+	public Set<Integer> getHostIDsSetForAccessSwitchID(int accessSwitchID) {
+		return flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).keySet();
 	}
 
 	public Set<Integer> getAccessSwitchIDsSet() {
 		return flowIDOfHostIDOfAccessSwitchID.keySet();
+	}
+
+	public double getMaxRTTForAccessSwitchID(int accessSwitchID) {
+		double maxRTT = Double.NEGATIVE_INFINITY;
+		for (int hostID : flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).keySet()) {
+			double rtt = getRttForFlowID(flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).get(hostID));
+			if (rtt >= maxRTT) {
+				maxRTT = rtt;
+			}
+		}
+		return maxRTT;
+
 	}
 
 }

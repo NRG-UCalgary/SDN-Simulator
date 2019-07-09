@@ -155,7 +155,7 @@ public class Simulator {
 		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay,
 				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
-		net.switches.get(switchLabels.getKey(dst)).isAccessSwitch = true;
+		//net.switches.get(switchLabels.getKey(dst)).isAccessSwitch = true;
 
 		// Handling Labeling
 		linkLabels.put(linkCounter + 10000, label + "r"); // TODO There should be a mechanism for handling different

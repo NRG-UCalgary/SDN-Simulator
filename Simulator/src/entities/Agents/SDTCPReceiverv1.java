@@ -28,15 +28,6 @@ public class SDTCPReceiverv1 extends Agent {
 			Debugger.debug("Receiver.recvSegment::Receiver has received a CTRL segment.");
 			break;
 		case Keywords.DATA:
-			if (previousDataArraivalTime > 0) {
-				if (net.getCurrentTime() - previousDataArraivalTime > 2.001
-						|| net.getCurrentTime() - previousDataArraivalTime < 1.991) {
-					Debugger.debugToConsole("This is currentTime: " + net.getCurrentTime());
-					Debugger.debugToConsole(
-							"   This is the previousArrival: " + (net.getCurrentTime() - previousDataArraivalTime));
-					Debugger.debugToConsole("   This is SequenceNumber: " + segment.getSeqNum());
-				}
-			}
 			previousDataArraivalTime = net.getCurrentTime();
 
 			updateACKNum(segment.getSeqNum());
@@ -57,6 +48,10 @@ public class SDTCPReceiverv1 extends Agent {
 		case Keywords.FINACK:
 			break;
 		case Keywords.FIN:
+			Debugger.debugToConsole("FIN received by receiver at: " + net.getCurrentTime());
+			Segment FINACKSegment = new Segment(flow.getID(), Keywords.FINACK, segment.getSeqNum(), Keywords.FINSegSize,
+					this.srcHostID, this.dstHostID);
+			net = sendSegment(net, FINACKSegment);
 			/** ===== Statistical Counters ===== **/
 			net.hosts.get(this.dstHostID).transportAgent.flow.completionTime = net.getCurrentTime();
 			/** ================================ **/

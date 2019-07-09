@@ -23,7 +23,7 @@ public class OutputHandler {
 			dataOfFlows.add(flowData);
 		}
 		excel.createSeqNumOutput("SeqNumberGraph", dataOfFlows);
-		excel.createBottleneckUtilizationGraph("BottleneckUtilization", stat.links.get(2).arrivalTimePerFlowID);
+		//excel.createBottleneckUtilizationGraph("BottleneckUtilization", stat.links.get(2).arrivalTimePerFlowID);
 
 	}
 

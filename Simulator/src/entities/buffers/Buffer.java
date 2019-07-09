@@ -23,7 +23,7 @@ public abstract class Buffer extends Entity {
 	/* ---------- Abstract methods ----------------------- */
 	/* --------------------------------------------------- */
 
-	public abstract void updateTokenList(double arrivalToBufferTime, BufferToken token);
+	public abstract void updateCCToken(double arrivalToBufferTime, BufferToken token);
 
 	public abstract double getBufferTime(double currentTime, double segmentTransmissionDelay);
 
