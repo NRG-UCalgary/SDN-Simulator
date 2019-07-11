@@ -48,7 +48,6 @@ public class SDTCPReceiverv1 extends Agent {
 		case Keywords.FINACK:
 			break;
 		case Keywords.FIN:
-			Debugger.debugToConsole("FIN received by receiver at: " + net.getCurrentTime());
 			Segment FINACKSegment = new Segment(flow.getID(), Keywords.FINACK, segment.getSeqNum(), Keywords.FINSegSize,
 					this.srcHostID, this.dstHostID);
 			net = sendSegment(net, FINACKSegment);

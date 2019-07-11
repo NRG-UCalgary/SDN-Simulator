@@ -2,6 +2,8 @@ package entities.switches;
 
 import java.util.HashMap;
 
+import org.apache.commons.math3.util.Pair;
+
 import entities.*;
 import system.*;
 import system.events.*;
@@ -34,10 +36,6 @@ public abstract class SDNSwitch extends Node {
 	/* --------------------------------------------------- */
 	public Network recvPacket(Network net, Packet packet) {
 		Segment segment = packet.segment;
-
-		if (segment != null && segment.getType() == Keywords.FIN) {
-			Debugger.debugToConsole("FIN received at Switch_" + this.ID + " at:" + net.getCurrentTime());
-		}
 
 		if (packet.type == Keywords.SDNControl) {
 			return recvCtrlMessage(net, packet.controlMessage);
@@ -158,7 +156,8 @@ public abstract class SDNSwitch extends Node {
 		}
 		/** ===== Statistical Counters ===== **/
 		net.hosts.get(segment.getSrcHostID()).transportAgent.flow.totalBufferTime += bufferTime;
-		networkLinks.get(switchID).arrivalTimePerFlowID.put(net.getCurrentTime(), segment.getFlowID());
+		networkLinks.get(switchID).arrivalTimeOfFlowID
+				.add(new Pair<Double, Integer>(net.getCurrentTime(), segment.getFlowID()));
 		/** ================================ **/
 		return net;
 	}

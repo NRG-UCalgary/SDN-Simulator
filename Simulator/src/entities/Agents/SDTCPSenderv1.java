@@ -101,7 +101,6 @@ public class SDTCPSenderv1 extends Agent {
 		/* Not applicable for now */
 		/* Maybe in future we can separate different types of ACKs */
 		case Keywords.FINACK:
-			Debugger.debugToConsole("FINACK received by sender at:" + net.getCurrentTime());
 			/** ===== Statistical Counters ===== **/
 			this.flow.ackSeqNumArrivalTimes.put(segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
@@ -130,7 +129,6 @@ public class SDTCPSenderv1 extends Agent {
 	}
 
 	private Network sendFIN(Network net) {
-		Debugger.debugToConsole("FIN is sent at: " + net.getCurrentTime());
 		net = sendSegment(net, genFIN());
 		return net;
 	}

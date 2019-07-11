@@ -11,7 +11,7 @@ sWnd = 43
 -------------------------------
 ======================================================
 ========== Controler has received a Segment ==========
-SYN (flow_1) arrived at: 215.07999999999998
+SYN (flow_1) arrived at: 45.08
 bigRtt = 86
 interSegmentDelay = 2.0
 interFlowDelay Constant = 43.0
@@ -27,7 +27,7 @@ sWnd = 21
 -------------------------------
 ======================================================
 ========== Controler has received a Segment ==========
-SYN (flow_2) arrived at: 515.08
+SYN (flow_2) arrived at: 215.07999999999998
 bigRtt = 86
 interSegmentDelay = 2.0
 interFlowDelay Constant = 28.0
@@ -47,6 +47,7 @@ sWnd = 14
 -------------------------------
 ======================================================
 ========== Controler has received a Segment ==========
+FIN has arrived at:922.04
 bigRtt = 86
 interSegmentDelay = 2.0
 interFlowDelay Constant = 43.0
@@ -62,6 +63,7 @@ sWnd = 21
 -------------------------------
 ======================================================
 ========== Controler has received a Segment ==========
+FIN has arrived at:1167.5999999999997
 bigRtt = 86
 interSegmentDelay = 2.0
 interFlowDelay Constant = 0.0
@@ -73,6 +75,7 @@ sWnd = 43
 -------------------------------
 ======================================================
 ========== Controler has received a Segment ==========
+FIN has arrived at:1351.7999999999993
 bigRtt = 0
 interSegmentDelay = 0.0
 interFlowDelay Constant = 0.0

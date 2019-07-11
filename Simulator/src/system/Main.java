@@ -59,9 +59,9 @@ public class Main {
 		 * generateFlow: 1.String label 2.String type 3.String src_label 4.String
 		 * dst_label 5.Integer number_packets 6.Double arrival_time
 		 */
-		sim.generateFlow("f0", Keywords.SDTCP, "h0", "d0", 800, 0.0);
-		sim.generateFlow("f1", Keywords.SDTCP, "h1", "d1", 400, 200);
-		sim.generateFlow("f2", Keywords.SDTCP, "h2", "d2", 50, 500);
+		sim.generateFlow("f0", Keywords.SDTCP, "h0", "d0", 200, 0.0);
+		sim.generateFlow("f1", Keywords.SDTCP, "h1", "d1", 120, 30);
+		sim.generateFlow("f2", Keywords.SDTCP, "h2", "d2", 80, 200);
 
 		/** Running Simulation: Times are in millisecond **/
 		sim.run(0.0, 200000.0);

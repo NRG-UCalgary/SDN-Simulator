@@ -44,7 +44,7 @@ public class Controllerv1 extends Controller {
 
 			break;
 		case Keywords.UncontrolledFIN:
-			Debugger.debugToConsole("FIN has arrived at:" + currentNetwork.getCurrentTime());
+			Debugger.debug("FIN has arrived at:" + currentNetwork.getCurrentTime());
 			database.removeFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
 			currentSegment.changeType(Keywords.FIN);
 			break;
@@ -120,6 +120,9 @@ public class Controllerv1 extends Controller {
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
 			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(currentSegment.getFlowID())
 					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) * Keywords.DataSegSize)));
+			if (this.sWnd == 0) {
+				this.sWnd = 1;
+			}
 			if (previousSWnd == 0) {
 				previousSWnd = sWnd;
 			}

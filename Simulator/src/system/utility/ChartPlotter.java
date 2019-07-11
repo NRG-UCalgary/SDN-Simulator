@@ -5,6 +5,7 @@ import org.apache.poi.xddf.usermodel.chart.AxisCrosses;
 import org.apache.poi.xddf.usermodel.chart.AxisPosition;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
 import org.apache.poi.xddf.usermodel.chart.LegendPosition;
+import org.apache.poi.xddf.usermodel.chart.MarkerStyle;
 import org.apache.poi.xddf.usermodel.chart.ScatterStyle;
 import org.apache.poi.xddf.usermodel.chart.XDDFChart;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartLegend;
@@ -20,8 +21,8 @@ import system.utility.dataStructures.ScatterTableData;
 
 public class ChartPlotter {
 
-	int chartWidth = 400;
-	int chartHeight = 400;
+	int chartWidth = 100;
+	int chartHeight = 100;
 	public int FirstChartRowIndex = 1;
 	public int TableChartGap = 2;
 
@@ -31,8 +32,8 @@ public class ChartPlotter {
 	public XSSFSheet plotScatterChart(XSSFSheet sheet, String chartTitle, ScatterTableData table) {
 		XSSFDrawing drawer = sheet.createDrawingPatriarch();
 		// createAnchor(-,-,-,-,topLeftCol, topLeftRow, botRightCol, botRightRow)
-		XSSFClientAnchor anchor = drawer.createAnchor(0, 0, 0, 0, (table.lastColIndex + TableChartGap),
-				FirstChartRowIndex, (table.lastColIndex + chartWidth), (FirstChartRowIndex + chartHeight));
+		XSSFClientAnchor anchor = drawer.createAnchor(0, 0, 0, 0, (table.getLastColIndex() + TableChartGap),
+				FirstChartRowIndex, (table.getLastColIndex() + chartWidth), (FirstChartRowIndex + chartHeight));
 		XDDFChart chart = drawer.createChart(anchor);
 		chart.setTitleText(chartTitle);
 		chart.setTitleOverlay(false);
@@ -61,8 +62,9 @@ public class ChartPlotter {
 			XDDFScatterChartData.Series series = (XDDFScatterChartData.Series) data.addSeries(xData, yData);
 			series.setTitle(seriesTitle, null);
 			series.setSmooth(false);
-			// series.setMarkerStyle(MarkerStyle.CIRCLE);
-			// series.setMarkerStyle(MarkerStyle.X);
+			setMarkerStyle(series, seriesTitle);
+			xDataColIndex += 2;
+			yDataColIndex = xDataColIndex + 1;
 		}
 		chart.plot(data);
 		return sheet;
@@ -72,6 +74,21 @@ public class ChartPlotter {
 
 		return sheet;
 
+	}
+
+	private void setMarkerStyle(XDDFScatterChartData.Series series, String seriesTitle) {
+		series.setMarkerSize((short) 3);
+		switch (seriesTitle) {
+		case "Data Segments":
+			series.setMarkerStyle(MarkerStyle.CIRCLE);
+			break;
+		case "ACKs":
+			series.setMarkerStyle(MarkerStyle.X);
+			break;
+		default:
+			series.setMarkerStyle(MarkerStyle.CIRCLE);
+			break;
+		}
 	}
 
 }

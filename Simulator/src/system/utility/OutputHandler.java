@@ -2,26 +2,44 @@ package system.utility;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 
 import entities.Flow;
 import system.utility.dataStructures.ScatterTableData;
-import system.utility.dataStructures.SeqNumData;
 
 public class OutputHandler {
-
+	int bottleneckLinkID = 3;
 	private ExcelHandler excel = new ExcelHandler();
 
 	public OutputHandler() {
 	}
 
+	public void outSegArrivalToBottleneckExcelFile(Statistics stat) {
+		ScatterTableData bottleneckArrivals = new ScatterTableData("Time (ms)", "FlowID");
+		for (Pair<Double, Integer> entry : stat.links.get(bottleneckLinkID).arrivalTimeOfFlowID) {
+			String key = "Flow_" + entry.getSecond();
+			if (bottleneckArrivals.data.containsKey(key)) {
+				bottleneckArrivals.data.get(key).add(entry);
+			} else {
+				ArrayList<Pair<Double, Integer>> array = new ArrayList<Pair<Double, Integer>>();
+				array.add(entry);
+				bottleneckArrivals.data.put(key, array);
+			}
+		}
+
+		try {
+			excel.createSegmentArrivalToBottleneckOutput("bottleNeckArrivals", bottleneckArrivals);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void outSeqNumExcelFile(Statistics stat) {
 		TreeMap<Integer, ScatterTableData> SeqNumDataForAllFlowIDs = new TreeMap<Integer, ScatterTableData>();
 		for (Flow flow : stat.flows.values()) {
-			ScatterTableData flowSeqNumData = new ScatterTableData("Time (ms)", "Sequence Number");
+			ScatterTableData flowSeqNumData = new ScatterTableData("Time (ms)", "SeqNum");
 			ArrayList<Pair<Double, Integer>> dataSerie = new ArrayList<Pair<Double, Integer>>();
 			for (Integer seqNum : flow.dataSeqNumSendingTimes.keySet()) {
 				Pair<Double, Integer> singleEntry = new Pair<Double, Integer>(flow.dataSeqNumSendingTimes.get(seqNum),

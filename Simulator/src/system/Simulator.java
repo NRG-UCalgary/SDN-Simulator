@@ -1,7 +1,5 @@
 package system;
 
-import java.io.IOException;
-
 import entities.*;
 import entities.Agents.*;
 import entities.controllers.*;
@@ -19,7 +17,7 @@ public class Simulator {
 	private final double CONTROLLER_RTT_DEALAY = 1.0;
 	private final double CONTROLLER_PROCESS_DELAY = 1.0;
 	private final int CONTROLLER_ROUTING_ALG = 1;
-	private final int alpha = 1;
+	private final double alpha = 1;
 
 	/* Buffer Algorithm */
 	// private final String BUFFER_ALG = "FCFS";
@@ -67,6 +65,7 @@ public class Simulator {
 		/* Reading the first Event from Network Event List */
 		/* Main Loop */
 		double timeCheck = 0;
+		Main.print("Starting simulation loop...");
 		while (net.getCurrentTime() <= end_time && net.eventList.size() > 0) {
 			if (net.getCurrentTime() < timeCheck) {
 				Debugger.debug("Error in simulator Time management: " + net.getCurrentTime());
@@ -75,11 +74,16 @@ public class Simulator {
 			net = net.eventList.getEvent().execute(net);
 			timeCheck = net.getCurrentTime();
 		}
+		Main.print("Simulation completed.");
+		Main.print("Preparing statistics...");
 		stats = new Statistics(net);
 		// Generating output files (Temporary)
+		Main.print("Creating output...");
 		if (OUTPUT) {
-				outputHandle.outSeqNumExcelFile(stats);
+			outputHandle.outSeqNumExcelFile(stats);
+			outputHandle.outSegArrivalToBottleneckExcelFile(stats);
 		}
+		Main.print("Done.");
 	}
 
 	/********** Topology Creation methods ***********/
@@ -150,7 +154,7 @@ public class Simulator {
 		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay,
 				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
-		//net.switches.get(switchLabels.getKey(dst)).isAccessSwitch = true;
+		// net.switches.get(switchLabels.getKey(dst)).isAccessSwitch = true;
 
 		// Handling Labeling
 		linkLabels.put(linkCounter + 10000, label + "r"); // TODO There should be a mechanism for handling different
