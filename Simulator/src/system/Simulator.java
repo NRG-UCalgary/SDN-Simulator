@@ -78,12 +78,7 @@ public class Simulator {
 		stats = new Statistics(net);
 		// Generating output files (Temporary)
 		if (OUTPUT) {
-			try {
 				outputHandle.outSeqNumExcelFile(stats);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 

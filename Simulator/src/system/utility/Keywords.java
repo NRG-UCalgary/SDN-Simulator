@@ -83,4 +83,13 @@ public interface Keywords {
 	public static final double HostProcessDelay = 0.0;
 	/*-----------------------------------------------------------------------*/
 
+	/* Chart Titles */
+	public static final String ArrtivalToBottleneckLink = "Arrival of segments to the bottleneck link";
+	public static final String Time = "Time(ms)";
+	public static final String FlowID = "Flow ID";
+
+	public static final String SeqNumPlot = "Transport Protocol Sequence Number Plot";
+	public static final String SeqNumPlotXAxisTitle = "Time(ms)";
+	public static final String SeqNumPlotYAxisTitle = "Segment Sequence Number";
+
 }

@@ -2,8 +2,13 @@ package system.utility;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.TreeMap;
+
+import org.apache.commons.math3.util.Pair;
 
 import entities.Flow;
+import system.utility.dataStructures.ScatterTableData;
 import system.utility.dataStructures.SeqNumData;
 
 public class OutputHandler {
@@ -13,18 +18,33 @@ public class OutputHandler {
 	public OutputHandler() {
 	}
 
-	public void outSeqNumExcelFile(Statistics stat) throws IOException {
-		ArrayList<SeqNumData> dataOfFlows = new ArrayList<SeqNumData>();
+	public void outSeqNumExcelFile(Statistics stat) {
+		TreeMap<Integer, ScatterTableData> SeqNumDataForAllFlowIDs = new TreeMap<Integer, ScatterTableData>();
 		for (Flow flow : stat.flows.values()) {
-			SeqNumData flowData = new SeqNumData();
-			flowData.ackNumbers = flow.ackSeqNumArrivalTimes;
-			flowData.seqNumbers = flow.dataSeqNumSendingTimes;
-			flowData.flowName = "Flow " + Integer.toString(flow.getID());
-			dataOfFlows.add(flowData);
-		}
-		excel.createSeqNumOutput("SeqNumberGraph", dataOfFlows);
-		//excel.createBottleneckUtilizationGraph("BottleneckUtilization", stat.links.get(2).arrivalTimePerFlowID);
+			ScatterTableData flowSeqNumData = new ScatterTableData("Time (ms)", "Sequence Number");
+			ArrayList<Pair<Double, Integer>> dataSerie = new ArrayList<Pair<Double, Integer>>();
+			for (Integer seqNum : flow.dataSeqNumSendingTimes.keySet()) {
+				Pair<Double, Integer> singleEntry = new Pair<Double, Integer>(flow.dataSeqNumSendingTimes.get(seqNum),
+						seqNum);
+				dataSerie.add(singleEntry);
+			}
+			flowSeqNumData.data.put("Data Segments", dataSerie);
 
+			ArrayList<Pair<Double, Integer>> ackSerie = new ArrayList<Pair<Double, Integer>>();
+			for (Integer seqNum : flow.ackSeqNumArrivalTimes.keySet()) {
+				Pair<Double, Integer> singleEntry = new Pair<Double, Integer>(flow.ackSeqNumArrivalTimes.get(seqNum),
+						seqNum);
+				ackSerie.add(singleEntry);
+			}
+			flowSeqNumData.data.put("ACKs", ackSerie);
+			SeqNumDataForAllFlowIDs.put(flow.getID(), flowSeqNumData);
+		}
+
+		try {
+			excel.createSeqNumOutput("SeqNumberGraphs", SeqNumDataForAllFlowIDs);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void outOneCollumTextFile(ArrayList<String> output, String address) {
