@@ -10,14 +10,14 @@ import system.utility.dataStructures.OneToOneMap;
 public class Simulator {
 
 	public final boolean OUTPUT = true;
-	public OutputHandler outputHandle = new OutputHandler();
+	public OutputHandler outputHandler = new OutputHandler();
 
 	/** ############### Default Variables ############### **/
 	/* Controller */
 	private final double CONTROLLER_RTT_DEALAY = 1.0;
 	private final double CONTROLLER_PROCESS_DELAY = 1.0;
 	private final int CONTROLLER_ROUTING_ALG = 1;
-	private final double alpha = 1;
+	private final double alpha = 0.9;
 
 	/* Buffer Algorithm */
 	// private final String BUFFER_ALG = "FCFS";
@@ -57,7 +57,7 @@ public class Simulator {
 	}
 
 	/********** Run **********/
-	public void run(Double start_time, Double end_time) {
+	public Statistics run(Double start_time, Double end_time) {
 
 		// Debugger.connectivity(net);
 		/* Other Default settings of the Simulator */
@@ -80,10 +80,11 @@ public class Simulator {
 		// Generating output files (Temporary)
 		Main.print("Creating output...");
 		if (OUTPUT) {
-			outputHandle.outSeqNumExcelFile(stats);
-			outputHandle.outSegArrivalToBottleneckExcelFile(stats);
+			outputHandler.outSeqNumExcelFile(stats);
+			outputHandler.outSegArrivalToBottleneckExcelFile(stats);
 		}
 		Main.print("Done.");
+		return stats;
 	}
 
 	/********** Topology Creation methods ***********/

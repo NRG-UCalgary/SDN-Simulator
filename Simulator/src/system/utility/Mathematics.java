@@ -86,4 +86,24 @@ public class Mathematics {
 		}
 	}
 
+	public static double microToMilli(double num) {
+		return num / Math.pow(10, 3);
+	}
+
+	public static double milliToBase(double num) {
+		return num / Math.pow(10, 3);
+	}
+
+	public static double gigaToBase(double num) {
+		return num * Math.pow(10, 9);
+	}
+
+	public static double megaToBase(double num) {
+		return num * Math.pow(10, 6);
+	}
+
+	public static double kiloToBase(double num) {
+		return num * Math.pow(10, 3);
+	}
+
 }

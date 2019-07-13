@@ -154,7 +154,7 @@ public class Controllerv1 extends Controller {
 					interFlowDelay = i * interFlowDelayConstant
 							+ (accessLinkRttOfFlowZero - currentNetwork.hosts.get(hostID).getAccessLinkRtt());
 				}
-				initialCycleDelay = previousBigRTT + interFlowDelay;
+				initialCycleDelay = (previousBigRTT) + interFlowDelay;
 				Debugger.debug("  initial ccDelay = " + initialCycleDelay);
 				steadyCycleDelay = bigRTT - database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
 				Debugger.debug("  steady ccDelay = " + steadyCycleDelay);

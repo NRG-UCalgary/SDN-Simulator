@@ -92,4 +92,8 @@ public interface Keywords {
 	public static final String SeqNumPlotXAxisTitle = "Time(ms)";
 	public static final String SeqNumPlotYAxisTitle = "Segment Sequence Number";
 
+	/* Tests */
+	public static final int WAN = 0;
+	public static final int LAN = 1;
+
 }

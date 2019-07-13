@@ -77,15 +77,18 @@ public class ChartPlotter {
 	}
 
 	private void setMarkerStyle(XDDFScatterChartData.Series series, String seriesTitle) {
-		series.setMarkerSize((short) 3);
+		
 		switch (seriesTitle) {
 		case "Data Segments":
+			series.setMarkerSize((short) 4);
 			series.setMarkerStyle(MarkerStyle.CIRCLE);
 			break;
 		case "ACKs":
+			series.setMarkerSize((short) 5);
 			series.setMarkerStyle(MarkerStyle.X);
 			break;
 		default:
+			series.setMarkerSize((short) 7);
 			series.setMarkerStyle(MarkerStyle.CIRCLE);
 			break;
 		}
