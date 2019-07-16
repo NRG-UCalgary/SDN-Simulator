@@ -8,8 +8,8 @@ import system.utility.Keywords;
 public class DepartureFromController extends Event {
 	int dstSwitchID;
 
-	public DepartureFromController(double startTime, int controllerID, int dstSwitchID, Packet packet) {
-		super(Keywords.DepartureFromController, startTime, controllerID, packet);
+	public DepartureFromController(float eventTime, int controllerID, int dstSwitchID, Packet packet) {
+		super(Keywords.DepartureFromController, eventTime, controllerID, packet);
 		this.dstSwitchID = dstSwitchID;
 	}
 

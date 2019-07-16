@@ -25,7 +25,7 @@ public class SDNSwitchv1 extends SDNSwitch {
 			break;
 		case Keywords.FlowSetUp:
 			addFlowTableEntry(message.flowID, message.neighborID);
-			net.switches.get(message.neighborID).addFlowTableEntry(Simulator.ACKStreamID(message.flowID), this.getID());
+			net.switches.get(message.neighborID).addFlowTableEntry(Simulator.reverseFlowStreamID(message.flowID), this.getID());
 			break;
 		case Keywords.FlowRemoval:
 			// TODO the flow entry can be removed here

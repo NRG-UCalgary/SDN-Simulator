@@ -47,9 +47,9 @@ public abstract class Controller extends Entity {
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
 	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
-		double nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).getTotalDelay(packet.getSize());
+		float nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).getTotalDelay(packet.getSize());
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
-		this.controlLinks.get(dstSwitchID).buffer.deQueue();
+		controlLinks.get(dstSwitchID).buffer.deQueue();
 		return net;
 	}
 
@@ -67,12 +67,13 @@ public abstract class Controller extends Entity {
 		// TODO The ACK flow path must be set up too
 
 		/* Finding the bottleneck link and RTT for the flow */
-		int minBW = Integer.MAX_VALUE;
-		double rtt = 0;
+		float minBW = Float.MAX_VALUE;
+		float rtt = 0;
 		for (Link link : result.values()) {
 			rtt += link.getTotalDelay(Keywords.ACKSegSize) + link.getTotalDelay(Keywords.DataSegSize);
 			if (link.getBandwidth() <= minBW) {
 				minBW = link.getBandwidth();
+				database.bottleneckLinkID = link.getID();
 			}
 		}
 		rtt += currentNetwork.hosts.get(currentSegment.getSrcHostID()).getAccessLinkRtt();
@@ -86,9 +87,9 @@ public abstract class Controller extends Entity {
 	/* ========== Switch Communication =========== */
 	/* =========================================== */
 	protected void sendPacketToSwitch(int switchID, Packet packet) {
-		double nextTime = currentNetwork.getCurrentTime() + controlLinks.get(switchID).buffer.getBufferTime(
+		float nextTime = currentNetwork.getCurrentTime() + controlLinks.get(switchID).buffer.getBufferTime(
 				currentNetwork.getCurrentTime(), controlLinks.get(switchID).getTransmissionDelay(packet.getSize()));
-		currentNetwork.eventList.addEvent(new DepartureFromController(nextTime, this.getID(), switchID, packet));
+		currentNetwork.eventList.addEvent(new DepartureFromController(nextTime, this.ID, switchID, packet));
 	}
 
 	/* =========================================== */
@@ -100,7 +101,7 @@ public abstract class Controller extends Entity {
 	}
 
 	// TODO must be updated
-	protected double getControlLinkDelay(int switchID, int segmentSize) {
+	protected float getControlLinkTotalDelay(int switchID, int segmentSize) {
 		return currentNetwork.switches.get(switchID).controlLink.getTotalDelay(segmentSize);
 	}
 
@@ -118,6 +119,10 @@ public abstract class Controller extends Entity {
 
 	public void connectSwitch(int switchID, Link controlLink) {
 		this.controlLinks.put(switchID, controlLink);
+	}
+
+	public int getBottleneckLinkID() {
+		return database.bottleneckLinkID;
 	}
 
 }

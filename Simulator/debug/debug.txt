@@ -1,84 +1,43 @@
+####################	Connectivity	####################
+=======================
+The switch ID = 0
+ These are the access links: 
+  link ID: 10000 connected to hostID: 0
+ These are the network links: 
+  link ID: 2 connected to switchID: 2
+=======================
+=======================
+The switch ID = 1
+ These are the access links: 
+  link ID: 10001 connected to hostID: 1
+ These are the network links: 
+  link ID: 10003 connected to switchID: 2
+=======================
+=======================
+The switch ID = 2
+ These are the access links: 
+ These are the network links: 
+  link ID: 10002 connected to switchID: 0
+  link ID: 3 connected to switchID: 1
+=======================
+############################################################
 ========== Controler has received a Segment ==========
-SYN (flow_0) arrived at: 15.079999999999998
-bigRtt = 86
-interSegmentDelay = 2.0
+SYN (flow_0) arrived at: 12.280001
+bigRtt = 94
+interSegmentDelay = 8.0
 interFlowDelay Constant = 0.0
-sWnd = 43
+sWnd = 11
 ++++++++++ Preparing message ++++++++++
  The token for hostID: 0
   initial ccDelay = 0.0
-  steady ccDelay = 0.8000000000000114
+  steady ccDelay = 0.08000183
 -------------------------------
 ======================================================
 ========== Controler has received a Segment ==========
-SYN (flow_1) arrived at: 45.08
-bigRtt = 86
-interSegmentDelay = 2.0
-interFlowDelay Constant = 43.0
-sWnd = 21
-++++++++++ Preparing message ++++++++++
- The token for hostID: 0
-  initial ccDelay = 86.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
- The token for hostID: 1
-  initial ccDelay = 129.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
-======================================================
-========== Controler has received a Segment ==========
-SYN (flow_2) arrived at: 215.07999999999998
-bigRtt = 86
-interSegmentDelay = 2.0
-interFlowDelay Constant = 28.0
-sWnd = 14
-++++++++++ Preparing message ++++++++++
- The token for hostID: 0
-  initial ccDelay = 86.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
- The token for hostID: 1
-  initial ccDelay = 114.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
- The token for hostID: 2
-  initial ccDelay = 142.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
-======================================================
-========== Controler has received a Segment ==========
-FIN has arrived at:922.04
-bigRtt = 86
-interSegmentDelay = 2.0
-interFlowDelay Constant = 43.0
-sWnd = 21
-++++++++++ Preparing message ++++++++++
- The token for hostID: 0
-  initial ccDelay = 86.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
- The token for hostID: 1
-  initial ccDelay = 129.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
-======================================================
-========== Controler has received a Segment ==========
-FIN has arrived at:1167.5999999999997
-bigRtt = 86
-interSegmentDelay = 2.0
-interFlowDelay Constant = 0.0
-sWnd = 43
-++++++++++ Preparing message ++++++++++
- The token for hostID: 0
-  initial ccDelay = 0.0
-  steady ccDelay = 0.8000000000000114
--------------------------------
-======================================================
-========== Controler has received a Segment ==========
-FIN has arrived at:1351.7999999999993
+FIN has arrived at:16172.84
 bigRtt = 0
 interSegmentDelay = 0.0
 interFlowDelay Constant = 0.0
-sWnd = 43
+sWnd = 11
 ++++++++++ Preparing message ++++++++++
 ======================================================

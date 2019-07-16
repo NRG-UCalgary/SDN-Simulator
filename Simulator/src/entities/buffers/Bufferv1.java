@@ -10,12 +10,12 @@ public class Bufferv1 extends Buffer {
 	/* ---------- Inherited methods (from Buffer) -------- */
 	/* --------------------------------------------------- */
 
-	public double getBufferTime(double currentTime, double segmentTransmissionDelay) {
-		double waitTime = 0;
-		double timeToEmpty = 0;
-		double ccDelay = 0;
+	public float getBufferTime(float currentTime, float segmentTransmissionDelay) {
+		float waitTime = 0;
+		float timeToEmpty = 0;
+		float ccDelay = 0;
 		if (isFull()) {
-			waitTime = Double.NEGATIVE_INFINITY;
+			waitTime = Float.NEGATIVE_INFINITY;
 		} else {
 			occupancy++;
 			timeToEmpty = mostRecentSegmentDepartureTime - currentTime;
@@ -41,9 +41,9 @@ public class Bufferv1 extends Buffer {
 	/* --------------------------------------------------- */
 
 	/* Called by SDNSwitch when executing the control message from controller */
-	public void updateCCToken(double arrivalToBufferTime, BufferToken token) {
-		token.setArrivalToBufferTime(arrivalToBufferTime);
-		this.ccToken = token;
+	public void updateCCToken(float arrivalToBufferTime, BufferToken ccToken) {
+		ccToken.setArrivalToBufferTime(arrivalToBufferTime);
+		this.ccToken = ccToken;
 	}
 
 }

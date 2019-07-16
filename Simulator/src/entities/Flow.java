@@ -7,22 +7,22 @@ import entities.switches.SDNSwitchv1;
 
 public class Flow extends Entity {
 
-	private Host source;
-	private Host destination;
+	private int srcHostID;
+	private int dstHostID;
 	private int size;
+	public float arrivalTime; // in Simulator
 
 	/** ========== Statistical Counters ========== **/
-	public double arrivalTime; // in Simulator
-	public double dataSendingStartTime; // in Sender Agent
-	public double completionTime; // in Receiver Agent
+	public float dataSendingStartTime; // in Sender Agent
+	public float completionTime; // in Receiver Agent
 	public int totalDroppedSegments; // in Buffer
 	public int totalSentSegments; // in Sender Agent
-	public double totalBufferTime; // in Buffer (when getting bufferTime)
+	public float totalBufferTime; // in Buffer (when getting bufferTime)
 
 	/* Sequence Number */
 	// in Sender Agent
-	public TreeMap<Integer, Double> dataSeqNumSendingTimes; // <SeqNum, Time>
-	public TreeMap<Integer, Double> ackSeqNumArrivalTimes; // <SeqNum, Time>
+	public TreeMap<Float, Float> dataSeqNumSendingTimes; // <SeqNum, Time>
+	public TreeMap<Float, Float> ackSeqNumArrivalTimes; // <SeqNum, Time>
 
 	/** ========================================== **/
 
@@ -30,22 +30,22 @@ public class Flow extends Entity {
 	/* Initialized at the creation of the flow */
 	public ArrayList<SDNSwitchv1> path = new ArrayList<SDNSwitchv1>();
 
-	public Flow(int ID, Host src, Host dst, int size, Double arrvTime) {
+	public Flow(int ID, int srcHostID, int dstHostID, int size, float arrivalTime) {
 		super(ID);
-		this.source = src;
-		this.destination = dst;
+		this.srcHostID = srcHostID;
+		this.dstHostID = dstHostID;
 		this.size = size;
+		this.arrivalTime = arrivalTime;
 
 		/** ========== Statistical Counters Initialization ========== **/
-		arrivalTime = arrvTime;
 		dataSendingStartTime = 0;
 		completionTime = 0;
 		totalDroppedSegments = 0;
 		totalSentSegments = 0;
 		totalBufferTime = 0;
 
-		dataSeqNumSendingTimes = new TreeMap<Integer, Double>();
-		ackSeqNumArrivalTimes = new TreeMap<Integer, Double>();
+		dataSeqNumSendingTimes = new TreeMap<Float, Float>();
+		ackSeqNumArrivalTimes = new TreeMap<Float, Float>();
 		/** ========================================================= **/
 	}
 
@@ -57,12 +57,11 @@ public class Flow extends Entity {
 		return size;
 	}
 
-	public int getDstID() {
-		int id = destination.getID();
-		return id;
+	public int getDstHostID() {
+		return dstHostID;
 	}
 
-	public int getSrcID() {
-		return source.getID();
+	public int getSrcHostID() {
+		return srcHostID;
 	}
 }

@@ -7,15 +7,13 @@ import system.utility.Keywords;
 
 public class SDTCPReceiverv1 extends Agent {
 
-	double previousDataArraivalTime = 0; // Debug
-
 	// indicates the sequence number of the latest received ACK
 	private int ACKNum;
 
 	public SDTCPReceiverv1(Flow flow) {
 		super(flow);
-		this.srcHostID = flow.getSrcID();
-		this.dstHostID = flow.getDstID();
+		srcHostID = flow.getSrcHostID();
+		dstHostID = flow.getDstHostID();
 		ACKNum = 0;
 	}
 
@@ -28,8 +26,6 @@ public class SDTCPReceiverv1 extends Agent {
 			Debugger.debug("Receiver.recvSegment::Receiver has received a CTRL segment.");
 			break;
 		case Keywords.DATA:
-			previousDataArraivalTime = net.getCurrentTime();
-
 			updateACKNum(segment.getSeqNum());
 			// TODO late we might want to implement NACK
 			ackSegment = new Segment(flow.getID(), Keywords.ACK, ACKNum, Keywords.ACKSegSize, this.srcHostID,

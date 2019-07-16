@@ -7,8 +7,8 @@ import entities.*;
 
 public class ArrivalToSwitch extends Event {
 
-	public ArrivalToSwitch(double startTime, int switchID, Packet packet) {
-		super(Keywords.ArrivalToSwitch, startTime, switchID, packet);
+	public ArrivalToSwitch(float eventTime, int switchID, Packet packet) {
+		super(Keywords.ArrivalToSwitch, eventTime, switchID, packet);
 	}
 
 	/* --------------------------------------------------- */

@@ -7,51 +7,71 @@ import java.util.TreeMap;
 import org.apache.commons.math3.util.Pair;
 
 import entities.Flow;
+import system.utility.dataStructures.NumberOFFlowsOutputData;
 import system.utility.dataStructures.ScatterTableData;
 
 public class OutputHandler {
-	int bottleneckLinkID = 3;
-	private ExcelHandler excel = new ExcelHandler();
+	boolean FunctionalityOutput = true;
 
 	public OutputHandler() {
 	}
 
-	public void outSegArrivalToBottleneckExcelFile(Statistics stat) {
+	public void outStatsforNumberOfFlows(TreeMap<Integer, Statistics> stats) {
+		NumberOFFlowsOutputData outputData = new NumberOFFlowsOutputData();
+		String studyOutputDirectory = "output/NumberOfFlows/";
+		new File(studyOutputDirectory).mkdir();
+		for (int numberOfFlows : stats.keySet()) {
+			String directoryPathPerFctor = "output/NumberOfFlows/" + numberOfFlows + "_flows/";
+			new File(directoryPathPerFctor).mkdir();
+			if (FunctionalityOutput) {
+				outSegmentArrivalToBottleneckData(directoryPathPerFctor, stats.get(numberOfFlows));
+				outSequenceNumberData(directoryPathPerFctor, stats.get(numberOfFlows));
+			}
+			outputData.prepareOutputMetrics(numberOfFlows, stats.get(numberOfFlows));
+		}
+		outputData.prepareOutputSheets();
+		try {
+			ExcelHandler.createNumberOfFlowsStudyOutput(studyOutputDirectory, outputData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void outSegmentArrivalToBottleneckData(String outputPath, Statistics stat) {
 		ScatterTableData bottleneckArrivals = new ScatterTableData("Time (ms)", "FlowID");
-		for (Pair<Double, Integer> entry : stat.links.get(bottleneckLinkID).arrivalTimeOfFlowID) {
-			String key = "Flow_" + entry.getSecond();
+		for (Pair<Float, Float> entry : stat.links.get(stat.bottleneckLinkID).arrivalTimeOfFlowID) {
+			String key = "Flow_" + entry.getSecond().intValue();
 			if (bottleneckArrivals.data.containsKey(key)) {
 				bottleneckArrivals.data.get(key).add(entry);
 			} else {
-				ArrayList<Pair<Double, Integer>> array = new ArrayList<Pair<Double, Integer>>();
+				ArrayList<Pair<Float, Float>> array = new ArrayList<Pair<Float, Float>>();
 				array.add(entry);
 				bottleneckArrivals.data.put(key, array);
 			}
 		}
 
 		try {
-			excel.createSegmentArrivalToBottleneckOutput("bottleNeckArrivals", bottleneckArrivals);
+			ExcelHandler.createSegmentArrivalToBottleneckOutput(outputPath, bottleneckArrivals);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void outSeqNumExcelFile(Statistics stat) {
+	public void outSequenceNumberData(String outputPath, Statistics stat) {
 		TreeMap<Integer, ScatterTableData> SeqNumDataForAllFlowIDs = new TreeMap<Integer, ScatterTableData>();
 		for (Flow flow : stat.flows.values()) {
 			ScatterTableData flowSeqNumData = new ScatterTableData("Time (ms)", "SeqNum");
-			ArrayList<Pair<Double, Integer>> dataSerie = new ArrayList<Pair<Double, Integer>>();
-			for (Integer seqNum : flow.dataSeqNumSendingTimes.keySet()) {
-				Pair<Double, Integer> singleEntry = new Pair<Double, Integer>(flow.dataSeqNumSendingTimes.get(seqNum),
+			ArrayList<Pair<Float, Float>> dataSerie = new ArrayList<Pair<Float, Float>>();
+			for (float seqNum : flow.dataSeqNumSendingTimes.keySet()) {
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.dataSeqNumSendingTimes.get(seqNum),
 						seqNum);
 				dataSerie.add(singleEntry);
 			}
 			flowSeqNumData.data.put("Data Segments", dataSerie);
 
-			ArrayList<Pair<Double, Integer>> ackSerie = new ArrayList<Pair<Double, Integer>>();
-			for (Integer seqNum : flow.ackSeqNumArrivalTimes.keySet()) {
-				Pair<Double, Integer> singleEntry = new Pair<Double, Integer>(flow.ackSeqNumArrivalTimes.get(seqNum),
-						seqNum);
+			ArrayList<Pair<Float, Float>> ackSerie = new ArrayList<Pair<Float, Float>>();
+			for (float seqNum : flow.ackSeqNumArrivalTimes.keySet()) {
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.ackSeqNumArrivalTimes.get(seqNum), seqNum);
 				ackSerie.add(singleEntry);
 			}
 			flowSeqNumData.data.put("ACKs", ackSerie);
@@ -59,7 +79,7 @@ public class OutputHandler {
 		}
 
 		try {
-			excel.createSeqNumOutput("SeqNumberGraphs", SeqNumDataForAllFlowIDs);
+			ExcelHandler.createSeqNumOutput(outputPath, SeqNumDataForAllFlowIDs);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -12,44 +12,56 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
+import system.utility.dataStructures.NumberOFFlowsOutputData;
 import system.utility.dataStructures.ScatterTableData;
 
 public class ExcelHandler {
 
-	public final String outputFolderPath;
-
-	private ChartPlotter plotter;
-
 	public ExcelHandler() {
-		outputFolderPath = "output/";
-		plotter = new ChartPlotter();
 	}
 
-	public void createSegmentArrivalToBottleneckOutput(String workbookName, ScatterTableData table) throws IOException {
-		FileOutputStream outPutStream = new FileOutputStream(outputFolderPath + workbookName + ".xlsx");
+	public static void createNumberOfFlowsStudyOutput(String outputPath, NumberOFFlowsOutputData outputData)
+			throws IOException {
+		FileOutputStream outPutStream = new FileOutputStream(outputPath + "NumberOfFlowsStudy.xlsx");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		for (String sheetName : outputData.outputSheets.keySet()) {
+			XSSFSheet sheet = workbook.createSheet(sheetName);
+			createScatterTableInSheet(sheet, outputData.outputSheets.get(sheetName));
+			// ChartPlotter.plotScatterChart(sheet, Keywords.ArrtivalToBottleneckLink,
+			// outputData.outputSheets.get(sheetName));
+		}
+		workbook.write(outPutStream);
+		workbook.close();
+		outPutStream.close();
+	}
+
+	public static void createSegmentArrivalToBottleneckOutput(String outputPath, ScatterTableData table)
+			throws IOException {
+		FileOutputStream outPutStream = new FileOutputStream(outputPath + "SegmentArrivalToBottleneck.xlsx");
 		XSSFWorkbook workBook = new XSSFWorkbook();
 		XSSFSheet sheet = workBook.createSheet();
 		createScatterTableInSheet(sheet, table);
-		plotter.plotScatterChart(sheet, Keywords.ArrtivalToBottleneckLink, table);
+		ChartPlotter.plotScatterChart(sheet, Keywords.ArrtivalToBottleneckLink, table);
 		workBook.write(outPutStream);
 		workBook.close();
 		outPutStream.close();
 	}
 
-	public void createSeqNumOutput(String workbookName, TreeMap<Integer, ScatterTableData> tables) throws IOException {
-		FileOutputStream outPutStream = new FileOutputStream(outputFolderPath + workbookName + ".xlsx");
+	public static void createSeqNumOutput(String outputPath, TreeMap<Integer, ScatterTableData> tables)
+			throws IOException {
+		FileOutputStream outPutStream = new FileOutputStream(outputPath + "SequenceNumberPerFlowID.xlsx");
 		XSSFWorkbook workBook = new XSSFWorkbook();
 		for (int flowID : tables.keySet()) {
 			XSSFSheet sheet = workBook.createSheet("Flow " + flowID);
 			createScatterTableInSheet(sheet, tables.get(flowID));
-			plotter.plotScatterChart(sheet, Keywords.SeqNumPlot, tables.get(flowID));
+			ChartPlotter.plotScatterChart(sheet, Keywords.SeqNumPlot, tables.get(flowID));
 		}
 		workBook.write(outPutStream);
 		workBook.close();
 		outPutStream.close();
 	}
 
-	private XSSFSheet createScatterTableInSheet(XSSFSheet sheet, ScatterTableData table) {
+	private static XSSFSheet createScatterTableInSheet(XSSFSheet sheet, ScatterTableData table) {
 		int SeriesTitleRowIndex = table.SeriesTitleRowIndex;
 		int ColumnHeaderRowIndex = table.ColumnHeaderRowIndex;
 		int FirstDataRowIndex = table.FirstDataRowIndex;
@@ -79,7 +91,7 @@ public class ExcelHandler {
 
 			// Putting actual data
 			int dataRowIndex = FirstDataRowIndex;
-			for (Pair<Double, Integer> data : table.data.get(seriesTitle)) {
+			for (Pair<Float, Float> data : table.data.get(seriesTitle)) {
 				XSSFRow dataRow;
 				if ((dataRow = sheet.getRow(dataRowIndex)) == null) {
 					dataRow = sheet.createRow(dataRowIndex);
@@ -98,7 +110,7 @@ public class ExcelHandler {
 		return sheet;
 	}
 
-	private XSSFSheet mergeCells(XSSFSheet sheet, int numRow, int untilRow, int numCol, int untilCol) {
+	private static XSSFSheet mergeCells(XSSFSheet sheet, int numRow, int untilRow, int numCol, int untilCol) {
 		CellRangeAddress cellMerge = new CellRangeAddress(numRow, untilRow, numCol, untilCol);
 		sheet.addMergedRegion(cellMerge);
 		return sheet;

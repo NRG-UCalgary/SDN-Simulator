@@ -7,10 +7,6 @@ public class Mathematics {
 	public Mathematics() {
 	}
 
-	public static int MegabitPerSecondTobitPerMsecond(double band) {
-		return (int) (band * (int) Math.pow(10, 3));
-	}
-
 	public static double Max(double a, double b) {
 		if (a >= b) {
 			return a;
@@ -19,7 +15,7 @@ public class Mathematics {
 		}
 	}
 
-	public static int minInteger(int a, int b) {
+	public static double minInteger(double a, double b) {
 		if (a <= b) {
 			return a;
 		} else {
@@ -27,7 +23,7 @@ public class Mathematics {
 		}
 	}
 
-	public static int lcm(ArrayList<Integer> vals) {
+	public static long lcm(ArrayList<Integer> vals) {
 		long lcm_of_array_elements = 1;
 		int divisor = 2;
 
@@ -86,8 +82,28 @@ public class Mathematics {
 		}
 	}
 
+	public static double gigabitPerSecondTobitPerMicroSecond(double band) {
+		return bitPerSecondTobitPerMicroSecond(gigaToBase(band));
+	}
+
+	public static double megabitPerSecondTobitPerMicroSecond(double band) {
+		return bitPerSecondTobitPerMicroSecond(megaToBase(band));
+	}
+
+	public static double bitPerSecondTobitPerMicroSecond(double band) {
+		return band * Math.pow(10, -6);
+	}
+
 	public static double microToMilli(double num) {
 		return num / Math.pow(10, 3);
+	}
+
+	public static double milliToMicro(double num) {
+		return num * Math.pow(10, 3);
+	}
+
+	public static double microToBase(double num) {
+		return num / Math.pow(10, 6);
 	}
 
 	public static double milliToBase(double num) {
@@ -106,4 +122,25 @@ public class Mathematics {
 		return num * Math.pow(10, 3);
 	}
 
+	public static double average(ArrayList<Float> values) throws NullPointerException {
+		double sum = 0;
+		for (double value : values) {
+			sum += value;
+		}
+		return sum / (double) values.size();
+
+	}
+
+	public static double variance(ArrayList<Float> values) throws NullPointerException {
+		double sum = 0;
+		double mean = average(values);
+		for (double value : values) {
+			sum += Math.pow((value - mean), 2);
+		}
+		return sum / (double) values.size();
+	}
+
+	public static double standartDeviation(ArrayList<Float> values) throws NullPointerException {
+		return Math.sqrt(variance(values));
+	}
 }

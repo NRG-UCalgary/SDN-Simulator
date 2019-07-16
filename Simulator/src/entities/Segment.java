@@ -4,28 +4,28 @@ public class Segment extends Entity {
 
 	/** my protocol variables **/
 	public int sWnd_;
-	public double rtt_;
+	public float rtt_;
 	public int bigRTT_;
-	public double interSegmentDelay_;
+	public float interSegmentDelay_;
 	/**************************/
-	private int flowID_;
-	private int seq_num;
+	private int flowID;
+	private int seqNum;
 	private int type;
 	private int size; // in bits
 	private int srcHostID;
 	private int dstHostID;
 
-	public Segment(int flowID, int type, int seq_num, int size, int sourceID, int destinationID) {
+	public Segment(int flowID, int type, int seqNum, int size, int srcHostID, int dstHostID) {
 		super(-1);
-		this.flowID_ = flowID;
-		this.sWnd_ = 0;
-		this.rtt_ = 0;
-		this.bigRTT_ = 0;
+		this.flowID = flowID;
+		sWnd_ = 0;
+		rtt_ = 0;
+		bigRTT_ = 0;
 		this.type = type;
-		this.seq_num = seq_num;
-		this.size = size; // The size from user is in Bytes. The size in segment is in bits
-		this.srcHostID = sourceID;
-		this.dstHostID = destinationID;
+		this.seqNum = seqNum;
+		this.size = size;
+		this.srcHostID = srcHostID;
+		this.dstHostID = dstHostID;
 
 	}
 
@@ -34,16 +34,12 @@ public class Segment extends Entity {
 	/**********************************************************************/
 
 	public int getSeqNum() {
-		return seq_num;
+		return seqNum;
 	}
 
 	public int getFlowID() {
 
-		return flowID_;
-	}
-
-	public void setFlowID(int flowID) {
-		this.flowID_ = flowID;
+		return flowID;
 	}
 
 	public int getType() {
@@ -51,7 +47,7 @@ public class Segment extends Entity {
 	}
 
 	public void changeType(int newType) {
-		this.type = newType;
+		type = newType;
 	}
 
 	public int getSize() {

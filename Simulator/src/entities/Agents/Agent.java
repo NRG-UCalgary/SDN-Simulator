@@ -12,8 +12,8 @@ public abstract class Agent {
 	protected int srcHostID;
 	protected int dstHostID;
 
-	protected double mostRecentSegmentDepartureTime;
-	protected double interSegmentDelay_;
+	protected float mostRecentSegmentDepartureTime;
+	protected float interSegmentDelay_;
 
 	public Flow flow;
 
@@ -32,7 +32,7 @@ public abstract class Agent {
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
 	public Network sendSYN(Network net) {
-		Debugger.debug("SDRCPReceiver.start()::We should never get here");
+		Main.error("Agent", "sendSYN", "incorrect method call.");
 		return null;
 	}
 
@@ -44,17 +44,17 @@ public abstract class Agent {
 	}
 
 	protected Network sendSegment(Network net, Segment segment) {
-		double bufferTime = net.hosts.get(srcHostID).accessLink.buffer.getBufferTime(net.getCurrentTime(),
+		float bufferTime = net.hosts.get(srcHostID).accessLink.buffer.getBufferTime(net.getCurrentTime(),
 				net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize()));
 
-		double nextTime = net.getCurrentTime() + bufferTime + Keywords.HostProcessDelay;
-		if (nextTime < this.interSegmentDelay_ + mostRecentSegmentDepartureTime) {
-			nextTime = this.interSegmentDelay_ + mostRecentSegmentDepartureTime;
+		float nextTime = net.getCurrentTime() + bufferTime + Keywords.HostProcessDelay;
+		if (nextTime < interSegmentDelay_ + mostRecentSegmentDepartureTime) {
+			nextTime = interSegmentDelay_ + mostRecentSegmentDepartureTime;
 		} else {
 
 		}
-		int nextNodeID = net.hosts.get(this.srcHostID).accessSwitchID;
-		net.eventList.addEvent(new DepartureFromHost(nextTime, this.srcHostID, nextNodeID, new Packet(segment, null)));
+		int nextNodeID = net.hosts.get(srcHostID).accessSwitchID;
+		net.eventList.addEvent(new DepartureFromHost(nextTime, srcHostID, nextNodeID, new Packet(segment, null)));
 		mostRecentSegmentDepartureTime = nextTime;
 		return net;
 	}

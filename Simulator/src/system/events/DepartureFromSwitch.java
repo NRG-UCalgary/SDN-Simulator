@@ -7,8 +7,8 @@ import system.utility.*;
 public class DepartureFromSwitch extends Event {
 	int dstNodeID;
 
-	public DepartureFromSwitch(double startTime, int switchID, int dstNodeID, Packet packet) {
-		super(Keywords.DepartureFromSwitch, startTime, switchID, packet);
+	public DepartureFromSwitch(float eventTime, int switchID, int dstNodeID, Packet packet) {
+		super(Keywords.DepartureFromSwitch, eventTime, switchID, packet);
 		this.dstNodeID = dstNodeID;
 	}
 

@@ -1,11 +1,17 @@
 package system.utility;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+
 import entities.*;
 import entities.switches.SDNSwitch;
+import system.Main;
 import system.Network;
 
 public class Statistics {
+
+	// Temporary
+	int bottleneckLinkID;
 
 	public HashMap<Integer, Link> links; // <LinkID, Link>
 	public HashMap<Integer, SDNSwitch> switches; // <SwitchID, SDNSwitch>
@@ -28,6 +34,55 @@ public class Statistics {
 			}
 		}
 
+		bottleneckLinkID = net.controller.getBottleneckLinkID();
+
 	}
 
+	public float getAvgFlowCompletionTime() {
+		float sum = 0;
+		for (Flow flow : flows.values()) {
+			sum += flow.completionTime;
+		}
+		return sum / (float) flows.size();
+	}
+
+	public float getAvgStartupDelay() {
+		float sum = 0;
+		for (Flow flow : flows.values()) {
+			sum += (flow.dataSendingStartTime - flow.arrivalTime);
+		}
+		return sum / (float) flows.size();
+	}
+
+	public float getBottleneckUtilization() {
+		Link bottleneck = links.get(bottleneckLinkID);
+		return bottleneck.totalUtilizationTime / bottleneck.totalUpTime;
+	}
+
+	public float getMaxBottleneckBufferOccupancy() {
+		// TODO add the max occupancy of both data and ack stream
+		return links.get(bottleneckLinkID).buffer.maxOccupancy;
+	}
+
+	public float getAvgBottleneckBufferOccupancy() {
+		// TODO prepare the formula and counters
+		return 0;
+	}
+
+	public float getVarianceOfBottleneckUtilizationShare() {
+		float variance = 0;
+		Link bottleneck = links.get(bottleneckLinkID);
+		ArrayList<Float> values = new ArrayList<Float>();
+		for (float utilizationShare : bottleneck.utilizationTimePerFlowID.values()) {
+			values.add((utilizationShare / bottleneck.totalUtilizationTime) * 100);
+		}
+		try {
+			variance = (float) Mathematics.variance(values);
+		} catch (Exception e) {
+			Main.print("Error::Statistics.getVarianceOfBottleneckUtilizationShare()");
+			e.printStackTrace();
+		}
+		Debugger.debugToConsole("This is variance: " + variance);
+		return variance;
+	}
 }

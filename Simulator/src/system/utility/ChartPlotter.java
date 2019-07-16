@@ -21,15 +21,15 @@ import system.utility.dataStructures.ScatterTableData;
 
 public class ChartPlotter {
 
-	int chartWidth = 100;
-	int chartHeight = 100;
-	public int FirstChartRowIndex = 1;
-	public int TableChartGap = 2;
+	public static int chartWidth = 100;
+	public static int chartHeight = 100;
+	public static int FirstChartRowIndex = 1;
+	public static int TableChartGap = 2;
 
 	public ChartPlotter() {
 	}
 
-	public XSSFSheet plotScatterChart(XSSFSheet sheet, String chartTitle, ScatterTableData table) {
+	public static XSSFSheet plotScatterChart(XSSFSheet sheet, String chartTitle, ScatterTableData table) {
 		XSSFDrawing drawer = sheet.createDrawingPatriarch();
 		// createAnchor(-,-,-,-,topLeftCol, topLeftRow, botRightCol, botRightRow)
 		XSSFClientAnchor anchor = drawer.createAnchor(0, 0, 0, 0, (table.getLastColIndex() + TableChartGap),
@@ -76,8 +76,8 @@ public class ChartPlotter {
 
 	}
 
-	private void setMarkerStyle(XDDFScatterChartData.Series series, String seriesTitle) {
-		
+	private static void setMarkerStyle(XDDFScatterChartData.Series series, String seriesTitle) {
+
 		switch (seriesTitle) {
 		case "Data Segments":
 			series.setMarkerSize((short) 4);

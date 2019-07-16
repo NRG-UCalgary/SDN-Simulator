@@ -27,17 +27,16 @@ public class Host extends Node {
 	}
 
 	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
-		this.accessLink.buffer.deQueue();
-		double nextTime = net.getCurrentTime() + this.getAccessLinkDelay(packet.getSize());
+		accessLink.buffer.deQueue();
+		float nextTime = net.getCurrentTime() + getAccessLinkTotalDelay(packet.getSize());
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
 		if (packet.segment.getType() == Keywords.DATA || packet.segment.getType() == Keywords.UncontrolledFIN) {
 			/** ===== Statistical Counters ===== **/
-			this.transportAgent.flow.totalSentSegments++;
-			this.transportAgent.flow.dataSeqNumSendingTimes.put(packet.segment.getSeqNum(),
+			transportAgent.flow.totalSentSegments++;
+			transportAgent.flow.dataSeqNumSendingTimes.put((float) packet.segment.getSeqNum(),
 					Keywords.HostProcessDelay + net.getCurrentTime());
 			/** ================================ **/
 		}
-
 		return net;
 	}
 
@@ -46,17 +45,16 @@ public class Host extends Node {
 	/* --------------------------------------------------- */
 
 	/* ########## Public ################################# */
-	// TODO this method must be called for initialization
 	public Network initialize(Network net) {
 		return transportAgent.sendSYN(net);
 	}
 
-	public double getAccessLinkDelay(int segmentSize) {
-		return accessLink.getTransmissionDelay(segmentSize) + accessLink.getPropagationDelay();
+	public float getAccessLinkTotalDelay(int segmentSize) {
+		return accessLink.getTotalDelay(segmentSize);
 	}
 
-	public double getAccessLinkRtt() {
-		return getAccessLinkDelay(Keywords.ACKSegSize) + getAccessLinkDelay(Keywords.DataSegSize);
+	public float getAccessLinkRtt() {
+		return getAccessLinkTotalDelay(Keywords.ACKSegSize) + getAccessLinkTotalDelay(Keywords.DataSegSize);
 	}
 
 	public void connectToNetwork(int accessSwitchID, Link accessLink) {
@@ -64,14 +62,12 @@ public class Host extends Node {
 		this.accessSwitchID = accessSwitchID;
 	}
 
-	public void setAgent(Agent agent) {
-		this.transportAgent = agent;
+	public void setAgent(Agent transportAgent) {
+		this.transportAgent = transportAgent;
 	}
 
-	/** Called in Class::Event.run() **/
-	/* Objective::Showing the egress-link for the desired destination Node */
 	public Link getEgressLink() {
-		return this.accessLink;
+		return accessLink;
 	}
 
 }

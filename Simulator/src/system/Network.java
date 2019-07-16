@@ -16,22 +16,22 @@ public class Network {
 	public Controller controller;
 
 	/* Simulation entities */
-	private double time; // in millisecond
+	private float currentTime; // in MicroSecond
 	public EventList eventList;
 
 	public Network() {
 		hosts = new HashMap<Integer, Host>();
 		switches = new HashMap<Integer, SDNSwitch>();
-		time = 0;
+		currentTime = 0;
 		eventList = new EventList();
 	}
 
-	public void updateTime(double currentTime) {
-		this.time = currentTime;
+	public void updateTime(float currentTime) {
+		this.currentTime = currentTime;
 	}
 
-	public double getCurrentTime() {
-		return this.time;
+	public float getCurrentTime() {
+		return currentTime;
 	}
 
 }

@@ -18,8 +18,8 @@ public class Controllerv1 extends Controller {
 	// TODO it should be changed to a map <AccessSwitchID, bigRTT> later
 	public int previousSWnd;
 	public int sWnd;
-	public double interSegmentDelay;
-	public double interFlowDelayConstant; // The fixed delay between each flow swnd
+	public float interSegmentDelay;
+	public float interFlowDelayConstant; // The fixed delay between each flow swnd
 
 	public Controllerv1(int ID, Network net, int routingAlgorithm, double alpha) {
 		super(ID, net, routingAlgorithm);
@@ -97,7 +97,7 @@ public class Controllerv1 extends Controller {
 
 	private void updateInterSegmentDelay() {
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
-			interSegmentDelay = Keywords.DataSegSize / (double) database.btlBwOfFlowID.get(currentSegment.getFlowID());
+			interSegmentDelay = Keywords.DataSegSize / database.btlBwOfFlowID.get(currentSegment.getFlowID());
 		} else {
 			interSegmentDelay = 0;
 		}
@@ -118,6 +118,10 @@ public class Controllerv1 extends Controller {
 		// note that this is only for the single bottleneck scenario
 		previousSWnd = sWnd;
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
+			Debugger.debugToConsole("bigRTT = " + bigRTT);
+			Debugger.debugToConsole("BtlBw = " + database.btlBwOfFlowID.get(currentSegment.getFlowID()));
+			Debugger.debugToConsole("Number Of Flows = " + (database.getNumberOfFlowsForAccessSwitch(currentSwitchID)));
+			Debugger.debugToConsole("Segment Size = " + Keywords.DataSegSize);
 			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(currentSegment.getFlowID())
 					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) * Keywords.DataSegSize)));
 			if (this.sWnd == 0) {
@@ -140,10 +144,10 @@ public class Controllerv1 extends Controller {
 			CtrlMessage singleMessage = new CtrlMessage(Keywords.BufferTokenUpdate);
 			HashMap<Integer, BufferToken> preparedTokens = new HashMap<Integer, BufferToken>();
 			int i = 0; // The flow ID index
-			double accessLinkRttOfFlowZero = 0; // d_i
-			double interFlowDelay = 0;
-			double initialCycleDelay = 0;
-			double steadyCycleDelay = 0;
+			float accessLinkRttOfFlowZero = 0; // d_i
+			float interFlowDelay = 0;
+			float initialCycleDelay = 0;
+			float steadyCycleDelay = 0;
 			for (int hostID : database.getHostIDsSetForAccessSwitchID(accessSwitchID)) {
 				BufferToken ccTokenForEachBuffer = new BufferToken();
 				Debugger.debug(" The token for hostID: " + hostID);
@@ -158,8 +162,7 @@ public class Controllerv1 extends Controller {
 				Debugger.debug("  initial ccDelay = " + initialCycleDelay);
 				steadyCycleDelay = bigRTT - database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
 				Debugger.debug("  steady ccDelay = " + steadyCycleDelay);
-				ccTokenForEachBuffer.activate(true, interSegmentDelay, initialCycleDelay, previousSWnd,
-						steadyCycleDelay, sWnd);
+				ccTokenForEachBuffer.activate(true, initialCycleDelay, previousSWnd, steadyCycleDelay, sWnd);
 
 				preparedTokens.put(hostID, ccTokenForEachBuffer);
 				i++;

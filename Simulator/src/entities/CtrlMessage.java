@@ -23,15 +23,15 @@ public class CtrlMessage {
 
 	public void prepareFlowSetUpMessage(int FlowID, Link egressLink) {
 		this.flowID = FlowID;
-		this.neighborID = egressLink.getDstID();
+		this.neighborID = egressLink.getDstNodeID();
 	}
 
 	public int getSize() {
-		return this.size;
+		return size;
 	}
 
 	public int getType() {
-		return this.type;
+		return type;
 	}
 
 }

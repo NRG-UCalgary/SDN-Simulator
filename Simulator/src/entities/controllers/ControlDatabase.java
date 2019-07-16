@@ -11,29 +11,28 @@ import system.Network;
 
 public class ControlDatabase {
 
+	// Temporary
+	public int bottleneckLinkID;
+
 	/* Topology related information */
 	public TreeMap<Integer, TreeMap<Integer, Integer>> flowIDOfHostIDOfAccessSwitchID; // <AccessSwitchID, <HostID,
 	// FlowID>>
-	public HashMap<Integer, Double> controlDelayOfSwitchID; // <SwitchID, ControlLinkPropDelay>
+	public HashMap<Integer, Float> controlDelayOfSwitchID; // <SwitchID, ControlLinkPropDelay>
 
 	/* Flow related information */
-	public HashMap<Integer, Integer> btlBwOfFlowID; // <FlowID, BottleneckBW>
-	public HashMap<Integer, Double> rttOfFlowID; // <FlowID, RTT>
+	public HashMap<Integer, Float> btlBwOfFlowID; // <FlowID, BottleneckBW>
+	public HashMap<Integer, Float> rttOfFlowID; // <FlowID, RTT>
 	public HashMap<Integer, ArrayList<Link>> pathOfFlowID; // <FlowID, ArrayList<Link>>
 
 	public ControlDatabase(Network net) {
 		flowIDOfHostIDOfAccessSwitchID = new TreeMap<Integer, TreeMap<Integer, Integer>>();
-		controlDelayOfSwitchID = new HashMap<Integer, Double>();
+		controlDelayOfSwitchID = new HashMap<Integer, Float>();
 
-		btlBwOfFlowID = new HashMap<Integer, Integer>();
-		rttOfFlowID = new HashMap<Integer, Double>();
+		btlBwOfFlowID = new HashMap<Integer, Float>();
+		rttOfFlowID = new HashMap<Integer, Float>();
 		pathOfFlowID = new HashMap<Integer, ArrayList<Link>>();
 
 		for (SDNSwitch sdnSwitch : net.switches.values()) {
-			if (sdnSwitch.isAccessSwitch()) {
-				// flowIDOfHostIDOfAccessSwitchID.put(sdnSwitch.getID(), new HashMap<Integer,
-				// Integer>());
-			}
 			controlDelayOfSwitchID.put(sdnSwitch.getID(), sdnSwitch.controlLink.getPropagationDelay());
 		}
 
@@ -58,7 +57,6 @@ public class ControlDatabase {
 			sum += flowIDOfHostIDOfAccessSwitchID.get(switchID).size();
 		}
 		return sum;
-		// return pairOfFlowHostForEachAccessSwitch.get(accessSwitchID).size();
 		// TODO Must change later for multiple accessSwitch scenario
 	}
 
@@ -66,11 +64,11 @@ public class ControlDatabase {
 		return flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).get(hostID);
 	}
 
-	public double getRttForAccessSwitchIDAndHostID(int accessSwitchID, int hostID) {
+	public float getRttForAccessSwitchIDAndHostID(int accessSwitchID, int hostID) {
 		return rttOfFlowID.get(flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).get(hostID));
 	}
 
-	public double getRttForFlowID(int flowID) {
+	public float getRttForFlowID(int flowID) {
 		return rttOfFlowID.get(flowID);
 	}
 
@@ -82,16 +80,15 @@ public class ControlDatabase {
 		return flowIDOfHostIDOfAccessSwitchID.keySet();
 	}
 
-	public double getMaxRTTForAccessSwitchID(int accessSwitchID) {
-		double maxRTT = Double.NEGATIVE_INFINITY;
+	public float getMaxRTTForAccessSwitchID(int accessSwitchID) {
+		float maxRTT = Float.NEGATIVE_INFINITY;
 		for (int hostID : flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).keySet()) {
-			double rtt = getRttForFlowID(flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).get(hostID));
+			float rtt = getRttForFlowID(flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).get(hostID));
 			if (rtt >= maxRTT) {
 				maxRTT = rtt;
 			}
 		}
 		return maxRTT;
-
 	}
 
 }

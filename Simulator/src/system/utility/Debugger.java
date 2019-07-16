@@ -57,11 +57,11 @@ public class Debugger {
 			Debugger.debug("The switch ID = " + s.getID());
 			Debugger.debug(" These are the access links: ");
 			for (Link l : s.accessLinks.values()) {
-				Debugger.debug("  link ID: " + l.getID() + " connected to hostID: " + l.getDstID());
+				Debugger.debug("  link ID: " + l.getID() + " connected to hostID: " + l.getDstNodeID());
 			}
 			Debugger.debug(" These are the network links: ");
 			for (Link l : s.networkLinks.values()) {
-				Debugger.debug("  link ID: " + l.getID() + " connected to switchID: " + l.getDstID());
+				Debugger.debug("  link ID: " + l.getID() + " connected to switchID: " + l.getDstNodeID());
 			}
 			Debugger.debug("=======================");
 		}

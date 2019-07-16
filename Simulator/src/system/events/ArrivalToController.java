@@ -6,8 +6,8 @@ import entities.*;
 
 public class ArrivalToController extends Event {
 
-	public ArrivalToController(double startTime, int nodeID, Packet packet) {
-		super(Keywords.ArrivalToController, startTime, nodeID, packet);
+	public ArrivalToController(float eventTime, int nodeID, Packet packet) {
+		super(Keywords.ArrivalToController, eventTime, nodeID, packet);
 	}
 
 	/* --------------------------------------------------- */

@@ -18,6 +18,8 @@ public interface Keywords {
 
 	/* Special IDs */
 	public static final int ControllerFLowID = -1;
+	public static final int ReverseLinkIDOffSet = 10000;
+	public static final int ACKStreamIDOffSet = 10000;
 
 	/* Node types */
 	public static final String Host = "Host";
@@ -59,28 +61,21 @@ public interface Keywords {
 	public static final int UncontrolledFIN = 7;
 
 	/* TCP congestion control states */
-	public static final int SlowStart = 0;
-	public static final int CongAvoidance = 1;
-	public static final int FastRecovery = 2;
-
 	public static final int CtrlMessageSize = 40 * 80;
 	public static final int DataSegSize = 1000 * 8;
 	public static final int ACKSegSize = 40 * 8;
 	public static final int SYNSegSize = 40 * 8;
 	public static final int FINSegSize = 40 * 8;
 	public static final int CTRLSegSize = 40 * 8;
-	public static final int SlowStartSSThreshFactor = 64;
-	public static final int FastRecoveryCWNDDivindingFactore = 2;
-	public static final int TimeOutSlowStartCWNDDivindingFactore = 2;
 	public static final int SYNSeqNum = 0;
 	public static final int SYNACKSeqNum = 1;
 	public static final int CTRLSeqNum = -1;
 
 	/*------------  Constant Values for different types of delays -----------*/
-	public static final double CONTROLLER_RTT_DELAY = 1.0;
-	public static final double CONTROLLER_PROCESS_DELAY = 1.0;
-	public static final double NODE_PROCESS_DELAY = 1.0;
-	public static final double HostProcessDelay = 0.0;
+	public static final float CONTROLLER_RTT_DELAY = 1;
+	public static final float CONTROLLER_PROCESS_DELAY = 1;
+	public static final float NODE_PROCESS_DELAY = 1;
+	public static final float HostProcessDelay = 0;
 	/*-----------------------------------------------------------------------*/
 
 	/* Chart Titles */
@@ -95,5 +90,17 @@ public interface Keywords {
 	/* Tests */
 	public static final int WAN = 0;
 	public static final int LAN = 1;
+
+	/* Scenarios */
+	public static final String SenderAccessSwitchPrefix = "SASwitch_";
+	public static final String ReceiverAccessSwitchPrefix = "RASwitch_";
+	public static final String NetworkSwitchPrefix = "NSwitch_";
+	public static final String SenderHostPrefix = "S_";
+	public static final String ReceiverHostPrefix = "R_";
+	public static final String FlowPrefix = "Flow_";
+	public static final String ControllerPrefix = "C_";
+	public static final String SenderAccessLinkPrefix = "SALink_";
+	public static final String ReceiverAccessLinkPrefix = "RALink_";
+	public static final String NetworkLinkPrefix = "NLink_";
 
 }

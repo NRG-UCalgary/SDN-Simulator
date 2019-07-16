@@ -12,19 +12,18 @@ public class Packet extends Entity {
 	public Packet(Segment segment, CtrlMessage controlMessage) {
 		super(-1);
 		if (segment != null) {
-			this.size = segment.getSize();
-			this.type = Keywords.Segment;
+			size = segment.getSize();
+			type = Keywords.Segment;
 			this.segment = segment;
 		} else if (controlMessage != null) {
-			this.size = controlMessage.getSize();
-			this.type = Keywords.SDNControl;
+			size = controlMessage.getSize();
+			type = Keywords.SDNControl;
 			this.controlMessage = controlMessage;
 		}
-
 	}
 
 	public int getSize() {
-		return this.size;
+		return size;
 	}
 
 }

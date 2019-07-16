@@ -12,16 +12,6 @@ public class Simulator {
 	public final boolean OUTPUT = true;
 	public OutputHandler outputHandler = new OutputHandler();
 
-	/** ############### Default Variables ############### **/
-	/* Controller */
-	private final double CONTROLLER_RTT_DEALAY = 1.0;
-	private final double CONTROLLER_PROCESS_DELAY = 1.0;
-	private final int CONTROLLER_ROUTING_ALG = 1;
-	private final double alpha = 0.9;
-
-	/* Buffer Algorithm */
-	// private final String BUFFER_ALG = "FCFS";
-
 	/** ############### ID to Label Mappings ############### **/
 	private OneToOneMap switchLabels;
 	private OneToOneMap hostLabels;
@@ -36,9 +26,7 @@ public class Simulator {
 	private int flowCounter;
 
 	/** ############### Variables ############### **/
-
 	private Network net;
-	public Statistics stats;
 
 	public Simulator() {
 		/* Default Settings of the Simulator */
@@ -52,16 +40,13 @@ public class Simulator {
 		linkCounter = 0;
 		controllerCounter = 0;
 		flowCounter = 0;
-
 		net = new Network();
 	}
 
 	/********** Run **********/
-	public Statistics run(Double start_time, Double end_time) {
-
-		// Debugger.connectivity(net);
+	public Statistics run(float start_time, float end_time) {
 		/* Other Default settings of the Simulator */
-
+		Debugger.connectivity(net);
 		/* Reading the first Event from Network Event List */
 		/* Main Loop */
 		double timeCheck = 0;
@@ -75,33 +60,21 @@ public class Simulator {
 			timeCheck = net.getCurrentTime();
 		}
 		Main.print("Simulation completed.");
-		Main.print("Preparing statistics...");
-		stats = new Statistics(net);
-		// Generating output files (Temporary)
-		Main.print("Creating output...");
-		if (OUTPUT) {
-			outputHandler.outSeqNumExcelFile(stats);
-			outputHandler.outSegArrivalToBottleneckExcelFile(stats);
-		}
-		Main.print("Done.");
-		return stats;
+		Main.print("Returning statistics to OutputHandler...");
+		return new Statistics(net);
 	}
 
 	/********** Topology Creation methods ***********/
 
 	/*-------------------------------------------------------*/
 	/* Switch Creation Method */
-	public void createSwitch(String label, double ctrlLinkPropagationDelay, double ctrlLinkBandwidth) {
-		// Note that here we are assuming that we only use SDN switches.
-		// Later, if needed, a mechanism for choosing type of switch should be
-		// implemented
+	public void createSwitch(String label, float ctrlLinkPropagationDelay, float ctrlLinkBandwidth) {
 		Link controlLink = new Link(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
-				ctrlLinkPropagationDelay, Mathematics.MegabitPerSecondTobitPerMsecond(ctrlLinkBandwidth), 1000,
+				ctrlLinkPropagationDelay,
+				(float) Mathematics.bitPerSecondTobitPerMicroSecond((double) ctrlLinkBandwidth), Integer.MAX_VALUE,
 				Keywords.FIFO);
 		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
 		net.switches.put(switchCounter, sw);
-
-		// Handling labeling
 		switchLabels.put(switchCounter, label);
 		switchCounter++;
 	}
@@ -111,125 +84,93 @@ public class Simulator {
 	public void createHost(String label) {
 		Host host = new Host(hostCounter);
 		net.hosts.put(hostCounter, host);
-
-		// Handling labeling
 		hostLabels.put(hostCounter, label);
 		hostCounter++;
-
 	}
 
 	/*-------------------------------------------------------*/
 	/* Link Creation Method */
-	public void createLink(String label, String src, String dst, double propDelay, double bandwidth, int bufferSize,
+	public void createLink(String label, String src, String dst, float propDelay, float bandwidth, int bufferSize,
 			int bufferPolicy) {
-		// The link from SRC to DST
 		Link link = new Link(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay,
-				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
+				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
-		// Handling Labeling
 		linkLabels.put(linkCounter, label);
-
-		// The link from DST to SRC
-		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), switchLabels.getKey(src), propDelay,
-				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
+		link = new Link(reverseLinkID(linkCounter), switchLabels.getKey(dst), switchLabels.getKey(src), propDelay,
+				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).networkLinks.put(switchLabels.getKey(src), link);
-
-		// Handling Labeling
-		linkLabels.put(linkCounter + 10000, label + "r"); // TODO There should be a mechanism for handling different
-															// labels for
+		linkLabels.put(reverseLinkID(linkCounter), label + "r"); // TODO There should be a mechanism for handling
 		linkCounter++;
 	}
 
 	/* Access link creation method */
-	public void createAccessLink(String label, String src, String dst, double propDelay, double bandwidth,
-			int bufferSize, int bufferPolicy) {
-		// The link from host to switch
+	public void createAccessLink(String label, String src, String dst, float propDelay, float bandwidth, int bufferSize,
+			int bufferPolicy) {
 		Link link = new Link(linkCounter, hostLabels.getKey(src), switchLabels.getKey(dst), propDelay,
-				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
+				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.hosts.get(hostLabels.getKey(src)).connectToNetwork(switchLabels.getKey(dst), link);
-
-		// Handling Labeling
 		linkLabels.put(linkCounter, label);
-
-		// The link from switch to host
-		link = new Link(linkCounter + 10000, switchLabels.getKey(dst), hostLabels.getKey(src), propDelay,
-				Mathematics.MegabitPerSecondTobitPerMsecond(bandwidth), bufferSize, bufferPolicy);
+		link = new Link(reverseLinkID(linkCounter), switchLabels.getKey(dst), hostLabels.getKey(src), propDelay,
+				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
-		// net.switches.get(switchLabels.getKey(dst)).isAccessSwitch = true;
-
-		// Handling Labeling
-		linkLabels.put(linkCounter + 10000, label + "r"); // TODO There should be a mechanism for handling different
-															// labels for
-															// reverse links
+		linkLabels.put(reverseLinkID(linkCounter), label + "r"); // TODO There should be a mechanism for handling
 		linkCounter++;
 	}
 
 	/*-------------------------------------------------------*/
 	/* Controller Creation Method */
-	public void createController(String label, int routing_alg, double rtt_delay, double process_delay) {
-		net.controller = new Controllerv1(controllerCounter, net, routing_alg, alpha);
-
-		// Handling Labeling
+	public void createController(String label, float alpha, int routingAlgorithm) {
+		net.controller = new Controllerv1(controllerCounter, net, routingAlgorithm, alpha);
 		for (SDNSwitch sdnSwitch : net.switches.values()) {
 			net.controller.connectSwitch(sdnSwitch.getID(), sdnSwitch.controlLink);
 		}
 		controllerLabels.put(controllerCounter, label);
 		controllerCounter++;
 	}
-
-	// Overload
-	public void createController(String label, int routing_alg) {
-
-		createController(label, routing_alg, CONTROLLER_RTT_DEALAY, CONTROLLER_PROCESS_DELAY);
-	}
-
-	// Overload
-	public void createController(String label) {
-		createController(label, CONTROLLER_ROUTING_ALG);
-	}
 	/*-------------------------------------------------------*/
 
 	/********* Flow Generation Methods **************/
 
-	public void generateFlow(String label, String type, String src, String dst, int size, double arrival_time) {
-
-		Flow flow = new Flow(flowCounter, net.hosts.get(hostLabels.getKey(src)), net.hosts.get(hostLabels.getKey(dst)),
-				size, arrival_time);
-		// Handling Labeling
+	public void generateFlow(String label, String type, String src, String dst, int size, float arrival_time) {
+		Flow flow = new Flow(flowCounter, hostLabels.getKey(src), hostLabels.getKey(dst), size, arrival_time);
 		flowLabels.put(flowCounter, label);
-
 		Agent src_agent = null;
 		Agent dst_agent = null;
-
 		switch (type) {
-		case Keywords.TCP:
-			break;
 		case Keywords.SDTCP:
 			src_agent = new SDTCPSenderv1(flow);
-			flow = new Flow(ACKStreamID(flowCounter), net.hosts.get(hostLabels.getKey(dst)),
-					net.hosts.get(hostLabels.getKey(src)), size, arrival_time);
+			flow = new Flow(reverseFlowStreamID(flowCounter), hostLabels.getKey(dst), hostLabels.getKey(src), size,
+					arrival_time);
 			dst_agent = new SDTCPReceiverv1(flow);
 			break;
-		case Keywords.RBTCP:
-			break;
 		default:
-			Debugger.debug("Simulator.generateFlow()::Invalid type for flow.");
+			Main.error("Simulator", "generateFlow", "Invalid flow type (" + type + ").");
 			break;
 		}
-
 		flowCounter++;
-		// Net update
 		net.hosts.get(hostLabels.getKey(src)).transportAgent = src_agent;
 		net.hosts.get(hostLabels.getKey(dst)).transportAgent = dst_agent;
-
-		// Creating initial ArrivalToSwitch event for the flow
 		net = net.hosts.get(hostLabels.getKey(src)).initialize(net);
-
 	}
 
 	/********* General Programming Methods **********/
 
-	public static int ACKStreamID(int dataStreamID) {
-		return dataStreamID + 10000;
+	public static int reverseFlowStreamID(int streamID) {
+		int offset = Keywords.ACKStreamIDOffSet;
+		if (streamID < offset) {
+			return streamID + offset;
+		} else {
+			return streamID - offset;
+		}
 	}
+
+	public static int reverseLinkID(int linkID) {
+		int offset = Keywords.ReverseLinkIDOffSet;
+		if (linkID < offset) {
+			return linkID + offset;
+		} else {
+			return linkID - offset;
+		}
+	}
+
 }

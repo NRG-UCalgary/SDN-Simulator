@@ -1,31 +1,41 @@
 package entities.buffers;
 
 import entities.Entity;
+import system.*;
 
 public abstract class Buffer extends Entity {
 
 	protected final int capacity;
 	protected int policy;
 	public int occupancy;
-	public double mostRecentSegmentDepartureTime;
+	public float mostRecentSegmentDepartureTime;
 	public BufferToken ccToken;
 
-	public Buffer(int cap, int policy) {
+	/** ========== Statistical Counters ========== **/
+	public int maxOccupancy;
+
+	/** ========================================== **/
+
+	public Buffer(int capacity, int policy) {
 		super(-1);
-		this.capacity = cap;
+		this.capacity = capacity;
 		this.policy = policy;
 		occupancy = 0;
 		mostRecentSegmentDepartureTime = 0;
 		ccToken = new BufferToken();
+
+		/** ========== Statistical Counters ========== **/
+		maxOccupancy = 0;
+		/** ========================================== **/
 	}
 
 	/* --------------------------------------------------- */
 	/* ---------- Abstract methods ----------------------- */
 	/* --------------------------------------------------- */
 
-	public abstract void updateCCToken(double arrivalToBufferTime, BufferToken token);
+	public abstract void updateCCToken(float arrivalToBufferTime, BufferToken token);
 
-	public abstract double getBufferTime(double currentTime, double segmentTransmissionDelay);
+	public abstract float getBufferTime(float currentTime, float segmentTransmissionDelay);
 
 	/* --------------------------------------------------- */
 	/* ---------- Implemented methods -------------------- */
@@ -37,7 +47,7 @@ public abstract class Buffer extends Entity {
 				mostRecentSegmentDepartureTime = 0;
 			}
 		} else if (occupancy < 0) {
-			System.out.println("Error Class::Buffer--Invalid buffer occupancy(" + occupancy + ").");
+			Main.error("Buffer", "deQueue", "Invalid buffer occupancy(" + occupancy + ").");
 		}
 	}
 
@@ -47,7 +57,7 @@ public abstract class Buffer extends Entity {
 		} else if (occupancy == capacity) {
 			return true;
 		}
-		System.out.println("Error Class::Buffer--Invalid buffer occupancy(" + occupancy + ").");
+		Main.error("Buffer", "isFull", "Invalid buffer occupancy(" + occupancy + ").");
 		return false;
 	}
 }

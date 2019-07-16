@@ -7,8 +7,8 @@ import system.utility.Keywords;
 
 public class ArrivalToHost extends Event {
 
-	public ArrivalToHost(double startTime, int hostID, Packet packet) {
-		super(Keywords.ArrivalToHost, startTime, hostID, packet);
+	public ArrivalToHost(float eventTime, int hostID, Packet packet) {
+		super(Keywords.ArrivalToHost, eventTime, hostID, packet);
 	}
 
 	/* --------------------------------------------------- */
