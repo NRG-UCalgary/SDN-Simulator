@@ -23,7 +23,7 @@ public class SDTCPReceiverv1 extends Agent {
 
 		switch (segment.getType()) {
 		case Keywords.CTRL:
-			Debugger.debug("Receiver.recvSegment::Receiver has received a CTRL segment.");
+			Main.error("SDTCPREceiver", "recvSegment", "Receiver got CTRL segment.");
 			break;
 		case Keywords.DATA:
 			updateACKNum(segment.getSeqNum());

@@ -77,4 +77,61 @@ public class NumberOFFlowsOutputData {
 		outputSheets.put(outputName, table);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((avgCompletionTimeData == null) ? 0 : avgCompletionTimeData.hashCode());
+		result = prime * result + ((avgStartupDelayData == null) ? 0 : avgStartupDelayData.hashCode());
+		result = prime * result + ((bottleneckUtilizationData == null) ? 0 : bottleneckUtilizationData.hashCode());
+		result = prime * result
+				+ ((maxBottleneckBufferOccupancy == null) ? 0 : maxBottleneckBufferOccupancy.hashCode());
+		result = prime * result + ((outputSheets == null) ? 0 : outputSheets.hashCode());
+		result = prime * result
+				+ ((varianceOfBottleneckUtilizationData == null) ? 0 : varianceOfBottleneckUtilizationData.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NumberOFFlowsOutputData other = (NumberOFFlowsOutputData) obj;
+		if (avgCompletionTimeData == null) {
+			if (other.avgCompletionTimeData != null)
+				return false;
+		} else if (!avgCompletionTimeData.equals(other.avgCompletionTimeData))
+			return false;
+		if (avgStartupDelayData == null) {
+			if (other.avgStartupDelayData != null)
+				return false;
+		} else if (!avgStartupDelayData.equals(other.avgStartupDelayData))
+			return false;
+		if (bottleneckUtilizationData == null) {
+			if (other.bottleneckUtilizationData != null)
+				return false;
+		} else if (!bottleneckUtilizationData.equals(other.bottleneckUtilizationData))
+			return false;
+		if (maxBottleneckBufferOccupancy == null) {
+			if (other.maxBottleneckBufferOccupancy != null)
+				return false;
+		} else if (!maxBottleneckBufferOccupancy.equals(other.maxBottleneckBufferOccupancy))
+			return false;
+		if (outputSheets == null) {
+			if (other.outputSheets != null)
+				return false;
+		} else if (!outputSheets.equals(other.outputSheets))
+			return false;
+		if (varianceOfBottleneckUtilizationData == null) {
+			if (other.varianceOfBottleneckUtilizationData != null)
+				return false;
+		} else if (!varianceOfBottleneckUtilizationData.equals(other.varianceOfBottleneckUtilizationData))
+			return false;
+		return true;
+	}
+
 }

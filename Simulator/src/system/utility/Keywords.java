@@ -2,6 +2,19 @@ package system.utility;
 
 public interface Keywords {
 
+	/* Traffic generator default values */
+	public static final int InterArrivalTimeStartingSeed = 1000;
+	public static final int FlowSizeStartingSeed = 2000;
+	public static final int AccessLinkPropagationDelayStartingSeed = 3000;
+	/* Scenario topologies */
+	public static final int Dumbbell = 0;
+	public static final int DataCenter = 1;
+	public static final int ParkingLot = 2;
+
+	/* RVG distributions */
+	public static final int Exponential = 0;
+	public static final int Uniform = 1;
+
 	/* Event names */
 	// Arrivals
 	public static final String ArrivalToController = "Arrival to Controller";
@@ -87,9 +100,14 @@ public interface Keywords {
 	public static final String SeqNumPlotXAxisTitle = "Time(ms)";
 	public static final String SeqNumPlotYAxisTitle = "Segment Sequence Number";
 
-	/* Tests */
+	/* Network Settings */
 	public static final int WAN = 0;
 	public static final int LAN = 1;
+
+	/* Traffic Settings */
+	public static final int GeneralTraffic = 0;
+	public static final int DatacenterTraffic = 1;
+	public static final int MultilediaTraffic = 2;
 
 	/* Scenarios */
 	public static final String SenderAccessSwitchPrefix = "SASwitch_";

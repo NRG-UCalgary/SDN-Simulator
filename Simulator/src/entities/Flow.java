@@ -49,6 +49,15 @@ public class Flow extends Entity {
 		/** ========================================================= **/
 	}
 
+	/*---------- Statistical counters methods ----------*/
+	public void updateDataSendingStartTime(float startTime) {
+		dataSendingStartTime = startTime;
+	}
+
+	public void updateCompletionTime(float completionTime) {
+		this.completionTime = completionTime;
+	}
+
 	/**********************************************************************/
 	/********************** Getters and Setters ***************************/
 	/**********************************************************************/
@@ -63,5 +72,69 @@ public class Flow extends Entity {
 
 	public int getSrcHostID() {
 		return srcHostID;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((ackSeqNumArrivalTimes == null) ? 0 : ackSeqNumArrivalTimes.hashCode());
+		result = prime * result + Float.floatToIntBits(arrivalTime);
+		result = prime * result + Float.floatToIntBits(completionTime);
+		result = prime * result + Float.floatToIntBits(dataSendingStartTime);
+		result = prime * result + ((dataSeqNumSendingTimes == null) ? 0 : dataSeqNumSendingTimes.hashCode());
+		result = prime * result + dstHostID;
+		result = prime * result + ((path == null) ? 0 : path.hashCode());
+		result = prime * result + size;
+		result = prime * result + srcHostID;
+		result = prime * result + Float.floatToIntBits(totalBufferTime);
+		result = prime * result + totalDroppedSegments;
+		result = prime * result + totalSentSegments;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Flow other = (Flow) obj;
+		if (ackSeqNumArrivalTimes == null) {
+			if (other.ackSeqNumArrivalTimes != null)
+				return false;
+		} else if (!ackSeqNumArrivalTimes.equals(other.ackSeqNumArrivalTimes))
+			return false;
+		if (Float.floatToIntBits(arrivalTime) != Float.floatToIntBits(other.arrivalTime))
+			return false;
+		if (Float.floatToIntBits(completionTime) != Float.floatToIntBits(other.completionTime))
+			return false;
+		if (Float.floatToIntBits(dataSendingStartTime) != Float.floatToIntBits(other.dataSendingStartTime))
+			return false;
+		if (dataSeqNumSendingTimes == null) {
+			if (other.dataSeqNumSendingTimes != null)
+				return false;
+		} else if (!dataSeqNumSendingTimes.equals(other.dataSeqNumSendingTimes))
+			return false;
+		if (dstHostID != other.dstHostID)
+			return false;
+		if (path == null) {
+			if (other.path != null)
+				return false;
+		} else if (!path.equals(other.path))
+			return false;
+		if (size != other.size)
+			return false;
+		if (srcHostID != other.srcHostID)
+			return false;
+		if (Float.floatToIntBits(totalBufferTime) != Float.floatToIntBits(other.totalBufferTime))
+			return false;
+		if (totalDroppedSegments != other.totalDroppedSegments)
+			return false;
+		if (totalSentSegments != other.totalSentSegments)
+			return false;
+		return true;
 	}
 }

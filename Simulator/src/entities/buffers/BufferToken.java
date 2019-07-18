@@ -2,6 +2,49 @@ package entities.buffers;
 
 public class BufferToken {
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ACKCounter;
+		result = prime * result + Float.floatToIntBits(arrivalToBufferTime);
+		result = prime * result + initialACKsToGo;
+		result = prime * result + Float.floatToIntBits(initialCycleDelay);
+		result = prime * result + (isActive ? 1231 : 1237);
+		result = prime * result + (isFirstCycle ? 1231 : 1237);
+		result = prime * result + steadyACKsToGo;
+		result = prime * result + Float.floatToIntBits(steadyCycleDelay);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BufferToken other = (BufferToken) obj;
+		if (ACKCounter != other.ACKCounter)
+			return false;
+		if (Float.floatToIntBits(arrivalToBufferTime) != Float.floatToIntBits(other.arrivalToBufferTime))
+			return false;
+		if (initialACKsToGo != other.initialACKsToGo)
+			return false;
+		if (Float.floatToIntBits(initialCycleDelay) != Float.floatToIntBits(other.initialCycleDelay))
+			return false;
+		if (isActive != other.isActive)
+			return false;
+		if (isFirstCycle != other.isFirstCycle)
+			return false;
+		if (steadyACKsToGo != other.steadyACKsToGo)
+			return false;
+		if (Float.floatToIntBits(steadyCycleDelay) != Float.floatToIntBits(other.steadyCycleDelay))
+			return false;
+		return true;
+	}
+
 	public boolean isActive;
 	public boolean isFirstCycle;
 	public float arrivalToBufferTime;

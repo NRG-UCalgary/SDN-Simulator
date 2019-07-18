@@ -50,17 +50,14 @@ public class Simulator {
 		/* Reading the first Event from Network Event List */
 		/* Main Loop */
 		double timeCheck = 0;
-		Main.print("Starting simulation loop...");
 		while (net.getCurrentTime() <= end_time && net.eventList.size() > 0) {
 			if (net.getCurrentTime() < timeCheck) {
-				Debugger.debug("Error in simulator Time management: " + net.getCurrentTime());
+				Main.error("Simulator", "run", "Invalid time progression.");
 			}
 			/* Running the Current Event and Updating the net */
 			net = net.eventList.getEvent().execute(net);
 			timeCheck = net.getCurrentTime();
 		}
-		Main.print("Simulation completed.");
-		Main.print("Returning statistics to OutputHandler...");
 		return new Statistics(net);
 	}
 
@@ -132,6 +129,7 @@ public class Simulator {
 	/********* Flow Generation Methods **************/
 
 	public void generateFlow(String label, String type, String src, String dst, int size, float arrival_time) {
+
 		Flow flow = new Flow(flowCounter, hostLabels.getKey(src), hostLabels.getKey(dst), size, arrival_time);
 		flowLabels.put(flowCounter, label);
 		Agent src_agent = null;

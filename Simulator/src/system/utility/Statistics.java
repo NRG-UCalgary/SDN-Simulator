@@ -73,8 +73,10 @@ public class Statistics {
 		float variance = 0;
 		Link bottleneck = links.get(bottleneckLinkID);
 		ArrayList<Float> values = new ArrayList<Float>();
-		for (float utilizationShare : bottleneck.utilizationTimePerFlowID.values()) {
-			values.add((utilizationShare / bottleneck.totalUtilizationTime) * 100);
+		for (float flowID : bottleneck.utilizationTimePerFlowID.keySet()) {
+			float utilizationShare = bottleneck.utilizationTimePerFlowID.get(flowID);
+			values.add((100 * utilizationShare)
+					/ ((float) (flows.get((int) flowID).getSize() * bottleneck.totalUtilizationTime)));
 		}
 		try {
 			variance = (float) Mathematics.variance(values);
@@ -82,7 +84,6 @@ public class Statistics {
 			Main.print("Error::Statistics.getVarianceOfBottleneckUtilizationShare()");
 			e.printStackTrace();
 		}
-		Debugger.debugToConsole("This is variance: " + variance);
 		return variance;
 	}
 }

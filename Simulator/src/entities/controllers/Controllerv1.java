@@ -118,10 +118,6 @@ public class Controllerv1 extends Controller {
 		// note that this is only for the single bottleneck scenario
 		previousSWnd = sWnd;
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
-			Debugger.debugToConsole("bigRTT = " + bigRTT);
-			Debugger.debugToConsole("BtlBw = " + database.btlBwOfFlowID.get(currentSegment.getFlowID()));
-			Debugger.debugToConsole("Number Of Flows = " + (database.getNumberOfFlowsForAccessSwitch(currentSwitchID)));
-			Debugger.debugToConsole("Segment Size = " + Keywords.DataSegSize);
 			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(currentSegment.getFlowID())
 					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) * Keywords.DataSegSize)));
 			if (this.sWnd == 0) {

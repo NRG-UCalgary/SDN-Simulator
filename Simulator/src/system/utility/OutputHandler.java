@@ -11,23 +11,24 @@ import system.utility.dataStructures.NumberOFFlowsOutputData;
 import system.utility.dataStructures.ScatterTableData;
 
 public class OutputHandler {
-	boolean FunctionalityOutput = true;
+	public static boolean FunctionalityOutput = false;
 
 	public OutputHandler() {
 	}
 
-	public void outStatsforNumberOfFlows(TreeMap<Integer, Statistics> stats) {
+	public static void outStatsforNumberOfFlows(TreeMap<Integer, Statistics> mySimStats,
+			TreeMap<Integer, Statistics> nsStats) {
 		NumberOFFlowsOutputData outputData = new NumberOFFlowsOutputData();
 		String studyOutputDirectory = "output/NumberOfFlows/";
 		new File(studyOutputDirectory).mkdir();
-		for (int numberOfFlows : stats.keySet()) {
-			String directoryPathPerFctor = "output/NumberOfFlows/" + numberOfFlows + "_flows/";
-			new File(directoryPathPerFctor).mkdir();
+		for (int numberOfFlows : mySimStats.keySet()) {
 			if (FunctionalityOutput) {
-				outSegmentArrivalToBottleneckData(directoryPathPerFctor, stats.get(numberOfFlows));
-				outSequenceNumberData(directoryPathPerFctor, stats.get(numberOfFlows));
+				String directoryPathPerFctor = "output/NumberOfFlows/" + numberOfFlows + "_flows/";
+				new File(directoryPathPerFctor).mkdir();
+				outSegmentArrivalToBottleneckData(directoryPathPerFctor, mySimStats.get(numberOfFlows));
+				outSequenceNumberData(directoryPathPerFctor, mySimStats.get(numberOfFlows));
 			}
-			outputData.prepareOutputMetrics(numberOfFlows, stats.get(numberOfFlows));
+			outputData.prepareOutputMetrics(numberOfFlows, mySimStats.get(numberOfFlows));
 		}
 		outputData.prepareOutputSheets();
 		try {
@@ -37,9 +38,9 @@ public class OutputHandler {
 		}
 	}
 
-	public void outSegmentArrivalToBottleneckData(String outputPath, Statistics stat) {
+	public static void outSegmentArrivalToBottleneckData(String outputPath, Statistics stat) {
 		ScatterTableData bottleneckArrivals = new ScatterTableData("Time (ms)", "FlowID");
-		for (Pair<Float, Float> entry : stat.links.get(stat.bottleneckLinkID).arrivalTimeOfFlowID) {
+		for (Pair<Float, Float> entry : stat.links.get(stat.bottleneckLinkID).segmentArrivalTimeOfFlowID) {
 			String key = "Flow_" + entry.getSecond().intValue();
 			if (bottleneckArrivals.data.containsKey(key)) {
 				bottleneckArrivals.data.get(key).add(entry);
@@ -57,10 +58,10 @@ public class OutputHandler {
 		}
 	}
 
-	public void outSequenceNumberData(String outputPath, Statistics stat) {
+	public static void outSequenceNumberData(String outputPath, Statistics stat) {
 		TreeMap<Integer, ScatterTableData> SeqNumDataForAllFlowIDs = new TreeMap<Integer, ScatterTableData>();
 		for (Flow flow : stat.flows.values()) {
-			ScatterTableData flowSeqNumData = new ScatterTableData("Time (ms)", "SeqNum");
+			ScatterTableData flowSeqNumData = new ScatterTableData("Time (us)", "SeqNum");
 			ArrayList<Pair<Float, Float>> dataSerie = new ArrayList<Pair<Float, Float>>();
 			for (float seqNum : flow.dataSeqNumSendingTimes.keySet()) {
 				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.dataSeqNumSendingTimes.get(seqNum),

@@ -2,14 +2,14 @@ package entities.switches;
 
 import java.util.HashMap;
 
-import org.apache.commons.math3.util.Pair;
-
 import entities.*;
 import system.*;
 import system.events.*;
 import system.utility.*;
 
 public abstract class SDNSwitch extends Node {
+
+	public boolean isMonitored;
 
 	public Link controlLink;
 	public int controllerID = 0; // Assuming there is only 1 controller
@@ -21,6 +21,7 @@ public abstract class SDNSwitch extends Node {
 	public SDNSwitch(int ID, Link controlLink) {
 		super(ID, Keywords.Switch);
 		this.controlLink = controlLink;
+		isMonitored = true;
 		accessLinks = new HashMap<Integer, Link>();
 		networkLinks = new HashMap<Integer, Link>();
 		flowTable = new HashMap<Integer, Integer>();
@@ -36,40 +37,68 @@ public abstract class SDNSwitch extends Node {
 	/* --------------------------------------------------- */
 	public Network recvPacket(Network net, Packet packet) {
 		Segment segment = packet.segment;
-
+		/* ================================================ */
+		/* ========== Control message stays in switch ===== */
+		/* ================================================ */
 		if (packet.type == Keywords.SDNControl) {
 			return recvCtrlMessage(net, packet.controlMessage);
-		} else if (segment.getDstHostID() == Keywords.BroadcastDestination) {
+		}
+		/* ================================================ */
+		/* ========== Broadcast segment to hosts ========== */
+		/* ================================================ */
+		else if (segment.getDstHostID() == Keywords.BroadcastDestination) {
 			return broadcastToHosts(net, segment);
-		} else if (isConnectedToHost(segment.getDstHostID())) {
+		}
+		/* ================================================ */
+		/* ========== Segment to end host ================= */
+		/* ================================================ */
+		else if (isConnectedToHost(segment.getDstHostID())) {
 			return forwardToHost(net, segment.getDstHostID(), segment);
-		} else if (hasFlowEntry(segment.getFlowID())) {
+		}
+		/* ================================================ */
+		/* ========== Segment to next switch ============== */
+		/* ================================================ */
+		else if (hasFlowEntry(segment.getFlowID())) {
 			if (segment.getType() == Keywords.UncontrolledFIN) {
+				/* Uncontrolled FIN goes to controller */
 				return forwardToController(net, segment);
 			} else {
 				return forwardToSwitch(net, getNextSwitchID(segment.getFlowID()), segment);
 			}
-		} else {
+		}
+		/* ================================================ */
+		/* ========== Segment to controller =============== */
+		/* ================================================ */
+		else {
 			return forwardToController(net, segment);
 		}
 	}
 
 	public Network releasePacket(Network net, int dstNodeID, Packet packet) {
 		Segment segment = packet.segment;
-		float nextTime;
 		Event nextEvent;
-		float linkUtilizationTime;
-		if (isConnectedToHost(segment.getDstHostID())) { // The next node is a Host
+		float nextTime, linkUtilizationTime;
+		/* ================================================ */
+		/* ========== Next node is a Host ================= */
+		/* ================================================ */
+		if (isConnectedToHost(segment.getDstHostID())) {
 			linkUtilizationTime = accessLinks.get(dstNodeID).getTransmissionDelay(segment.getSize());
 			nextTime = net.getCurrentTime() + getAccessLinkTotalDelay(dstNodeID, segment.getSize());
 			nextEvent = new ArrivalToHost(nextTime, dstNodeID, packet);
 			deQueueFromAccessLinkBuffer(dstNodeID);
 			/** ===== Statistical Counters ===== **/
-			accessLinks.get(segment.getDstHostID()).utilizationTimePerFlowID.put(segment.getFlowID(),
-					linkUtilizationTime);
+			if (isMonitored) {
+				accessLinks.get(dstNodeID).updateUtilizationCounters(segment.getFlowID(), linkUtilizationTime);
+			}
 			/** ================================ **/
-		} else if (hasFlowEntry(segment.getFlowID())) { // The next node is a Switch
+		}
+		/* ================================================ */
+		/* ========== Next node is a Switch =============== */
+		/* ================================================ */
+		else if (hasFlowEntry(segment.getFlowID())) {
+			
 			if (segment.getType() == Keywords.UncontrolledFIN) {
+				/* Uncontrolled FIN goes to controller */
 				nextTime = net.getCurrentTime() + controlLink.getTotalDelay(segment.getSize());
 				nextEvent = new ArrivalToController(nextTime, this.ID, packet);
 				controlLink.buffer.deQueue();
@@ -79,11 +108,17 @@ public abstract class SDNSwitch extends Node {
 				nextEvent = new ArrivalToSwitch(nextTime, dstNodeID, packet);
 				deQueueFromNetworkLinkBuffer(segment.getFlowID());
 				/** ===== Statistical Counters ===== **/
-				networkLinks.get(getNextSwitchID(segment.getFlowID())).utilizationTimePerFlowID.put(segment.getFlowID(),
-						linkUtilizationTime);
+				if (isMonitored) {
+					networkLinks.get(getNextSwitchID(segment.getFlowID()))
+							.updateUtilizationCounters(segment.getFlowID(), linkUtilizationTime);
+				}
 				/** ================================ **/
 			}
-		} else { // The next node is the controller
+		}
+		/* ================================================ */
+		/* ========== Next node is a Controller =========== */
+		/* ================================================ */
+		else {
 			nextTime = net.getCurrentTime() + controlLink.getTotalDelay(segment.getSize());
 			nextEvent = new ArrivalToController(nextTime, this.ID, packet);
 			controlLink.buffer.deQueue();
@@ -95,7 +130,6 @@ public abstract class SDNSwitch extends Node {
 	/* --------------------------------------------------- */
 	/* ---------- Implemented methods -------------------- */
 	/* --------------------------------------------------- */
-
 	/* ########## Protected ############################## */
 	protected void addFlowTableEntry(int flowID, int neighborID) {
 		flowTable.put(flowID, neighborID);
@@ -121,7 +155,8 @@ public abstract class SDNSwitch extends Node {
 				Event nextEvent = new DepartureFromSwitch(nextTime, this.ID, hostID, new Packet(segment, null));
 				net.eventList.addEvent(nextEvent);
 			} else {
-				// TODO segment drop happens here
+				// Packet Drop happens here
+				Main.error("SDNSwitch", "broadcastToHosts", "Packe Drop happened at switch_" + ID);
 			}
 		}
 		return net;
@@ -135,11 +170,13 @@ public abstract class SDNSwitch extends Node {
 			Event nextEvent = new DepartureFromSwitch(nextTime, this.ID, hostID, new Packet(segment, null));
 			net.eventList.addEvent(nextEvent);
 		} else {
-			// TODO segment drop happens here
+			// Packet Drop happens here
+			Main.error("SDNSwitch", "forwardToHost", "Packe Drop happened at switch_" + ID);
 		}
 
 		/** ===== Statistical Counters ===== **/
-		net.hosts.get(segment.getSrcHostID()).transportAgent.flow.totalBufferTime += bufferTime;
+		if (isMonitored)
+			net.hosts.get(segment.getSrcHostID()).transportAgent.flow.totalBufferTime += bufferTime;
 		/** ================================ **/
 		return net;
 	}
@@ -152,21 +189,24 @@ public abstract class SDNSwitch extends Node {
 			Event nextEvent = new DepartureFromSwitch(nextTime, this.ID, switchID, new Packet(segment, null));
 			net.eventList.addEvent(nextEvent);
 		} else {
-			// TODO segment drop happens here
+			// Packet Drop happens here
+			Main.error("SDNSwitch", "forwardToSwitch", "Packe Drop happened at switch_" + ID);
 		}
 		/** ===== Statistical Counters ===== **/
-		net.hosts.get(segment.getSrcHostID()).transportAgent.flow.totalBufferTime += bufferTime;
-		networkLinks.get(switchID).arrivalTimeOfFlowID
-				.add(new Pair<Float, Float>(net.getCurrentTime(), (float) segment.getFlowID()));
+		if (isMonitored) {
+			networkLinks.get(switchID).updateSegementArrivalToLinkCounters(segment.getFlowID(), net.getCurrentTime());
+		}
 		/** ================================ **/
 		return net;
 	}
 
 	protected Network forwardToController(Network net, Segment segment) {
-		float nextTime = net.getCurrentTime() + controlLink.buffer.getBufferTime(net.getCurrentTime(),
+		float bufferTime = controlLink.buffer.getBufferTime(net.getCurrentTime(),
 				controlLink.getTransmissionDelay(segment.getSize()));
+		float nextTime = net.getCurrentTime() + bufferTime;
 		Event nextEvent = new DepartureFromSwitch(nextTime, this.ID, controllerID, new Packet(segment, null));
 		net.eventList.addEvent(nextEvent);
+
 		return net;
 	}
 

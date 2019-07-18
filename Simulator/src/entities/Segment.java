@@ -2,6 +2,55 @@ package entities;
 
 public class Segment extends Entity {
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + bigRTT_;
+		result = prime * result + dstHostID;
+		result = prime * result + flowID;
+		result = prime * result + Float.floatToIntBits(interSegmentDelay_);
+		result = prime * result + Float.floatToIntBits(rtt_);
+		result = prime * result + sWnd_;
+		result = prime * result + seqNum;
+		result = prime * result + size;
+		result = prime * result + srcHostID;
+		result = prime * result + type;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Segment other = (Segment) obj;
+		if (bigRTT_ != other.bigRTT_)
+			return false;
+		if (dstHostID != other.dstHostID)
+			return false;
+		if (flowID != other.flowID)
+			return false;
+		if (Float.floatToIntBits(interSegmentDelay_) != Float.floatToIntBits(other.interSegmentDelay_))
+			return false;
+		if (Float.floatToIntBits(rtt_) != Float.floatToIntBits(other.rtt_))
+			return false;
+		if (sWnd_ != other.sWnd_)
+			return false;
+		if (seqNum != other.seqNum)
+			return false;
+		if (size != other.size)
+			return false;
+		if (srcHostID != other.srcHostID)
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
+
 	/** my protocol variables **/
 	public int sWnd_;
 	public float rtt_;

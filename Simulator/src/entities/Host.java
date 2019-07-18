@@ -46,6 +46,7 @@ public class Host extends Node {
 
 	/* ########## Public ################################# */
 	public Network initialize(Network net) {
+	
 		return transportAgent.sendSYN(net);
 	}
 
@@ -68,6 +69,46 @@ public class Host extends Node {
 
 	public Link getEgressLink() {
 		return accessLink;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((accessLink == null) ? 0 : accessLink.hashCode());
+		result = prime * result + accessSwitchID;
+		result = prime * result + ((label == null) ? 0 : label.hashCode());
+		result = prime * result + ((transportAgent == null) ? 0 : transportAgent.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Host other = (Host) obj;
+		if (accessLink == null) {
+			if (other.accessLink != null)
+				return false;
+		} else if (!accessLink.equals(other.accessLink))
+			return false;
+		if (accessSwitchID != other.accessSwitchID)
+			return false;
+		if (label == null) {
+			if (other.label != null)
+				return false;
+		} else if (!label.equals(other.label))
+			return false;
+		if (transportAgent == null) {
+			if (other.transportAgent != null)
+				return false;
+		} else if (!transportAgent.equals(other.transportAgent))
+			return false;
+		return true;
 	}
 
 }
