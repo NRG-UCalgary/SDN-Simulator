@@ -1,14 +1,24 @@
 package system;
 
-import experiments.scenarios.onefactor.NumberOfFlowsStudy;
-import experiments.scenarios.onefactor.OneFactorScenario;
-import system.utility.*;
+import java.util.ArrayList;
+
+import experiments.scenarios.NumberOfFlowsPerFlowSizeDistributionStudy;
+import system.utility.Keywords;
 
 public class Main {
 
 	public static void main(String[] args) {
-		OneFactorScenario numberOfFlowsStudy = new NumberOfFlowsStudy();
-		numberOfFlowsStudy.executeTest(-1, -1, 1, 10, 1, Keywords.LAN, Keywords.Dumbbell, Keywords.GeneralTraffic);
+		NumberOfFlowsPerFlowSizeDistributionStudy numberOfFlowsStudy = new NumberOfFlowsPerFlowSizeDistributionStudy();
+		ArrayList<Integer> numberOfFlowsValues = new ArrayList<Integer>();
+		for (int i = 1; i <= 10; i++) {
+			numberOfFlowsValues.add(i);
+		}
+		ArrayList<Integer> flowSizeDistributions = new ArrayList<Integer>();
+		flowSizeDistributions.add(Keywords.Uniform);
+		flowSizeDistributions.add(Keywords.Guassian);
+		flowSizeDistributions.add(Keywords.Exponential);
+		numberOfFlowsStudy.executeTest(numberOfFlowsValues, flowSizeDistributions, Keywords.LAN, Keywords.Dumbbell,
+				Keywords.GeneralTraffic);
 	}
 
 	public static void print(Object o) {

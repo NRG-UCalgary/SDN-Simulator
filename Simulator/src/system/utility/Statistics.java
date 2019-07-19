@@ -11,7 +11,7 @@ import system.Network;
 public class Statistics {
 
 	// Temporary
-	int bottleneckLinkID;
+	public int bottleneckLinkID;
 
 	public HashMap<Integer, Link> links; // <LinkID, Link>
 	public HashMap<Integer, SDNSwitch> switches; // <SwitchID, SDNSwitch>

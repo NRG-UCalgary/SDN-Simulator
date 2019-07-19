@@ -14,6 +14,7 @@ public interface Keywords {
 	/* RVG distributions */
 	public static final int Exponential = 0;
 	public static final int Uniform = 1;
+	public static final int Guassian = 2;
 
 	/* Event names */
 	// Arrivals
@@ -99,6 +100,17 @@ public interface Keywords {
 	public static final String SeqNumPlot = "Transport Protocol Sequence Number Plot";
 	public static final String SeqNumPlotXAxisTitle = "Time(ms)";
 	public static final String SeqNumPlotYAxisTitle = "Segment Sequence Number";
+
+	/* Main factor names */
+	public static final String NumberOfFlowsFactor = "Number Of Flows ";
+	public static final String FlowSizeFactor = "Flow Size (# Segments)";
+	public static final String AvgFlowInterArrivalTime = "Avg Flow InterArrival Time (us)";
+
+	/* Second factor names */
+
+	/* Scenario names */
+	public static final String NumberOfFlowsStudy = "Number Of Flows Study";
+	public static final String FlowSizeStudy = "Flow Size Study";
 
 	/* Network Settings */
 	public static final int WAN = 0;

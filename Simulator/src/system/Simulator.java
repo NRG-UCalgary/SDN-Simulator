@@ -10,7 +10,6 @@ import system.utility.dataStructures.OneToOneMap;
 public class Simulator {
 
 	public final boolean OUTPUT = true;
-	public OutputHandler outputHandler = new OutputHandler();
 
 	/** ############### ID to Label Mappings ############### **/
 	private OneToOneMap switchLabels;

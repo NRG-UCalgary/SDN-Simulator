@@ -16,6 +16,7 @@ public class TrafficGenerator {
 	public int MinFlowSize;
 	public int MaxFlowSize;
 	public double AverageFlowSize;
+	public double StandardDeviationFlowSize;
 
 	public double MinFlowInterArrivalTime;
 	public double MaxFlowInterArrivalTime;
@@ -36,9 +37,10 @@ public class TrafficGenerator {
 
 			TotalNumberOfFlows = 10;
 
-			MinFlowSize = (int) Mathematics.kiloToBase(1);
-			MaxFlowSize = (int) Mathematics.kiloToBase(10);
+			MinFlowSize = (int) Mathematics.kiloToBase(5);
+			MaxFlowSize = (int) Mathematics.kiloToBase(30);
 			AverageFlowSize = Mathematics.kiloToBase(10);
+			StandardDeviationFlowSize = Mathematics.kiloToBase(5);
 
 			MinFlowInterArrivalTime = Mathematics.milliToMicro(100);
 			MaxFlowInterArrivalTime = Mathematics.milliToMicro(1000);
@@ -97,6 +99,9 @@ public class TrafficGenerator {
 				break;
 			case Keywords.Uniform:
 				flowSize = flowSizeRVG.getNextUniformInteger(MinFlowSize, MaxFlowSize);
+				break;
+			case Keywords.Guassian:
+				flowSize = flowSizeRVG.getNextGuassianInteger((int) AverageFlowSize, (int) StandardDeviationFlowSize);
 				break;
 			default:
 				break;
