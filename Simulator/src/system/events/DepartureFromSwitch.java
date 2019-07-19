@@ -8,7 +8,7 @@ public class DepartureFromSwitch extends Event {
 	int dstNodeID;
 
 	public DepartureFromSwitch(float eventTime, int switchID, int dstNodeID, Packet packet) {
-		super(Keywords.DepartureFromSwitch, eventTime, switchID, packet);
+		super(Keywords.Operations.Events.Names.Departures.DepartureFromSwitch, eventTime, switchID, packet);
 		this.dstNodeID = dstNodeID;
 	}
 

@@ -18,16 +18,17 @@ public class SDNSwitchv1 extends SDNSwitch {
 	/* -------------------------------------------------------------- */
 	public Network recvCtrlMessage(Network net, CtrlMessage message) {
 		switch (message.getType()) {
-		case Keywords.BufferTokenUpdate:
+		case Keywords.Operations.SDNMessages.Types.BufferTokenUpdate:
 			for (int hostID : message.ccTokenOfHostID.keySet()) {
 				accessLinks.get(hostID).buffer.updateCCToken(net.getCurrentTime(), message.ccTokenOfHostID.get(hostID));
 			}
 			break;
-		case Keywords.FlowSetUp:
+		case Keywords.Operations.SDNMessages.Types.FlowSetUp:
 			addFlowTableEntry(message.flowID, message.neighborID);
-			net.switches.get(message.neighborID).addFlowTableEntry(Simulator.reverseFlowStreamID(message.flowID), this.getID());
+			net.switches.get(message.neighborID).addFlowTableEntry(Simulator.reverseFlowStreamID(message.flowID),
+					this.getID());
 			break;
-		case Keywords.FlowRemoval:
+		case Keywords.Operations.SDNMessages.Types.FlowRemoval:
 			// TODO the flow entry can be removed here
 			break;
 		default:

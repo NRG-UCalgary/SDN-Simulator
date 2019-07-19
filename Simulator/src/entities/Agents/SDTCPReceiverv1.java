@@ -22,30 +22,30 @@ public class SDTCPReceiverv1 extends Agent {
 		/* Updating the ACKNum_ state variable */
 
 		switch (segment.getType()) {
-		case Keywords.CTRL:
+		case Keywords.Operations.Segments.Types.CTRL:
 			Main.error("SDTCPREceiver", "recvSegment", "Receiver got CTRL segment.");
 			break;
-		case Keywords.DATA:
+		case Keywords.Operations.Segments.Types.DATA:
 			updateACKNum(segment.getSeqNum());
 			// TODO late we might want to implement NACK
-			ackSegment = new Segment(flow.getID(), Keywords.ACK, ACKNum, Keywords.ACKSegSize, this.srcHostID,
-					this.dstHostID);
+			ackSegment = new Segment(flow.getID(), Keywords.Operations.Segments.Types.ACK, ACKNum,
+					Keywords.Operations.Segments.Sizes.ACKSegSize, this.srcHostID, this.dstHostID);
 			net = sendSegment(net, ackSegment);
 			break;
-		case Keywords.SYN:
+		case Keywords.Operations.Segments.Types.SYN:
 			// SYNACK must be generated and sent to the sender
-			ackSegment = new Segment(flow.getID(), Keywords.SYNACK, ACKNum, Keywords.SYNSegSize, this.srcHostID,
-					this.dstHostID);
+			ackSegment = new Segment(flow.getID(), Keywords.Operations.Segments.Types.SYNACK, ACKNum,
+					Keywords.Operations.Segments.Sizes.SYNSegSize, this.srcHostID, this.dstHostID);
 			net = sendSegment(net, ackSegment);
 			break;
 		/* ==================================== */
 		/* Not applicable for now */
 		/* Maybe in future we can separate different types of ACKs */
-		case Keywords.FINACK:
+		case Keywords.Operations.Segments.Types.FINACK:
 			break;
-		case Keywords.FIN:
-			Segment FINACKSegment = new Segment(flow.getID(), Keywords.FINACK, segment.getSeqNum(), Keywords.FINSegSize,
-					this.srcHostID, this.dstHostID);
+		case Keywords.Operations.Segments.Types.FIN:
+			Segment FINACKSegment = new Segment(flow.getID(), Keywords.Operations.Segments.Types.FINACK,
+					segment.getSeqNum(), Keywords.Operations.Segments.Sizes.FINSegSize, this.srcHostID, this.dstHostID);
 			net = sendSegment(net, FINACKSegment);
 			/** ===== Statistical Counters ===== **/
 			net.hosts.get(this.dstHostID).transportAgent.flow.completionTime = net.getCurrentTime();

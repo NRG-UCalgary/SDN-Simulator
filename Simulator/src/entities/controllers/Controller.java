@@ -25,10 +25,10 @@ public abstract class Controller extends Entity {
 		controlLinks = new HashMap<Integer, Link>();
 		database = new ControlDatabase(net);
 		switch (routingAlgorithm) {
-		case Keywords.Dijkstra:
+		case Keywords.Operations.RoutingAlgorithms.Dijkstra:
 			router = new Dijkstra(net.switches);
 			break;
-		case Keywords.Routing1:
+		case Keywords.Operations.RoutingAlgorithms.Routing1:
 			break;
 		default:
 			break;
@@ -60,7 +60,7 @@ public abstract class Controller extends Entity {
 		/* Updating flow path database */
 		/* Controller updates flow tables of all switches in the flow path */
 		for (int switchID : result.keySet()) {
-			CtrlMessage flowSetupMessage = new CtrlMessage(Keywords.FlowSetUp);
+			CtrlMessage flowSetupMessage = new CtrlMessage(Keywords.Operations.SDNMessages.Types.FlowSetUp);
 			flowSetupMessage.prepareFlowSetUpMessage(currentSegment.getFlowID(), result.get(switchID));
 			sendPacketToSwitch(switchID, new Packet(null, flowSetupMessage));
 		}
@@ -70,7 +70,8 @@ public abstract class Controller extends Entity {
 		float minBW = Float.MAX_VALUE;
 		float rtt = 0;
 		for (Link link : result.values()) {
-			rtt += link.getTotalDelay(Keywords.ACKSegSize) + link.getTotalDelay(Keywords.DataSegSize);
+			rtt += link.getTotalDelay(Keywords.Operations.Segments.Sizes.ACKSegSize)
+					+ link.getTotalDelay(Keywords.Operations.Segments.Sizes.DataSegSize);
 			if (link.getBandwidth() <= minBW) {
 				minBW = link.getBandwidth();
 				database.bottleneckLinkID = link.getID();

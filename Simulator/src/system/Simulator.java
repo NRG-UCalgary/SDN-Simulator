@@ -65,10 +65,10 @@ public class Simulator {
 	/*-------------------------------------------------------*/
 	/* Switch Creation Method */
 	public void createSwitch(String label, float ctrlLinkPropagationDelay, float ctrlLinkBandwidth) {
-		Link controlLink = new Link(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
+		Link controlLink = new Link(Keywords.Operations.ControllerID, switchCounter, Keywords.Operations.ControllerID,
 				ctrlLinkPropagationDelay,
 				(float) Mathematics.bitPerSecondTobitPerMicroSecond((double) ctrlLinkBandwidth), Integer.MAX_VALUE,
-				Keywords.FIFO);
+				Keywords.Operations.Buffers.Policy.FIFO);
 		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
 		net.switches.put(switchCounter, sw);
 		switchLabels.put(switchCounter, label);
@@ -134,7 +134,7 @@ public class Simulator {
 		Agent src_agent = null;
 		Agent dst_agent = null;
 		switch (type) {
-		case Keywords.SDTCP:
+		case Keywords.Operations.Agents.Types.SDTCP:
 			src_agent = new SDTCPSenderv1(flow);
 			flow = new Flow(reverseFlowStreamID(flowCounter), hostLabels.getKey(dst), hostLabels.getKey(src), size,
 					arrival_time);
@@ -153,7 +153,7 @@ public class Simulator {
 	/********* General Programming Methods **********/
 
 	public static int reverseFlowStreamID(int streamID) {
-		int offset = Keywords.ACKStreamIDOffSet;
+		int offset = Keywords.Operations.ACKStreamIDOffSet;
 		if (streamID < offset) {
 			return streamID + offset;
 		} else {
@@ -162,7 +162,7 @@ public class Simulator {
 	}
 
 	public static int reverseLinkID(int linkID) {
-		int offset = Keywords.ReverseLinkIDOffSet;
+		int offset = Keywords.Operations.ReverseLinkIDOffSet;
 		if (linkID < offset) {
 			return linkID + offset;
 		} else {

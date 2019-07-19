@@ -37,27 +37,28 @@ public abstract class Testbed {
 
 	public Testbed(int networkType) {
 		SimEndTime = Float.MAX_VALUE;
-		rttRVG = new RandomVariableGenerator(Keywords.AccessLinkPropagationDelayStartingSeed);
+		rttRVG = new RandomVariableGenerator(
+				Keywords.Inputs.RandomVariableGenerator.StartingSeeds.AccessLinkPropagationDelayStartingSeed);
 		switch (networkType) {
-		case Keywords.WAN:
+		case Keywords.Inputs.Testbeds.Types.WAN:
 			AccessLinkBandwidth = (float) Mathematics.megaToBase(500);
 			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
 			ReceiverAccessLinkPropagationDelay = 10;
 			NetworkLinkPropagationDelay = (float) Mathematics.milliToMicro(10);
 
-			AccessLinkPropagationDelayDistribution = Keywords.Uniform;
+			AccessLinkPropagationDelayDistribution = Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform;
 			MinAccessLinkPropagationDelay = 1.0;
 			MaxAccessLinkPropagationDelay = 10.0;
 			AverageAccessLinkPropagationDelay = 5.0;
 
 			break;
-		case Keywords.LAN:
+		case Keywords.Inputs.Testbeds.Types.LAN:
 			AccessLinkBandwidth = (float) Mathematics.megaToBase(500);
 			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
 			ReceiverAccessLinkPropagationDelay = 1;
 			NetworkLinkPropagationDelay = 10;
 
-			AccessLinkPropagationDelayDistribution = Keywords.Uniform;
+			AccessLinkPropagationDelayDistribution = Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform;
 			MinAccessLinkPropagationDelay = 1.0;
 			MaxAccessLinkPropagationDelay = 5.0;
 			AverageAccessLinkPropagationDelay = 2.0;
@@ -78,10 +79,10 @@ public abstract class Testbed {
 		for (int flowIndex = 0; flowIndex < totalNumberOfFlows; flowIndex++) {
 			float propagationDelay = 0;
 			switch (distribution) {
-			case Keywords.Exponential:
+			case Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential:
 				propagationDelay = (float) rttRVG.getNextExponential(AverageAccessLinkPropagationDelay);
 				break;
-			case Keywords.Uniform:
+			case Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform:
 				propagationDelay = (float) rttRVG.getNextUniform(MinAccessLinkPropagationDelay,
 						MaxAccessLinkPropagationDelay);
 				break;

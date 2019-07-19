@@ -50,7 +50,7 @@ public class SDTCPSenderv1 extends Agent {
 	/* ########## Public ################################# */
 	public Network sendSYN(Network net) {
 		Segment synSegment = genSYN();
-		float nextTime = flow.arrivalTime + Keywords.HostProcessDelay;
+		float nextTime = flow.arrivalTime;
 		int nextNodeID = net.hosts.get(srcHostID).accessSwitchID;
 		net.eventList.addEvent(new DepartureFromHost(nextTime, srcHostID, nextNodeID, new Packet(synSegment, null)));
 		mostRecentSegmentDepartureTime = nextTime;
@@ -64,13 +64,13 @@ public class SDTCPSenderv1 extends Agent {
 	public Network recvSegment(Network net, Segment segment) {
 		segmentsToSend.clear();
 		switch (segment.getType()) {
-		case Keywords.CTRL:
+		case Keywords.Operations.Segments.Types.CTRL:
 			/* Update the congestion control variables */
 			sWnd_ = segment.sWnd_;
 			bigrtt_ = segment.bigRTT_;
 			interSegmentDelay_ = segment.interSegmentDelay_;
 			break;
-		case Keywords.ACK:
+		case Keywords.Operations.Segments.Types.ACK:
 			/** ===== Statistical Counters ===== **/
 			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
@@ -86,7 +86,7 @@ public class SDTCPSenderv1 extends Agent {
 				// This is the case that the receiver is demanding something else
 			}
 			break;
-		case Keywords.SYNACK:
+		case Keywords.Operations.Segments.Types.SYNACK:
 			/** ===== Statistical Counters ===== **/
 			flow.dataSendingStartTime = net.getCurrentTime();
 			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
@@ -98,12 +98,12 @@ public class SDTCPSenderv1 extends Agent {
 		/* ==================================== */
 		/* Not applicable for now */
 		/* Maybe in future we can separate different types of ACKs */
-		case Keywords.FINACK:
+		case Keywords.Operations.Segments.Types.FINACK:
 			/** ===== Statistical Counters ===== **/
 			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
 			break;
-		case Keywords.FIN:
+		case Keywords.Operations.Segments.Types.FIN:
 			break;
 		/* ==================================== */
 		default:
@@ -142,22 +142,23 @@ public class SDTCPSenderv1 extends Agent {
 	}
 
 	private Segment genSYN() {
-		Segment seg = new Segment(flow.getID(), Keywords.SYN, Keywords.SYNSeqNum, Keywords.SYNSegSize, srcHostID,
-				dstHostID);
+		Segment seg = new Segment(flow.getID(), Keywords.Operations.Segments.Types.SYN,
+				Keywords.Operations.Segments.SpecialSequenceNumbers.SYNSeqNum,
+				Keywords.Operations.Segments.Sizes.SYNSegSize, srcHostID, dstHostID);
 		return seg;
 	}
 
 	private Segment genFIN() {
 		seqNum++;
-		Segment seg = new Segment(flow.getID(), Keywords.UncontrolledFIN, seqNum, Keywords.FINSegSize, srcHostID,
-				dstHostID);
+		Segment seg = new Segment(flow.getID(), Keywords.Operations.Segments.Types.UncontrolledFIN, seqNum,
+				Keywords.Operations.Segments.Sizes.FINSegSize, srcHostID, dstHostID);
 		return seg;
 	}
 
 	private Segment genDATASegment() {
 		if (remainingSegments > 0) {
-			Segment seg = new Segment(this.flow.getID(), Keywords.DATA, seqNum, Keywords.DataSegSize, srcHostID,
-					dstHostID);
+			Segment seg = new Segment(this.flow.getID(), Keywords.Operations.Segments.Types.DATA, seqNum,
+					Keywords.Operations.Segments.Sizes.DataSegSize, srcHostID, dstHostID);
 			remainingSegments--;
 			return seg;
 		} else if (remainingSegments == 0) {

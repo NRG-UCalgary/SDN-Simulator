@@ -25,7 +25,10 @@ public class RandomVariableGenerator extends Random {
 	public void resetRng() {
 		rand = new Random(seed);
 	}
-
+	
+	
+	
+	
 	/**********************************************************************/
 	/** Generating a RANDOM Double NUMBER uniformly from (0,1) ************/
 	/**********************************************************************/

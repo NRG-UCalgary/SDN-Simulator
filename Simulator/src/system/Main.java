@@ -14,11 +14,11 @@ public class Main {
 			numberOfFlowsValues.add(i);
 		}
 		ArrayList<Integer> flowSizeDistributions = new ArrayList<Integer>();
-		flowSizeDistributions.add(Keywords.Uniform);
-		flowSizeDistributions.add(Keywords.Guassian);
-		flowSizeDistributions.add(Keywords.Exponential);
-		numberOfFlowsStudy.executeTest(numberOfFlowsValues, flowSizeDistributions, Keywords.LAN, Keywords.Dumbbell,
-				Keywords.GeneralTraffic);
+		flowSizeDistributions.add(Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform);
+		flowSizeDistributions.add(Keywords.Inputs.RandomVariableGenerator.Distributions.Guassian);
+		flowSizeDistributions.add(Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential);
+		numberOfFlowsStudy.executeTest(numberOfFlowsValues, flowSizeDistributions, Keywords.Inputs.Testbeds.Types.LAN,
+				Keywords.Inputs.Testbeds.Topologies.Dumbbell, Keywords.Inputs.Traffics.Types.GeneralTraffic);
 	}
 
 	public static void print(Object o) {

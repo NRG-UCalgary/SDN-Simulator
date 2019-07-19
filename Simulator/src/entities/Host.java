@@ -15,7 +15,7 @@ public class Host extends Node {
 	public String label;
 
 	public Host(int ID) {
-		super(ID, Keywords.Host);
+		super(ID, Keywords.Operations.Nodes.Names.Host);
 	}
 
 	/* --------------------------------------------------- */
@@ -30,11 +30,11 @@ public class Host extends Node {
 		accessLink.buffer.deQueue();
 		float nextTime = net.getCurrentTime() + getAccessLinkTotalDelay(packet.getSize());
 		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
-		if (packet.segment.getType() == Keywords.DATA || packet.segment.getType() == Keywords.UncontrolledFIN) {
+		if (packet.segment.getType() == Keywords.Operations.Segments.Types.DATA
+				|| packet.segment.getType() == Keywords.Operations.Segments.Types.UncontrolledFIN) {
 			/** ===== Statistical Counters ===== **/
 			transportAgent.flow.totalSentSegments++;
-			transportAgent.flow.dataSeqNumSendingTimes.put((float) packet.segment.getSeqNum(),
-					Keywords.HostProcessDelay + net.getCurrentTime());
+			transportAgent.flow.dataSeqNumSendingTimes.put((float) packet.segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
 		}
 		return net;
@@ -46,7 +46,7 @@ public class Host extends Node {
 
 	/* ########## Public ################################# */
 	public Network initialize(Network net) {
-	
+
 		return transportAgent.sendSYN(net);
 	}
 
@@ -55,7 +55,8 @@ public class Host extends Node {
 	}
 
 	public float getAccessLinkRtt() {
-		return getAccessLinkTotalDelay(Keywords.ACKSegSize) + getAccessLinkTotalDelay(Keywords.DataSegSize);
+		return getAccessLinkTotalDelay(Keywords.Operations.Segments.Sizes.ACKSegSize)
+				+ getAccessLinkTotalDelay(Keywords.Operations.Segments.Sizes.DataSegSize);
 	}
 
 	public void connectToNetwork(int accessSwitchID, Link accessLink) {

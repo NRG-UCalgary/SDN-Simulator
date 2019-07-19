@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import entities.*;
 import system.*;
 import system.events.*;
-import system.utility.*;
 
 public abstract class Agent {
 
@@ -47,7 +46,7 @@ public abstract class Agent {
 		float bufferTime = net.hosts.get(srcHostID).accessLink.buffer.getBufferTime(net.getCurrentTime(),
 				net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize()));
 
-		float nextTime = net.getCurrentTime() + bufferTime + Keywords.HostProcessDelay;
+		float nextTime = net.getCurrentTime() + bufferTime;
 		if (nextTime < interSegmentDelay_ + mostRecentSegmentDepartureTime) {
 			nextTime = interSegmentDelay_ + mostRecentSegmentDepartureTime;
 		} else {

@@ -37,16 +37,16 @@ public class Controllerv1 extends Controller {
 		this.currentNetwork = net;
 		this.currentSegment = segment;
 		switch (segment.getType()) {
-		case Keywords.SYN:
+		case Keywords.Operations.Segments.Types.SYN:
 			Debugger.debug("SYN (flow_" + segment.getFlowID() + ")" + " arrived at: " + net.getCurrentTime());
 			database.addFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
 			handleRouting(currentNetwork.switches.get(switchID), this.getAccessSwitch(currentSegment.getDstHostID()));
 
 			break;
-		case Keywords.UncontrolledFIN:
+		case Keywords.Operations.Segments.Types.UncontrolledFIN:
 			Debugger.debug("FIN has arrived at:" + currentNetwork.getCurrentTime());
 			database.removeFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
-			currentSegment.changeType(Keywords.FIN);
+			currentSegment.changeType(Keywords.Operations.Segments.Types.FIN);
 			break;
 		default:
 			break;
@@ -97,7 +97,8 @@ public class Controllerv1 extends Controller {
 
 	private void updateInterSegmentDelay() {
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
-			interSegmentDelay = Keywords.DataSegSize / database.btlBwOfFlowID.get(currentSegment.getFlowID());
+			interSegmentDelay = Keywords.Operations.Segments.Sizes.DataSegSize
+					/ database.btlBwOfFlowID.get(currentSegment.getFlowID());
 		} else {
 			interSegmentDelay = 0;
 		}
@@ -119,7 +120,8 @@ public class Controllerv1 extends Controller {
 		previousSWnd = sWnd;
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
 			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(currentSegment.getFlowID())
-					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) * Keywords.DataSegSize)));
+					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID)
+							* Keywords.Operations.Segments.Sizes.DataSegSize)));
 			if (this.sWnd == 0) {
 				this.sWnd = 1;
 			}
@@ -137,7 +139,7 @@ public class Controllerv1 extends Controller {
 		HashMap<Integer, CtrlMessage> messages = new HashMap<Integer, CtrlMessage>();
 		// a CtrlMessage for each accessSwitches in the network
 		for (int accessSwitchID : database.getAccessSwitchIDsSet()) {
-			CtrlMessage singleMessage = new CtrlMessage(Keywords.BufferTokenUpdate);
+			CtrlMessage singleMessage = new CtrlMessage(Keywords.Operations.SDNMessages.Types.BufferTokenUpdate);
 			HashMap<Integer, BufferToken> preparedTokens = new HashMap<Integer, BufferToken>();
 			int i = 0; // The flow ID index
 			float accessLinkRttOfFlowZero = 0; // d_i
@@ -180,8 +182,9 @@ public class Controllerv1 extends Controller {
 	private void notifyHosts() {
 		// TODO this is for one accessSwitch assumption
 		// TODO must be updated for more than access switches
-		Segment segmentToHosts = new Segment(Keywords.ControllerFLowID, Keywords.CTRL, Keywords.CTRLSeqNum,
-				Keywords.CTRLSegSize, this.getID(), Keywords.BroadcastDestination);
+		Segment segmentToHosts = new Segment(Keywords.Operations.ControllerFLowID,
+				Keywords.Operations.Segments.Types.CTRL, Keywords.Operations.Segments.SpecialSequenceNumbers.CTRLSeqNum,
+				Keywords.Operations.Segments.Sizes.CTRLSegSize, this.getID(), Keywords.Operations.BroadcastDestination);
 		segmentToHosts.bigRTT_ = this.bigRTT;
 		segmentToHosts.sWnd_ = this.sWnd;
 		segmentToHosts.interSegmentDelay_ = this.interSegmentDelay;

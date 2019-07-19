@@ -19,7 +19,7 @@ public abstract class SDNSwitch extends Node {
 	private HashMap<Integer, Integer> flowTable; // <FlowID, SwitchID(neighbors)>
 
 	public SDNSwitch(int ID, Link controlLink) {
-		super(ID, Keywords.Switch);
+		super(ID, Keywords.Operations.Nodes.Names.Switch);
 		this.controlLink = controlLink;
 		isMonitored = true;
 		accessLinks = new HashMap<Integer, Link>();
@@ -40,13 +40,13 @@ public abstract class SDNSwitch extends Node {
 		/* ================================================ */
 		/* ========== Control message stays in switch ===== */
 		/* ================================================ */
-		if (packet.type == Keywords.SDNControl) {
+		if (packet.type == Keywords.Operations.Packets.Types.SDNControl) {
 			return recvCtrlMessage(net, packet.controlMessage);
 		}
 		/* ================================================ */
 		/* ========== Broadcast segment to hosts ========== */
 		/* ================================================ */
-		else if (segment.getDstHostID() == Keywords.BroadcastDestination) {
+		else if (segment.getDstHostID() == Keywords.Operations.BroadcastDestination) {
 			return broadcastToHosts(net, segment);
 		}
 		/* ================================================ */
@@ -59,7 +59,7 @@ public abstract class SDNSwitch extends Node {
 		/* ========== Segment to next switch ============== */
 		/* ================================================ */
 		else if (hasFlowEntry(segment.getFlowID())) {
-			if (segment.getType() == Keywords.UncontrolledFIN) {
+			if (segment.getType() == Keywords.Operations.Segments.Types.UncontrolledFIN) {
 				/* Uncontrolled FIN goes to controller */
 				return forwardToController(net, segment);
 			} else {
@@ -96,8 +96,8 @@ public abstract class SDNSwitch extends Node {
 		/* ========== Next node is a Switch =============== */
 		/* ================================================ */
 		else if (hasFlowEntry(segment.getFlowID())) {
-			
-			if (segment.getType() == Keywords.UncontrolledFIN) {
+
+			if (segment.getType() == Keywords.Operations.Segments.Types.UncontrolledFIN) {
 				/* Uncontrolled FIN goes to controller */
 				nextTime = net.getCurrentTime() + controlLink.getTotalDelay(segment.getSize());
 				nextEvent = new ArrivalToController(nextTime, this.ID, packet);

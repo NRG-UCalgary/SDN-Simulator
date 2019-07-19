@@ -9,7 +9,7 @@ public class DepartureFromController extends Event {
 	int dstSwitchID;
 
 	public DepartureFromController(float eventTime, int controllerID, int dstSwitchID, Packet packet) {
-		super(Keywords.DepartureFromController, eventTime, controllerID, packet);
+		super(Keywords.Operations.Events.Names.Departures.DepartureFromController, eventTime, controllerID, packet);
 		this.dstSwitchID = dstSwitchID;
 	}
 

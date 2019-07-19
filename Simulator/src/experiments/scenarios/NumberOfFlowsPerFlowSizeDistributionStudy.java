@@ -12,7 +12,8 @@ import system.utility.*;
 public class NumberOfFlowsPerFlowSizeDistributionStudy extends Scenario {
 
 	public NumberOfFlowsPerFlowSizeDistributionStudy() {
-		super(Keywords.NumberOfFlowsStudy, Keywords.NumberOfFlowsFactor);
+		super(Keywords.Outputs.Scenarios.Names.NumberOfFlowsStudy,
+				Keywords.Outputs.Charts.MainFactors.Titles.NumberOfFlowsFactor);
 	}
 
 	public void executeTest(ArrayList<Integer> numberOfFlowsValues, ArrayList<Integer> flowSizeDistributionValues,
@@ -21,16 +22,16 @@ public class NumberOfFlowsPerFlowSizeDistributionStudy extends Scenario {
 		for (int flowSizeDistribution : flowSizeDistributionValues) {
 			TreeMap<Float, Statistics> StudyStats = new TreeMap<Float, Statistics>();
 			Testbed testbed;
-			TrafficGenerator trafficGen = new TrafficGenerator(trafficType);
-			trafficGen.FlowSizeDistribution = flowSizeDistribution;
+			TrafficGenerator trafficGen = new TrafficGenerator(trafficType, 10);
+			trafficGen.flowSizeDistribution = flowSizeDistribution;
 			switch (networkTopology) {
-			case Keywords.Dumbbell:
+			case Keywords.Inputs.Testbeds.Topologies.Dumbbell:
 				testbed = new Dumbbell(networkType);
 				break;
-			case Keywords.DataCenter:
+			case Keywords.Inputs.Testbeds.Topologies.DataCenter:
 				testbed = new DataCenter(networkType);
 				break;
-			case Keywords.ParkingLot:
+			case Keywords.Inputs.Testbeds.Topologies.ParkingLot:
 				testbed = new ParkingLot(networkType);
 				break;
 			default:
@@ -41,26 +42,26 @@ public class NumberOfFlowsPerFlowSizeDistributionStudy extends Scenario {
 			// An outer loop can be created for replication
 			for (int numberOfFlows : numberOfFlowsValues) {
 				Main.singleFactoractorMessage("Number Of Flows", Integer.toString(numberOfFlows));
-				trafficGen.TotalNumberOfFlows = (int) numberOfFlows;
+				trafficGen.totalNumberOfFlows = (int) numberOfFlows;
 				StudyStats.put((float) numberOfFlows, testbed.executeSimulation(trafficGen.generate()));
 				Main.simulationDoneMessage();
 			}
 			String distributionName;
 			switch (flowSizeDistribution) {
-			case Keywords.Uniform:
+			case Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform:
 				distributionName = "Uniform";
 				break;
-			case Keywords.Exponential:
+			case Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential:
 				distributionName = "Exponential";
 				break;
-			case Keywords.Guassian:
+			case Keywords.Inputs.RandomVariableGenerator.Distributions.Guassian:
 				distributionName = "Guassian";
 				break;
 			default:
 				distributionName = "Error";
 				break;
 			}
-			result.put(distributionName+" Flow Sizes", StudyStats);
+			result.put(distributionName + " Flow Sizes", StudyStats);
 		}
 		generateNumericalFactorOutput(result);
 	}
