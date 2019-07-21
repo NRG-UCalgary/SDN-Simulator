@@ -21,6 +21,7 @@ public abstract class Testbed {
 	// Link Propagation Delay
 	protected float ReceiverAccessLinkPropagationDelay;
 	protected double AverageAccessLinkPropagationDelay;
+	protected double StandardDeviationAccessLinkPropagationDelay;
 	protected double MinAccessLinkPropagationDelay;
 	protected double MaxAccessLinkPropagationDelay;
 
@@ -33,35 +34,37 @@ public abstract class Testbed {
 	protected int NumberOfHostsPerAccessSwitch;
 
 	/* Flow Properties */
-	public int AccessLinkPropagationDelayDistribution;
+	public short AccessLinkPropagationDelayDistribution;
 
-	public Testbed(int networkType) {
+	public Testbed(short networkType) {
 		SimEndTime = Float.MAX_VALUE;
 		rttRVG = new RandomVariableGenerator(
-				Keywords.Inputs.RandomVariableGenerator.StartingSeeds.AccessLinkPropagationDelayStartingSeed);
+				Keywords.RandomVariableGenerator.StartingSeeds.AccessLinkPropagationDelayStartingSeed);
 		switch (networkType) {
-		case Keywords.Inputs.Testbeds.Types.WAN:
+		case Keywords.Testbeds.Types.WAN:
 			AccessLinkBandwidth = (float) Mathematics.megaToBase(500);
 			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
 			ReceiverAccessLinkPropagationDelay = 10;
 			NetworkLinkPropagationDelay = (float) Mathematics.milliToMicro(10);
 
-			AccessLinkPropagationDelayDistribution = Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform;
+			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Uniform;
 			MinAccessLinkPropagationDelay = 1.0;
 			MaxAccessLinkPropagationDelay = 10.0;
 			AverageAccessLinkPropagationDelay = 5.0;
+			StandardDeviationAccessLinkPropagationDelay = 4.0;
 
 			break;
-		case Keywords.Inputs.Testbeds.Types.LAN:
+		case Keywords.Testbeds.Types.LAN:
 			AccessLinkBandwidth = (float) Mathematics.megaToBase(500);
 			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
 			ReceiverAccessLinkPropagationDelay = 1;
 			NetworkLinkPropagationDelay = 10;
 
-			AccessLinkPropagationDelayDistribution = Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform;
+			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Uniform;
 			MinAccessLinkPropagationDelay = 1.0;
 			MaxAccessLinkPropagationDelay = 5.0;
 			AverageAccessLinkPropagationDelay = 2.0;
+			StandardDeviationAccessLinkPropagationDelay = 1.0;
 
 			break;
 		default:
@@ -77,19 +80,8 @@ public abstract class Testbed {
 		TreeMap<Integer, Float> accessLinkPropagationDelayPerFlowID = new TreeMap<Integer, Float>();
 		rttRVG.resetRng();
 		for (int flowIndex = 0; flowIndex < totalNumberOfFlows; flowIndex++) {
-			float propagationDelay = 0;
-			switch (distribution) {
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential:
-				propagationDelay = (float) rttRVG.getNextExponential(AverageAccessLinkPropagationDelay);
-				break;
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform:
-				propagationDelay = (float) rttRVG.getNextUniform(MinAccessLinkPropagationDelay,
-						MaxAccessLinkPropagationDelay);
-				break;
-			default:
-				break;
-			}
-			accessLinkPropagationDelayPerFlowID.put(flowIndex, propagationDelay);
+			accessLinkPropagationDelayPerFlowID.put(flowIndex, (float) rttRVG.getNextValue(distribution,
+					AverageAccessLinkPropagationDelay, StandardDeviationAccessLinkPropagationDelay));
 		}
 		return accessLinkPropagationDelayPerFlowID;
 	}

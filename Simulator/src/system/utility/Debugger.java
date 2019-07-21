@@ -86,11 +86,11 @@ public class Debugger {
 
 	public static void pacekt(Packet packet) {
 		switch (packet.type) {
-		case Keywords.Operations.Packets.Types.Segment:
+		case Keywords.Packets.Types.Segment:
 			String segmentType = segmentType(packet.segment.getType());
 			debug("" + segmentType);
 			break;
-		case Keywords.Operations.Packets.Types.SDNControl:
+		case Keywords.Packets.Types.SDNControl:
 
 			break;
 		default:
@@ -111,19 +111,19 @@ public class Debugger {
 	/* ======================== Private methods ============================ */
 	private static String segmentType(int type) {
 		switch (type) {
-		case Keywords.Operations.Segments.Types.DATA:
+		case Keywords.Segments.Types.DATA:
 			return "Data";
-		case Keywords.Operations.Segments.Types.ACK:
+		case Keywords.Segments.Types.ACK:
 			return "ACK";
-		case Keywords.Operations.Segments.Types.CTRL:
+		case Keywords.Segments.Types.CTRL:
 			return "Control";
-		case Keywords.Operations.Segments.Types.SYN:
+		case Keywords.Segments.Types.SYN:
 			return "SYN";
-		case Keywords.Operations.Segments.Types.FIN:
+		case Keywords.Segments.Types.FIN:
 			return "FIN";
-		case Keywords.Operations.Segments.Types.SYNACK:
+		case Keywords.Segments.Types.SYNACK:
 			return "SYNACK";
-		case Keywords.Operations.Segments.Types.FINACK:
+		case Keywords.Segments.Types.FINACK:
 			return "FINACK";
 		default:
 			return null;

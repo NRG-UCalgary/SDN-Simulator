@@ -27,8 +27,8 @@ import system.charts.datastructures.NumericFactorScatterTableData;
 
 public class ChartPlotter {
 
-	public static int chartWidth = 15;
-	public static int chartHeight = 20;
+	public static int chartWidth = 25;
+	public static int chartHeight = 25;
 	public static int FirstChartRowIndex = 1;
 	public static int TableChartGap = 2;
 

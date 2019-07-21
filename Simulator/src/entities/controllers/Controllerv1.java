@@ -30,31 +30,26 @@ public class Controllerv1 extends Controller {
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Inherited methods (from Controller) --------------------------- */
 	/* -------------------------------------------------------------------------- */
-	public Network recvPacket(Network net, int switchID, Packet packet) {
-		Debugger.debug("========== Controler has received a Segment ==========");
+	public void recvPacket(Network net, int switchID, Packet packet) {
 		Segment segment = packet.segment;
 		this.currentSwitchID = switchID;
-		this.currentNetwork = net;
+		// this.currentNetwork = net;
 		this.currentSegment = segment;
 		switch (segment.getType()) {
-		case Keywords.Operations.Segments.Types.SYN:
-			Debugger.debug("SYN (flow_" + segment.getFlowID() + ")" + " arrived at: " + net.getCurrentTime());
+		case Keywords.Segments.Types.SYN:
 			database.addFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
-			handleRouting(currentNetwork.switches.get(switchID), this.getAccessSwitch(currentSegment.getDstHostID()));
+			handleRouting(net, net.switches.get(switchID), this.getAccessSwitch(currentSegment.getDstHostID()));
 
 			break;
-		case Keywords.Operations.Segments.Types.UncontrolledFIN:
-			Debugger.debug("FIN has arrived at:" + currentNetwork.getCurrentTime());
+		case Keywords.Segments.Types.UncontrolledFIN:
 			database.removeFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
-			currentSegment.changeType(Keywords.Operations.Segments.Types.FIN);
+			currentSegment.changeType(Keywords.Segments.Types.FIN);
 			break;
 		default:
 			break;
 		}
-		handleCongestionControl();
-		sendPacketToSwitch(switchID, new Packet(currentSegment, null));
-		Debugger.debug("======================================================");
-		return currentNetwork;
+		handleCongestionControl(net);
+		sendPacketToSwitch(net, switchID, new Packet(currentSegment, null));
 	}
 
 	/* -------------------------------------------------------------------------- */
@@ -64,18 +59,14 @@ public class Controllerv1 extends Controller {
 	/* =========================================== */
 	/* ========== Congestion Control ============= */
 	/* =========================================== */
-	private void handleCongestionControl() {
+	private void handleCongestionControl(Network net) {
 		updateBigRTT();
-		Debugger.debug("bigRtt = " + bigRTT);
 		updateInterSegmentDelay();
-		Debugger.debug("interSegmentDelay = " + interSegmentDelay);
 		updateInterFlowDelayConstant();
-		Debugger.debug("interFlowDelay Constant = " + interFlowDelayConstant);
 		updateSWnd();
-		Debugger.debug("sWnd = " + sWnd);
-		notifyHosts();
+		notifyHosts(net);
 		// if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 1) {
-		notifyAccessSwitches(prepareMessage());
+		notifyAccessSwitches(net, prepareMessage(net));
 		// }
 
 	}
@@ -97,7 +88,7 @@ public class Controllerv1 extends Controller {
 
 	private void updateInterSegmentDelay() {
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
-			interSegmentDelay = Keywords.Operations.Segments.Sizes.DataSegSize
+			interSegmentDelay = Keywords.Segments.Sizes.DataSegSize
 					/ database.btlBwOfFlowID.get(currentSegment.getFlowID());
 		} else {
 			interSegmentDelay = 0;
@@ -121,7 +112,7 @@ public class Controllerv1 extends Controller {
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
 			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(currentSegment.getFlowID())
 					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID)
-							* Keywords.Operations.Segments.Sizes.DataSegSize)));
+							* Keywords.Segments.Sizes.DataSegSize)));
 			if (this.sWnd == 0) {
 				this.sWnd = 1;
 			}
@@ -134,12 +125,11 @@ public class Controllerv1 extends Controller {
 		}
 	}
 
-	private HashMap<Integer, CtrlMessage> prepareMessage() {
-		Debugger.debug("++++++++++ Preparing message ++++++++++");
+	private HashMap<Integer, CtrlMessage> prepareMessage(Network net) {
 		HashMap<Integer, CtrlMessage> messages = new HashMap<Integer, CtrlMessage>();
 		// a CtrlMessage for each accessSwitches in the network
 		for (int accessSwitchID : database.getAccessSwitchIDsSet()) {
-			CtrlMessage singleMessage = new CtrlMessage(Keywords.Operations.SDNMessages.Types.BufferTokenUpdate);
+			CtrlMessage singleMessage = new CtrlMessage(Keywords.SDNMessages.Types.BufferTokenUpdate);
 			HashMap<Integer, BufferToken> preparedTokens = new HashMap<Integer, BufferToken>();
 			int i = 0; // The flow ID index
 			float accessLinkRttOfFlowZero = 0; // d_i
@@ -148,23 +138,19 @@ public class Controllerv1 extends Controller {
 			float steadyCycleDelay = 0;
 			for (int hostID : database.getHostIDsSetForAccessSwitchID(accessSwitchID)) {
 				BufferToken ccTokenForEachBuffer = new BufferToken();
-				Debugger.debug(" The token for hostID: " + hostID);
 				if (i == 0) { // flow_0
 					interFlowDelay = 0;
-					accessLinkRttOfFlowZero = currentNetwork.hosts.get(hostID).getAccessLinkRtt();
+					accessLinkRttOfFlowZero = net.hosts.get(hostID).getAccessLinkRtt();
 				} else { // flow_i and i>0
 					interFlowDelay = i * interFlowDelayConstant
-							+ (accessLinkRttOfFlowZero - currentNetwork.hosts.get(hostID).getAccessLinkRtt());
+							+ (accessLinkRttOfFlowZero - net.hosts.get(hostID).getAccessLinkRtt());
 				}
 				initialCycleDelay = (previousBigRTT) + interFlowDelay;
-				Debugger.debug("  initial ccDelay = " + initialCycleDelay);
 				steadyCycleDelay = bigRTT - database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
-				Debugger.debug("  steady ccDelay = " + steadyCycleDelay);
 				ccTokenForEachBuffer.activate(true, initialCycleDelay, previousSWnd, steadyCycleDelay, sWnd);
 
 				preparedTokens.put(hostID, ccTokenForEachBuffer);
 				i++;
-				Debugger.debug("-------------------------------");
 			}
 
 			singleMessage.ccTokenOfHostID = preparedTokens;
@@ -173,22 +159,22 @@ public class Controllerv1 extends Controller {
 		return messages;
 	}
 
-	private void notifyAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
+	private void notifyAccessSwitches(Network net, HashMap<Integer, CtrlMessage> messages) {
 		// TODO this is for one accessSwitch assumption
 		// TODO must be updated for more than access switches
-		sendControlMessageToAccessSwitches(messages);
+		sendControlMessageToAccessSwitches(net, messages);
 	}
 
-	private void notifyHosts() {
+	private void notifyHosts(Network net) {
 		// TODO this is for one accessSwitch assumption
 		// TODO must be updated for more than access switches
-		Segment segmentToHosts = new Segment(Keywords.Operations.ControllerFLowID,
-				Keywords.Operations.Segments.Types.CTRL, Keywords.Operations.Segments.SpecialSequenceNumbers.CTRLSeqNum,
-				Keywords.Operations.Segments.Sizes.CTRLSegSize, this.getID(), Keywords.Operations.BroadcastDestination);
+		Segment segmentToHosts = new Segment(Keywords.ControllerFLowID, Keywords.Segments.Types.CTRL,
+				Keywords.Segments.SpecialSequenceNumbers.CTRLSeqNum, Keywords.Segments.Sizes.CTRLSegSize, this.getID(),
+				Keywords.BroadcastDestination);
 		segmentToHosts.bigRTT_ = this.bigRTT;
 		segmentToHosts.sWnd_ = this.sWnd;
 		segmentToHosts.interSegmentDelay_ = this.interSegmentDelay;
-		sendPacketToSwitch(this.currentSwitchID, new Packet(segmentToHosts, null));
+		sendPacketToSwitch(net, this.currentSwitchID, new Packet(segmentToHosts, null));
 	}
 
 }

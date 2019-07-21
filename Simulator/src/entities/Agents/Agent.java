@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import entities.*;
 import system.*;
-import system.events.*;
+import system.utility.Keywords;
 
 public abstract class Agent {
 
@@ -25,24 +25,27 @@ public abstract class Agent {
 	/* ---------- Abstract methods ---------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
 
-	public abstract Network recvSegment(Network net, Segment segment);
+	public abstract void recvSegment(Network net, Segment segment);
 
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
-	public Network sendSYN(Network net) {
+	public void sendSYN(Network net) {
 		Main.error("Agent", "sendSYN", "incorrect method call.");
-		return null;
 	}
 
-	protected Network sendMultipleSegments(Network net, ArrayList<Segment> segmentsToSend) {
+	protected void sendMultipleSegments(Network net, ArrayList<Segment> segmentsToSend) {
 		for (int i = 0; i < segmentsToSend.size(); i++) {
-			net = sendSegment(net, segmentsToSend.get(i));
+			sendSegment(net, segmentsToSend.get(i));
 		}
-		return net;
 	}
 
-	protected Network sendSegment(Network net, Segment segment) {
+	protected void sendSegment(Network net, Segment segment) {
+		/** ===== Statistical Counters ===== **/
+		if (segment.getType() != Keywords.Segments.Types.ACK && segment.getType() != Keywords.Segments.Types.SYNACK) {
+			flow.totalTransmissionTime += net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize());
+		}
+		/** ================================ **/
 		float bufferTime = net.hosts.get(srcHostID).accessLink.buffer.getBufferTime(net.getCurrentTime(),
 				net.hosts.get(srcHostID).accessLink.getTransmissionDelay(segment.getSize()));
 
@@ -53,9 +56,8 @@ public abstract class Agent {
 
 		}
 		int nextNodeID = net.hosts.get(srcHostID).accessSwitchID;
-		net.eventList.addEvent(new DepartureFromHost(nextTime, srcHostID, nextNodeID, new Packet(segment, null)));
+		net.eventList.addDepartureFromHost(nextTime, srcHostID, nextNodeID, new Packet(segment, null));
 		mostRecentSegmentDepartureTime = nextTime;
-		return net;
 	}
 
 }

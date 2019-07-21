@@ -16,26 +16,25 @@ public class SDNSwitchv1 extends SDNSwitch {
 	/* -------------------------------------------------------------- */
 	/* ---------- Implemented abstract methods (from SDNSwitch) ----- */
 	/* -------------------------------------------------------------- */
-	public Network recvCtrlMessage(Network net, CtrlMessage message) {
+	public void recvCtrlMessage(Network net, CtrlMessage message) {
 		switch (message.getType()) {
-		case Keywords.Operations.SDNMessages.Types.BufferTokenUpdate:
+		case Keywords.SDNMessages.Types.BufferTokenUpdate:
 			for (int hostID : message.ccTokenOfHostID.keySet()) {
 				accessLinks.get(hostID).buffer.updateCCToken(net.getCurrentTime(), message.ccTokenOfHostID.get(hostID));
 			}
 			break;
-		case Keywords.Operations.SDNMessages.Types.FlowSetUp:
+		case Keywords.SDNMessages.Types.FlowSetUp:
 			addFlowTableEntry(message.flowID, message.neighborID);
 			net.switches.get(message.neighborID).addFlowTableEntry(Simulator.reverseFlowStreamID(message.flowID),
 					this.getID());
 			break;
-		case Keywords.Operations.SDNMessages.Types.FlowRemoval:
+		case Keywords.SDNMessages.Types.FlowRemoval:
 			// TODO the flow entry can be removed here
 			break;
 		default:
 			Debugger.debugToConsole("SNDSwitchv1.recvCtrlMessage()::Invalid message type.");
 			break;
 		}
-		return net;
 	}
 
 	/* --------------------------------------------------- */

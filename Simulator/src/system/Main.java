@@ -1,24 +1,12 @@
 package system;
 
-import java.util.ArrayList;
-
-import experiments.scenarios.NumberOfFlowsPerFlowSizeDistributionStudy;
-import system.utility.Keywords;
+import experiments.scenarios.FlowSizeMeanAndSTDStudy;
 
 public class Main {
 
 	public static void main(String[] args) {
-		NumberOfFlowsPerFlowSizeDistributionStudy numberOfFlowsStudy = new NumberOfFlowsPerFlowSizeDistributionStudy();
-		ArrayList<Integer> numberOfFlowsValues = new ArrayList<Integer>();
-		for (int i = 1; i <= 10; i++) {
-			numberOfFlowsValues.add(i);
-		}
-		ArrayList<Integer> flowSizeDistributions = new ArrayList<Integer>();
-		flowSizeDistributions.add(Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform);
-		flowSizeDistributions.add(Keywords.Inputs.RandomVariableGenerator.Distributions.Guassian);
-		flowSizeDistributions.add(Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential);
-		numberOfFlowsStudy.executeTest(numberOfFlowsValues, flowSizeDistributions, Keywords.Inputs.Testbeds.Types.LAN,
-				Keywords.Inputs.Testbeds.Topologies.Dumbbell, Keywords.Inputs.Traffics.Types.GeneralTraffic);
+		FlowSizeMeanAndSTDStudy study = new FlowSizeMeanAndSTDStudy();
+		study.executeTest();
 	}
 
 	public static void print(Object o) {

@@ -12,11 +12,11 @@ public class Packet extends Entity {
 		super(-1);
 		if (segment != null) {
 			size = segment.getSize();
-			type = Keywords.Operations.Packets.Types.Segment;
+			type = Keywords.Packets.Types.Segment;
 			this.segment = segment;
 		} else if (controlMessage != null) {
 			size = controlMessage.getSize();
-			type = Keywords.Operations.Packets.Types.SDNControl;
+			type = Keywords.Packets.Types.SDNControl;
 			this.controlMessage = controlMessage;
 		}
 	}

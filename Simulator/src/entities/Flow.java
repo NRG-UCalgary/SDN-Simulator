@@ -14,10 +14,12 @@ public class Flow extends Entity {
 
 	/** ========== Statistical Counters ========== **/
 	public float dataSendingStartTime; // in Sender Agent
+	public float FINSendingTime;
 	public float completionTime; // in Receiver Agent
 	public int totalDroppedSegments; // in Buffer
 	public int totalSentSegments; // in Sender Agent
 	public float totalBufferTime; // in Buffer (when getting bufferTime)
+	public float totalTransmissionTime;
 
 	/* Sequence Number */
 	// in Sender Agent
@@ -43,6 +45,8 @@ public class Flow extends Entity {
 		totalDroppedSegments = 0;
 		totalSentSegments = 0;
 		totalBufferTime = 0;
+		FINSendingTime = 0;
+		totalTransmissionTime = 0;
 
 		dataSeqNumSendingTimes = new TreeMap<Float, Float>();
 		ackSeqNumArrivalTimes = new TreeMap<Float, Float>();

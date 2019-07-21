@@ -1,7 +1,5 @@
 package experiments.traffic;
 
-import java.util.TreeMap;
-
 import system.utility.*;
 
 public class TrafficGenerator {
@@ -10,147 +8,110 @@ public class TrafficGenerator {
 	private RandomVariableGenerator flowSizeRVG;
 	private RandomVariableGenerator numberOfFLowsRVG;
 
-	public int numberOfFlowsDistribution;
-	public int minNumberOfFlows;
-	public int maxNumberOfFlows;
-	public double meanNumberOfFlows;
-	public double standardDeviationNumberOfFLows;
-	public int totalNumberOfFlows;
+	private float firstFlowArrivalTime;
+	private int numberOfFlows;
+	private Traffic traffic;
 
-	public int flowSizeDistribution;
-	public int minFlowSize;
-	public int maxFlowSize;
-	public double meanFlowSize;
-	public double standardDeviationFlowSize;
+	private short numberOfFlowsDistribution;
+	private double numberOfFlowsMean;
+	private double numberOfFlowsSTD;
 
-	public int flowInterArrivalTimeDistribution;
-	public double minFlowInterArrivalTime;
-	public double maxFlowInterArrivalTime;
-	public double meanFlowInterArrivalTime;
-	public double standardDeviationFlowInterArrivalTime;
-	public float firstFlowArrivalTime;
+	private short interArrivalTimeDistribution;
+	private double interArrivalTimeMean;
+	private double interArrivalTimeSTD;
 
-	public TrafficGenerator(int networkType, int numberOfFlows) {
+	private short flowSizeDistribution;
+	private double flowSizeMean;
+	private double flowSizeSTD;
+
+	public TrafficGenerator(short trafficType, float firstFlowArrivalTime) {
 		interArrivalTimeRVG = new RandomVariableGenerator(
-				Keywords.Inputs.RandomVariableGenerator.StartingSeeds.InterArrivalTimeStartingSeed);
-		flowSizeRVG = new RandomVariableGenerator(
-				Keywords.Inputs.RandomVariableGenerator.StartingSeeds.FlowSizeStartingSeed);
+				Keywords.RandomVariableGenerator.StartingSeeds.InterArrivalTimeStartingSeed);
+		flowSizeRVG = new RandomVariableGenerator(Keywords.RandomVariableGenerator.StartingSeeds.FlowSizeStartingSeed);
 		numberOfFLowsRVG = new RandomVariableGenerator(
-				Keywords.Inputs.RandomVariableGenerator.StartingSeeds.NumberOfFLowsStartingSeed);
-		switch (networkType) {
-		case Keywords.Inputs.Traffics.Types.GeneralTraffic:
-			setFlowInterArrivalProperties(Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential,
-					Mathematics.milliToMicro(100), Mathematics.milliToMicro(1000), Mathematics.milliToMicro(100),
-					Mathematics.milliToMicro(10));
-			setFlowSizeProperties(Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform,
-					(int) Mathematics.kiloToBase(30), (int) Mathematics.kiloToBase(100), Mathematics.kiloToBase(50),
-					Mathematics.kiloToBase(30));
-			firstFlowArrivalTime = 0;
-			break;
-		case Keywords.Inputs.Traffics.Types.DatacenterTraffic:
-			break;
-		case Keywords.Inputs.Traffics.Types.MultilediaTraffic:
-			break;
-		default:
-			break;
-		}
-		totalNumberOfFlows = numberOfFlows;
+				Keywords.RandomVariableGenerator.StartingSeeds.NumberOfFLowsStartingSeed);
+		this.firstFlowArrivalTime = firstFlowArrivalTime;
+		numberOfFlows = 0;
+		traffic = new Traffic();
+
+		numberOfFlowsDistribution = Keywords.DefaultTestValues.NumberOfFlows.Distribution;
+		numberOfFlowsMean = Keywords.DefaultTestValues.NumberOfFlows.Mean;
+		numberOfFlowsSTD = Keywords.DefaultTestValues.NumberOfFlows.STD;
+
+		interArrivalTimeDistribution = Keywords.DefaultTestValues.FlowInterArrivalTime.Distribution;
+		interArrivalTimeMean = Keywords.DefaultTestValues.FlowInterArrivalTime.Mean;
+		interArrivalTimeSTD = Keywords.DefaultTestValues.FlowInterArrivalTime.STD;
+
+		flowSizeDistribution = Keywords.DefaultTestValues.FlowSize.Distribution;
+		flowSizeMean = Keywords.DefaultTestValues.FlowSize.Mean;
+		flowSizeSTD = Keywords.DefaultTestValues.FlowSize.STD;
+
 	}
 
-	public Traffic generate() {
-		Traffic traffic = new Traffic();
-		traffic.ArrivalTimePerFlowID = prepareFlowArrivals(flowInterArrivalTimeDistribution);
-		traffic.FlowSizePerFlowID = prepareFlowSizes(flowSizeDistribution);
+	public Traffic generateTraffic() {
+		prepareNumberOfFlows();
+		prepareFlowArrivals();
+		prepareFlowSizes();
 		return traffic;
 	}
 
-	public void setNumberOfFlowsProperties(int distribution, int min, int max, double mean, double standardDeviation) {
+	public void setNumberOfFlowsProperties(short distribution, double mean, double standardDeviation) {
 		numberOfFlowsDistribution = distribution;
-		minNumberOfFlows = min;
-		maxNumberOfFlows = max;
-		meanNumberOfFlows = mean;
-		standardDeviationNumberOfFLows = standardDeviation;
+		numberOfFlowsMean = mean;
+		numberOfFlowsSTD = standardDeviation;
 
 	}
 
-	public void setFlowInterArrivalProperties(int distribution, double min, double max, double mean,
-			double standardDeviation) {
-		flowInterArrivalTimeDistribution = distribution;
-		minFlowInterArrivalTime = min;
-		maxFlowInterArrivalTime = max;
-		meanFlowInterArrivalTime = mean;
-		standardDeviationFlowInterArrivalTime = standardDeviation;
-
+	public void setFlowInterArrivalTimeProperties(short distribution, double mean, double standardDeviation) {
+		interArrivalTimeDistribution = distribution;
+		interArrivalTimeMean = mean;
+		interArrivalTimeSTD = standardDeviation;
 	}
 
-	public void setFlowSizeProperties(int distribution, int min, int max, double mean, double standardDeviation) {
+	public void setFlowSizeProperties(short distribution, double mean, double standardDeviation) {
 		flowSizeDistribution = distribution;
-		minFlowSize = min;
-		maxFlowSize = max;
-		meanFlowSize = mean;
-		standardDeviationFlowSize = standardDeviation;
+		flowSizeMean = mean;
+		flowSizeSTD = standardDeviation;
+
 	}
 
-	public void prepareNumberOfFlows() {
-		switch (numberOfFlowsDistribution) {
-		case Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform:
-			totalNumberOfFlows = numberOfFLowsRVG.getNextUniformInteger(minNumberOfFlows, maxNumberOfFlows);
-		case Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential:
-			totalNumberOfFlows = (int) numberOfFLowsRVG.getNextExponential(meanNumberOfFlows);
-		case Keywords.Inputs.RandomVariableGenerator.Distributions.Guassian:
-			totalNumberOfFlows = (int) numberOfFLowsRVG.getNextGuassianInteger((int) meanNumberOfFlows,
-					(int) standardDeviationNumberOfFLows);
+	private void prepareNumberOfFlows() {
+		numberOfFlows = (int) numberOfFLowsRVG.getNextValue(numberOfFlowsDistribution, numberOfFlowsMean,
+				numberOfFlowsSTD);
+		while (numberOfFlows <= 0) {
+			numberOfFlows = (int) numberOfFLowsRVG.getNextValue(numberOfFlowsDistribution, numberOfFlowsMean,
+					numberOfFlowsSTD);
 
-		default:
-			totalNumberOfFlows = -1;
 		}
 	}
 
-	private TreeMap<Integer, Float> prepareFlowArrivals(int distribution) {
-		TreeMap<Integer, Float> arrivalTimePerFlowID = new TreeMap<Integer, Float>();
+	private void prepareFlowArrivals() {
 		interArrivalTimeRVG.resetRng();
-		arrivalTimePerFlowID.put(0, firstFlowArrivalTime);
-		float interArrivalTime = 0;
+		traffic.arrivalTimePerFlowID.put(0, firstFlowArrivalTime);
 		float previousArrival = firstFlowArrivalTime;
-		for (int flowIndex = 1; flowIndex < totalNumberOfFlows; flowIndex++) {
-			switch (distribution) {
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential:
-				interArrivalTime = (float) interArrivalTimeRVG.getNextExponential(meanFlowInterArrivalTime);
-				break;
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform:
-				interArrivalTime = (float) interArrivalTimeRVG.getNextUniform(minFlowInterArrivalTime,
-						maxFlowInterArrivalTime);
-				break;
-			default:
-				break;
+		float interArrivalTime = 0;
+		for (int flowIndex = 1; flowIndex < numberOfFlows; flowIndex++) {
+			interArrivalTime = (float) interArrivalTimeRVG.getNextValue(interArrivalTimeDistribution,
+					interArrivalTimeMean, interArrivalTimeSTD);
+			while (interArrivalTime <= 0) {
+				interArrivalTime = (float) interArrivalTimeRVG.getNextValue(interArrivalTimeDistribution,
+						interArrivalTimeMean, interArrivalTimeSTD);
 			}
-			arrivalTimePerFlowID.put(flowIndex, interArrivalTime + previousArrival);
+			traffic.arrivalTimePerFlowID.put(flowIndex, interArrivalTime + previousArrival);
 			previousArrival += interArrivalTime;
 		}
-		return arrivalTimePerFlowID;
 	}
 
-	private TreeMap<Integer, Integer> prepareFlowSizes(int distribution) {
-		TreeMap<Integer, Integer> flowSizePerFlowID = new TreeMap<Integer, Integer>();
+	private void prepareFlowSizes() {
 		flowSizeRVG.resetRng();
-		for (int flowIndex = 0; flowIndex < totalNumberOfFlows; flowIndex++) {
-			int flowSize = 0;
-			switch (distribution) {
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential:
-				flowSize = (int) flowSizeRVG.getNextExponential(meanFlowSize);
-				break;
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform:
-				flowSize = flowSizeRVG.getNextUniformInteger(minFlowSize, maxFlowSize);
-				break;
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Guassian:
-				flowSize = flowSizeRVG.getNextGuassianInteger((int) meanFlowSize, (int) standardDeviationFlowSize);
-				break;
-			default:
-				break;
+		int flowSize = 0;
+		for (int flowIndex = 0; flowIndex < numberOfFlows; flowIndex++) {
+			flowSize = (int) flowSizeRVG.getNextValue(flowSizeDistribution, flowSizeMean, flowSizeSTD);
+			while (flowSize <= 0) {
+				flowSize = (int) flowSizeRVG.getNextValue(flowSizeDistribution, flowSizeMean, flowSizeSTD);
 			}
-			flowSizePerFlowID.put(flowIndex, flowSize);
+			traffic.flowSizePerFlowID.put(flowIndex, flowSize);
 		}
-		return flowSizePerFlowID;
 	}
 
 }

@@ -45,7 +45,7 @@ public class Simulator {
 	/********** Run **********/
 	public Statistics run(float start_time, float end_time) {
 		/* Other Default settings of the Simulator */
-		Debugger.connectivity(net);
+		// Debugger.connectivity(net);
 		/* Reading the first Event from Network Event List */
 		/* Main Loop */
 		double timeCheck = 0;
@@ -54,7 +54,8 @@ public class Simulator {
 				Main.error("Simulator", "run", "Invalid time progression.");
 			}
 			/* Running the Current Event and Updating the net */
-			net = net.eventList.getEvent().execute(net);
+			net.eventList.getEvent().execute(net);
+			net.eventList.removeEvent();
 			timeCheck = net.getCurrentTime();
 		}
 		return new Statistics(net);
@@ -65,10 +66,10 @@ public class Simulator {
 	/*-------------------------------------------------------*/
 	/* Switch Creation Method */
 	public void createSwitch(String label, float ctrlLinkPropagationDelay, float ctrlLinkBandwidth) {
-		Link controlLink = new Link(Keywords.Operations.ControllerID, switchCounter, Keywords.Operations.ControllerID,
+		Link controlLink = new Link(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
 				ctrlLinkPropagationDelay,
 				(float) Mathematics.bitPerSecondTobitPerMicroSecond((double) ctrlLinkBandwidth), Integer.MAX_VALUE,
-				Keywords.Operations.Buffers.Policy.FIFO);
+				Keywords.Buffers.Policy.FIFO);
 		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
 		net.switches.put(switchCounter, sw);
 		switchLabels.put(switchCounter, label);
@@ -87,11 +88,12 @@ public class Simulator {
 	/*-------------------------------------------------------*/
 	/* Link Creation Method */
 	public void createLink(String label, String src, String dst, float propDelay, float bandwidth, int bufferSize,
-			int bufferPolicy) {
+			int bufferPolicy, boolean isMonitored) {
 		Link link = new Link(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay,
 				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
 		linkLabels.put(linkCounter, label);
+		link.isMonitored = isMonitored;
 		link = new Link(reverseLinkID(linkCounter), switchLabels.getKey(dst), switchLabels.getKey(src), propDelay,
 				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).networkLinks.put(switchLabels.getKey(src), link);
@@ -134,7 +136,7 @@ public class Simulator {
 		Agent src_agent = null;
 		Agent dst_agent = null;
 		switch (type) {
-		case Keywords.Operations.Agents.Types.SDTCP:
+		case Keywords.Agents.Types.SDTCP:
 			src_agent = new SDTCPSenderv1(flow);
 			flow = new Flow(reverseFlowStreamID(flowCounter), hostLabels.getKey(dst), hostLabels.getKey(src), size,
 					arrival_time);
@@ -147,13 +149,13 @@ public class Simulator {
 		flowCounter++;
 		net.hosts.get(hostLabels.getKey(src)).transportAgent = src_agent;
 		net.hosts.get(hostLabels.getKey(dst)).transportAgent = dst_agent;
-		net = net.hosts.get(hostLabels.getKey(src)).initialize(net);
+		net.hosts.get(hostLabels.getKey(src)).initialize(net);
 	}
 
 	/********* General Programming Methods **********/
 
 	public static int reverseFlowStreamID(int streamID) {
-		int offset = Keywords.Operations.ACKStreamIDOffSet;
+		int offset = Keywords.ACKStreamIDOffSet;
 		if (streamID < offset) {
 			return streamID + offset;
 		} else {
@@ -162,7 +164,7 @@ public class Simulator {
 	}
 
 	public static int reverseLinkID(int linkID) {
-		int offset = Keywords.Operations.ReverseLinkIDOffSet;
+		int offset = Keywords.ReverseLinkIDOffSet;
 		if (linkID < offset) {
 			return linkID + offset;
 		} else {

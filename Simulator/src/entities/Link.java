@@ -5,14 +5,14 @@ import java.util.HashMap;
 
 import org.apache.commons.math3.util.Pair;
 
-import entities.buffers.Buffer;
-import entities.buffers.Bufferv1;
+import entities.buffers.*;
 
 /** Links are attributes of Switch and Host **/
 /** There are two types of link: 1.accessLink 2.networkLink **/
 
 public class Link extends Entity {
 
+	public boolean isMonitored;
 	public Buffer buffer;
 
 	private float bandwidth;
@@ -21,8 +21,9 @@ public class Link extends Entity {
 	private int dstNodeID;
 
 	/** ========== Statistical Counters ========== **/
-	public float totalUtilizationTime;
-	public float totalUpTime;
+	public float totalTransmissionTime;
+	public float firstSegmentArrivalTime;
+	public float lastSegmentTransmittedTime;
 	public HashMap<Float, Float> utilizationTimePerFlowID; // <FlowID, utilizationzTime>
 	public ArrayList<Pair<Float, Float>> segmentArrivalTimeOfFlowID; // Array<<FlowID, ArrivalTime>>
 
@@ -38,12 +39,13 @@ public class Link extends Entity {
 		this.buffer = new Bufferv1(bufferSize, bufferPolicy);
 
 		/** ========== Statistical Counters Initialization ========== **/
-		totalUtilizationTime = 0;
-		totalUpTime = 0;
+		totalTransmissionTime = 0;
+		firstSegmentArrivalTime = 0;
+		lastSegmentTransmittedTime = 0;
 		utilizationTimePerFlowID = new HashMap<Float, Float>();
-		segmentArrivalTimeOfFlowID = new ArrayList<Pair<Float, Float>>();/**
-																			 * =========================================================
-																			 **/
+		segmentArrivalTimeOfFlowID = new ArrayList<Pair<Float, Float>>();
+		/** ==================================================== **/
+		isMonitored = false;
 	}
 
 	public float getTotalDelay(int segmentSize) {
@@ -55,19 +57,26 @@ public class Link extends Entity {
 	}
 
 	/*---------- Statistical counter methods ---------- */
-	public void updateUtilizationCounters(int flowID, float transmissionDelay) {
-		if (utilizationTimePerFlowID.containsKey((float) flowID)) {
-			utilizationTimePerFlowID.put((float) flowID,
-					utilizationTimePerFlowID.get((float) flowID) + transmissionDelay);
-		} else {
-			utilizationTimePerFlowID.put((float) flowID, transmissionDelay);
+	public void updateUtilizationCounters(float currentTime, int flowID, float transmissionDelay) {
+		if (isMonitored) {
+			if (firstSegmentArrivalTime == 0) {
+				firstSegmentArrivalTime = currentTime;
+			}
+			if (utilizationTimePerFlowID.containsKey((float) flowID)) {
+				utilizationTimePerFlowID.put((float) flowID,
+						utilizationTimePerFlowID.get((float) flowID) + transmissionDelay);
+			} else {
+				utilizationTimePerFlowID.put((float) flowID, transmissionDelay);
+			}
+			totalTransmissionTime += transmissionDelay;
 		}
-		totalUtilizationTime += transmissionDelay;
 
 	}
 
 	public void updateSegementArrivalToLinkCounters(int flowID, float segmentArrivalTime) {
-		segmentArrivalTimeOfFlowID.add(new Pair<Float, Float>((float) flowID, segmentArrivalTime));
+		if (isMonitored) {
+			segmentArrivalTimeOfFlowID.add(new Pair<Float, Float>((float) flowID, segmentArrivalTime));
+		}
 	}
 
 	/*------------------- Getters ------------------------*/
@@ -87,58 +96,4 @@ public class Link extends Entity {
 		return dstNodeID;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Float.floatToIntBits(bandwidth);
-		result = prime * result + ((buffer == null) ? 0 : buffer.hashCode());
-		result = prime * result + dstNodeID;
-		result = prime * result + Float.floatToIntBits(propagationDelay);
-		result = prime * result + ((segmentArrivalTimeOfFlowID == null) ? 0 : segmentArrivalTimeOfFlowID.hashCode());
-		result = prime * result + srcNodeID;
-		result = prime * result + Float.floatToIntBits(totalUpTime);
-		result = prime * result + Float.floatToIntBits(totalUtilizationTime);
-		result = prime * result + ((utilizationTimePerFlowID == null) ? 0 : utilizationTimePerFlowID.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Link other = (Link) obj;
-		if (Float.floatToIntBits(bandwidth) != Float.floatToIntBits(other.bandwidth))
-			return false;
-		if (buffer == null) {
-			if (other.buffer != null)
-				return false;
-		} else if (!buffer.equals(other.buffer))
-			return false;
-		if (dstNodeID != other.dstNodeID)
-			return false;
-		if (Float.floatToIntBits(propagationDelay) != Float.floatToIntBits(other.propagationDelay))
-			return false;
-		if (segmentArrivalTimeOfFlowID == null) {
-			if (other.segmentArrivalTimeOfFlowID != null)
-				return false;
-		} else if (!segmentArrivalTimeOfFlowID.equals(other.segmentArrivalTimeOfFlowID))
-			return false;
-		if (srcNodeID != other.srcNodeID)
-			return false;
-		if (Float.floatToIntBits(totalUpTime) != Float.floatToIntBits(other.totalUpTime))
-			return false;
-		if (Float.floatToIntBits(totalUtilizationTime) != Float.floatToIntBits(other.totalUtilizationTime))
-			return false;
-		if (utilizationTimePerFlowID == null) {
-			if (other.utilizationTimePerFlowID != null)
-				return false;
-		} else if (!utilizationTimePerFlowID.equals(other.utilizationTimePerFlowID))
-			return false;
-		return true;
-	}
 }

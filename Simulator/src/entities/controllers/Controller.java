@@ -1,14 +1,20 @@
 package entities.controllers;
 
 import java.util.HashMap;
+
 import system.*;
-import system.events.*;
 import system.utility.*;
 import entities.*;
 import entities.controllers.routers.*;
 import entities.switches.*;
 
 public abstract class Controller extends Entity {
+
+	/** ========== Statistical Counters ========== **/
+	public float numberOfDistinctSYNs;
+	public float numberOfAdmittedFlows;
+	public float numberOfRejectedFlows;
+	/** ========================================== **/
 
 	// ControlLinks
 	protected HashMap<Integer, Link> controlLinks; // <SwitchID, Link>
@@ -22,13 +28,19 @@ public abstract class Controller extends Entity {
 
 	public Controller(int ID, Network net, int routingAlgorithm) {
 		super(ID);
+		/** ========== Statistical Counters ========== **/
+		numberOfDistinctSYNs = 0;
+		numberOfAdmittedFlows = 0;
+		numberOfRejectedFlows = 0;
+		/** ========================================== **/
+
 		controlLinks = new HashMap<Integer, Link>();
 		database = new ControlDatabase(net);
 		switch (routingAlgorithm) {
-		case Keywords.Operations.RoutingAlgorithms.Dijkstra:
+		case Keywords.RoutingAlgorithms.Dijkstra:
 			router = new Dijkstra(net.switches);
 			break;
-		case Keywords.Operations.RoutingAlgorithms.Routing1:
+		case Keywords.RoutingAlgorithms.Routing1:
 			break;
 		default:
 			break;
@@ -41,28 +53,28 @@ public abstract class Controller extends Entity {
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Abstract methods ---------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
-	public abstract Network recvPacket(Network net, int switchID, Packet packet);
+	public abstract void recvPacket(Network net, int switchID, Packet packet);
 
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
-	public Network releasePacket(Network net, int dstSwitchID, Packet packet) {
+	public void releasePacket(Network net, int dstSwitchID, Packet packet) {
 		float nextTime = net.getCurrentTime() + controlLinks.get(dstSwitchID).getTotalDelay(packet.getSize());
-		net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
+		net.eventList.addArrivalToSwitch(nextTime, dstSwitchID, packet);
+		// net.eventList.addEvent(new ArrivalToSwitch(nextTime, dstSwitchID, packet));
 		controlLinks.get(dstSwitchID).buffer.deQueue();
-		return net;
 	}
 
-	protected void handleRouting(SDNSwitch srcAccessSwitch, SDNSwitch dstAccessSwitch) {
+	protected void handleRouting(Network net, SDNSwitch srcAccessSwitch, SDNSwitch dstAccessSwitch) {
 		/* Controller runs the router module to find the path for the flow */
 		HashMap<Integer, Link> result = router.run(srcAccessSwitch.getID(), dstAccessSwitch.getID());
 
 		/* Updating flow path database */
 		/* Controller updates flow tables of all switches in the flow path */
 		for (int switchID : result.keySet()) {
-			CtrlMessage flowSetupMessage = new CtrlMessage(Keywords.Operations.SDNMessages.Types.FlowSetUp);
+			CtrlMessage flowSetupMessage = new CtrlMessage(Keywords.SDNMessages.Types.FlowSetUp);
 			flowSetupMessage.prepareFlowSetUpMessage(currentSegment.getFlowID(), result.get(switchID));
-			sendPacketToSwitch(switchID, new Packet(null, flowSetupMessage));
+			sendPacketToSwitch(net, switchID, new Packet(null, flowSetupMessage));
 		}
 		// TODO The ACK flow path must be set up too
 
@@ -70,8 +82,8 @@ public abstract class Controller extends Entity {
 		float minBW = Float.MAX_VALUE;
 		float rtt = 0;
 		for (Link link : result.values()) {
-			rtt += link.getTotalDelay(Keywords.Operations.Segments.Sizes.ACKSegSize)
-					+ link.getTotalDelay(Keywords.Operations.Segments.Sizes.DataSegSize);
+			rtt += link.getTotalDelay(Keywords.Segments.Sizes.ACKSegSize)
+					+ link.getTotalDelay(Keywords.Segments.Sizes.DataSegSize);
 			if (link.getBandwidth() <= minBW) {
 				minBW = link.getBandwidth();
 				database.bottleneckLinkID = link.getID();
@@ -87,10 +99,12 @@ public abstract class Controller extends Entity {
 	/* =========================================== */
 	/* ========== Switch Communication =========== */
 	/* =========================================== */
-	protected void sendPacketToSwitch(int switchID, Packet packet) {
+	protected void sendPacketToSwitch(Network net, int switchID, Packet packet) {
 		float nextTime = currentNetwork.getCurrentTime() + controlLinks.get(switchID).buffer.getBufferTime(
 				currentNetwork.getCurrentTime(), controlLinks.get(switchID).getTransmissionDelay(packet.getSize()));
-		currentNetwork.eventList.addEvent(new DepartureFromController(nextTime, this.ID, switchID, packet));
+		net.eventList.addDepartureFromController(nextTime, this.ID, switchID, packet);
+		// currentNetwork.eventList.addEvent(new DepartureFromController(nextTime,
+		// this.ID, switchID, packet));
 	}
 
 	/* =========================================== */
@@ -106,15 +120,15 @@ public abstract class Controller extends Entity {
 		return currentNetwork.switches.get(switchID).controlLink.getTotalDelay(segmentSize);
 	}
 
-	protected void sendSegmentToAccessSwitches(Segment segment) {
+	protected void sendSegmentToAccessSwitches(Network net, Segment segment) {
 		for (int switchID : database.getAccessSwitchIDsSet()) {
-			sendPacketToSwitch(switchID, new Packet(segment, null));
+			sendPacketToSwitch(net, switchID, new Packet(segment, null));
 		}
 	}
 
-	protected void sendControlMessageToAccessSwitches(HashMap<Integer, CtrlMessage> messages) {
+	protected void sendControlMessageToAccessSwitches(Network net, HashMap<Integer, CtrlMessage> messages) {
 		for (int switchID : database.getAccessSwitchIDsSet()) {
-			sendPacketToSwitch(switchID, new Packet(null, messages.get(switchID)));
+			sendPacketToSwitch(net, switchID, new Packet(null, messages.get(switchID)));
 		}
 	}
 

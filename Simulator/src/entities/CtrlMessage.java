@@ -7,7 +7,7 @@ import system.utility.*;
 
 public class CtrlMessage {
 	private int type;
-	private int size = Keywords.Operations.SDNMessages.Size;
+	private int size = Keywords.SDNMessages.Size;
 
 	// FlowSetup information
 	public int neighborID;

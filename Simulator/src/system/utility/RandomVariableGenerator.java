@@ -3,14 +3,10 @@ package system.utility;
 import java.util.Random;
 
 public class RandomVariableGenerator extends Random {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private final int MAXINT = Integer.MAX_VALUE;
-	int distributionType;
-	int seed;
-	Random rand;
+	private int seed;
+	private Random rand;
 
 	public RandomVariableGenerator(int seed) {
 		this.seed = seed;
@@ -25,14 +21,32 @@ public class RandomVariableGenerator extends Random {
 	public void resetRng() {
 		rand = new Random(seed);
 	}
-	
-	
-	
-	
+
+	public double getNextValue(int distribution, double mean, double standardDeviation) {
+		switch (distribution) {
+		case Keywords.RandomVariableGenerator.Distributions.Constant:
+			return mean;
+		case Keywords.RandomVariableGenerator.Distributions.Uniform:
+			// TODO the formula must be corrected
+			return getNextUniform(mean - standardDeviation, mean + standardDeviation);
+		case Keywords.RandomVariableGenerator.Distributions.Exponential:
+			return getNextExponential(mean);
+		case Keywords.RandomVariableGenerator.Distributions.Guassian:
+			return getNextGaussian(mean, standardDeviation);
+		case Keywords.RandomVariableGenerator.Distributions.LogNormal:
+			return getNextLogNormal(mean, standardDeviation);
+		case Keywords.RandomVariableGenerator.Distributions.Gamma:
+			return getNextGamma(mean, standardDeviation);
+		default:
+			break;
+		}
+		return 0;
+	}
+
 	/**********************************************************************/
 	/** Generating a RANDOM Double NUMBER uniformly from (0,1) ************/
 	/**********************************************************************/
-	public double equalLikly() {
+	private double equalLikly() {
 		double randnum;
 		randnum = rand.nextInt(MAXINT - 1) + 1;
 		if (randnum == MAXINT) {
@@ -48,18 +62,9 @@ public class RandomVariableGenerator extends Random {
 	}
 
 	/**********************************************************************/
-	/** Generating a RANDOM INTEGER NUMBER uniformly from [lower, upper] **/
-	/**********************************************************************/
-	public int getNextUniformInteger(int lower, int upper) {
-		int randnum;
-		randnum = (int) (lower + equalLikly() * (upper - lower + 1));
-		return randnum;
-	}
-
-	/**********************************************************************/
 	/** Generating a RANDOM double NUMBER uniformly from [lower, upper] ***/
 	/**********************************************************************/
-	public double getNextUniform(double lower, double upper) {
+	private double getNextUniform(double lower, double upper) {
 		double randnum;
 		randnum = lower + equalLikly() * (upper - lower + 1);
 		return randnum;
@@ -68,7 +73,7 @@ public class RandomVariableGenerator extends Random {
 	/***********************************************************************/
 	/** Generating an Exponential RANDOM Double NUMBER with mean = lambda **/
 	/***********************************************************************/
-	public double getNextExponential(double mean) {
+	private double getNextExponential(double mean) {
 		double lambda = 1 / mean;
 		return ((-1) * (1 / lambda)) * Math.log(1.0 - equalLikly());
 	}
@@ -76,15 +81,22 @@ public class RandomVariableGenerator extends Random {
 	/**************************************************************************/
 	/** Generating a Gaussian double NUMBER with mean = mean and std = alpha **/
 	/**************************************************************************/
-	public double getNextGaussian(double mean, double std) {
+	private double getNextGaussian(double mean, double std) {
 		return (rand.nextGaussian() * std) + mean;
 	}
 
 	/***************************************************************************/
-	/** Generating a Gaussian Integer NUMBER with mean = mean and std = alpha **/
+	/** Generating a LogNormal double NUMBER with mean = mean and std = alpha **/
 	/***************************************************************************/
-	public int getNextGuassianInteger(int mean, double std) {
-		return (int) Math.round(((rand.nextGaussian() * std))) + mean;
+	private double getNextLogNormal(double mean, double std) {
+		return 0;
+	}
+
+	/***********************************************************************/
+	/** Generating a Gamma double NUMBER with mean = mean and std = alpha **/
+	/***********************************************************************/
+	private double getNextGamma(double mean, double std) {
+		return 0;
 	}
 
 }

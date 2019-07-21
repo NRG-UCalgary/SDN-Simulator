@@ -8,13 +8,13 @@ public class TestbedGenerator {
 	public TestbedGenerator() {
 	}
 
-	public Testbed generate(int networkTopology, int networkType) {
+	public Testbed generate(short networkTopology, short networkType) {
 		switch (networkTopology) {
-		case Keywords.Inputs.Testbeds.Topologies.Dumbbell:
+		case Keywords.Testbeds.Topologies.Dumbbell:
 			return new Dumbbell(networkType);
-		case Keywords.Inputs.Testbeds.Topologies.DataCenter:
+		case Keywords.Testbeds.Topologies.DataCenter:
 			return new DataCenter(networkType);
-		case Keywords.Inputs.Testbeds.Topologies.ParkingLot:
+		case Keywords.Testbeds.Topologies.ParkingLot:
 			return new ParkingLot(networkType);
 		default:
 			Main.error(this.getClass().getName(), "generate", "Invalid network type.");

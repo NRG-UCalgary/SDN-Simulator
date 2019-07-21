@@ -3,19 +3,18 @@ package system.events;
 import entities.*;
 import system.Event;
 import system.Network;
-import system.utility.Keywords;
 
 public class DepartureFromController extends Event {
 	int dstSwitchID;
 
 	public DepartureFromController(float eventTime, int controllerID, int dstSwitchID, Packet packet) {
-		super(Keywords.Operations.Events.Names.Departures.DepartureFromController, eventTime, controllerID, packet);
+		super(eventTime, controllerID, packet);
 		this.dstSwitchID = dstSwitchID;
 	}
 
-	public Network execute(Network net) {
+	public void execute(Network net) {
 		net.updateTime(this.eventTime);
-		return net.controller.releasePacket(net, dstSwitchID, packet);
+		net.controller.releasePacket(net, dstSwitchID, packet);
 	}
 
 }

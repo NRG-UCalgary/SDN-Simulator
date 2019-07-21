@@ -12,26 +12,27 @@ import system.utility.*;
 public class NumberOfFlowsPerFlowSizeDistributionStudy extends Scenario {
 
 	public NumberOfFlowsPerFlowSizeDistributionStudy() {
-		super(Keywords.Outputs.Scenarios.Names.NumberOfFlowsStudy,
-				Keywords.Outputs.Charts.MainFactors.Titles.NumberOfFlowsFactor);
+		super(Keywords.Scenarios.Names.NumberOfFlowsStudy, Keywords.Charts.MainFactors.Titles.NumberOfFlowsFactor);
 	}
 
-	public void executeTest(ArrayList<Integer> numberOfFlowsValues, ArrayList<Integer> flowSizeDistributionValues,
-			int networkType, int networkTopology, int trafficType) {
+	public void executeTest(ArrayList<Integer> numberOfFlowsValues, ArrayList<Short> flowSizeDistributionValues,
+			short networkType, short networkTopology, short trafficType) {
 		LinkedHashMap<String, TreeMap<Float, Statistics>> result = new LinkedHashMap<String, TreeMap<Float, Statistics>>();
-		for (int flowSizeDistribution : flowSizeDistributionValues) {
+		for (short flowSizeDistribution : flowSizeDistributionValues) {
 			TreeMap<Float, Statistics> StudyStats = new TreeMap<Float, Statistics>();
+			TrafficGenerator trafficGen = new TrafficGenerator(trafficType,
+					Keywords.DefaultTestValues.FirstFlowArrival);
+			trafficGen.setFlowSizeProperties(flowSizeDistribution, Keywords.DefaultTestValues.FlowSize.Mean,
+					Keywords.DefaultTestValues.FlowSize.STD);
 			Testbed testbed;
-			TrafficGenerator trafficGen = new TrafficGenerator(trafficType, 10);
-			trafficGen.flowSizeDistribution = flowSizeDistribution;
 			switch (networkTopology) {
-			case Keywords.Inputs.Testbeds.Topologies.Dumbbell:
+			case Keywords.Testbeds.Topologies.Dumbbell:
 				testbed = new Dumbbell(networkType);
 				break;
-			case Keywords.Inputs.Testbeds.Topologies.DataCenter:
+			case Keywords.Testbeds.Topologies.DataCenter:
 				testbed = new DataCenter(networkType);
 				break;
-			case Keywords.Inputs.Testbeds.Topologies.ParkingLot:
+			case Keywords.Testbeds.Topologies.ParkingLot:
 				testbed = new ParkingLot(networkType);
 				break;
 			default:
@@ -42,19 +43,20 @@ public class NumberOfFlowsPerFlowSizeDistributionStudy extends Scenario {
 			// An outer loop can be created for replication
 			for (int numberOfFlows : numberOfFlowsValues) {
 				Main.singleFactoractorMessage("Number Of Flows", Integer.toString(numberOfFlows));
-				trafficGen.totalNumberOfFlows = (int) numberOfFlows;
-				StudyStats.put((float) numberOfFlows, testbed.executeSimulation(trafficGen.generate()));
+				trafficGen.setNumberOfFlowsProperties(Keywords.RandomVariableGenerator.Distributions.Constant,
+						numberOfFlows, 0);
+				StudyStats.put((float) numberOfFlows, testbed.executeSimulation(trafficGen.generateTraffic()));
 				Main.simulationDoneMessage();
 			}
 			String distributionName;
 			switch (flowSizeDistribution) {
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Uniform:
+			case Keywords.RandomVariableGenerator.Distributions.Uniform:
 				distributionName = "Uniform";
 				break;
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Exponential:
+			case Keywords.RandomVariableGenerator.Distributions.Exponential:
 				distributionName = "Exponential";
 				break;
-			case Keywords.Inputs.RandomVariableGenerator.Distributions.Guassian:
+			case Keywords.RandomVariableGenerator.Distributions.Guassian:
 				distributionName = "Guassian";
 				break;
 			default:

@@ -5,7 +5,7 @@ import system.utility.Statistics;
 
 public class DataCenter extends Testbed {
 
-	public DataCenter(int networkType) {
+	public DataCenter(short networkType) {
 		super(networkType);
 	}
 

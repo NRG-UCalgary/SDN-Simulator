@@ -5,7 +5,7 @@ import system.utility.Statistics;
 
 public class ParkingLot extends Testbed {
 
-	public ParkingLot(int networkType) {
+	public ParkingLot(short networkType) {
 		super(networkType);
 	}
 
