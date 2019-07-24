@@ -11,6 +11,8 @@ public class Simulator {
 
 	public final boolean OUTPUT = true;
 
+	public int btllinkID = -1;
+
 	/** ############### ID to Label Mappings ############### **/
 	private OneToOneMap switchLabels;
 	private OneToOneMap hostLabels;
@@ -58,7 +60,8 @@ public class Simulator {
 			net.eventList.removeEvent();
 			timeCheck = net.getCurrentTime();
 		}
-		return new Statistics(net);
+
+		return new Statistics(net, btllinkID);
 	}
 
 	/********** Topology Creation methods ***********/
@@ -89,11 +92,15 @@ public class Simulator {
 	/* Link Creation Method */
 	public void createLink(String label, String src, String dst, float propDelay, float bandwidth, int bufferSize,
 			int bufferPolicy, boolean isMonitored) {
+		if (isMonitored) {
+			btllinkID = linkCounter;
+		}
 		Link link = new Link(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay,
 				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
 		linkLabels.put(linkCounter, label);
 		link.isMonitored = isMonitored;
+
 		link = new Link(reverseLinkID(linkCounter), switchLabels.getKey(dst), switchLabels.getKey(src), propDelay,
 				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
 		net.switches.get(switchLabels.getKey(dst)).networkLinks.put(switchLabels.getKey(src), link);
@@ -119,6 +126,7 @@ public class Simulator {
 	/* Controller Creation Method */
 	public void createController(String label, float alpha, int routingAlgorithm) {
 		net.controller = new Controllerv1(controllerCounter, net, routingAlgorithm, alpha);
+		net.controller.setBottleneckLinkID(btllinkID);
 		for (SDNSwitch sdnSwitch : net.switches.values()) {
 			net.controller.connectSwitch(sdnSwitch.getID(), sdnSwitch.controlLink);
 		}

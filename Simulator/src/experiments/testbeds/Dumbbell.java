@@ -3,7 +3,6 @@ package experiments.testbeds;
 import java.util.TreeMap;
 
 import experiments.traffic.Traffic;
-import system.Main;
 import system.Simulator;
 import system.utility.*;
 
@@ -19,7 +18,7 @@ public class Dumbbell extends Testbed {
 		NumberOfHostsPerAccessSwitch = traffic.flowSizePerFlowID.size();
 		TreeMap<Integer, Float> accessLinkPropagationDelayPerFlowID = prepareAccessLinksPropagationDelay(
 				AccessLinkPropagationDelayDistribution, NumberOfHostsPerAccessSwitch);
-		Main.print("======================== New Simulation ==========================");
+		Debugger.debugToConsole("    ^^^^^^^^^^^^^ New Simulation ^^^^^^^^^^^^^");
 		Simulator sim = new Simulator();
 		// Creating access switches
 		for (int acessSwitchIndex = 0; acessSwitchIndex < NumberOfSenderAccessSwitches; acessSwitchIndex++) {
@@ -92,10 +91,6 @@ public class Dumbbell extends Testbed {
 			sim.generateFlow(flowLabel, Keywords.Agents.Types.SDTCP, senderHostLabel, receiverHostLabel,
 					traffic.flowSizePerFlowID.get(flowIndex), traffic.arrivalTimePerFlowID.get(flowIndex));
 		}
-
-		// Debugger output
-		Debugger.debugOutPut();
-
 		// Running the simulation
 		return sim.run(0, SimEndTime);
 	}

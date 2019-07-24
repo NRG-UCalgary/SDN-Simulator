@@ -44,7 +44,7 @@ public class Debugger {
 	}
 
 	public static void debug(String s) {
-		boolean DEB = false;
+		boolean DEB = true;
 		if (DEB) {
 			debugLines.add(s);
 		}

@@ -45,7 +45,8 @@ public abstract class Testbed {
 			AccessLinkBandwidth = (float) Mathematics.megaToBase(500);
 			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
 			ReceiverAccessLinkPropagationDelay = 10;
-			NetworkLinkPropagationDelay = (float) Mathematics.milliToMicro(10);
+			NetworkLinkPropagationDelay = 10000;
+			//NetworkLinkPropagationDelay = 10;
 
 			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Uniform;
 			MinAccessLinkPropagationDelay = 1.0;
@@ -80,8 +81,8 @@ public abstract class Testbed {
 		TreeMap<Integer, Float> accessLinkPropagationDelayPerFlowID = new TreeMap<Integer, Float>();
 		rttRVG.resetRng();
 		for (int flowIndex = 0; flowIndex < totalNumberOfFlows; flowIndex++) {
-			accessLinkPropagationDelayPerFlowID.put(flowIndex, (float) rttRVG.getNextValue(distribution,
-					AverageAccessLinkPropagationDelay, StandardDeviationAccessLinkPropagationDelay));
+			accessLinkPropagationDelayPerFlowID.put(flowIndex,
+					(float) rttRVG.getNextUniform(MinAccessLinkPropagationDelay, MaxAccessLinkPropagationDelay));
 		}
 		return accessLinkPropagationDelayPerFlowID;
 	}

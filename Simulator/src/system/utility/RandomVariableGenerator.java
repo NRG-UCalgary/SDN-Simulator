@@ -64,7 +64,7 @@ public class RandomVariableGenerator extends Random {
 	/**********************************************************************/
 	/** Generating a RANDOM double NUMBER uniformly from [lower, upper] ***/
 	/**********************************************************************/
-	private double getNextUniform(double lower, double upper) {
+	public double getNextUniform(double lower, double upper) {
 		double randnum;
 		randnum = lower + equalLikly() * (upper - lower + 1);
 		return randnum;
@@ -89,7 +89,16 @@ public class RandomVariableGenerator extends Random {
 	/** Generating a LogNormal double NUMBER with mean = mean and std = alpha **/
 	/***************************************************************************/
 	private double getNextLogNormal(double mean, double std) {
-		return 0;
+		mean = Math.log(mean);
+		std = Math.log(std);
+		// Debugger.debugToConsole("---------------------------------------");
+		double gaussian = getNextGaussian(mean, std);
+		double rvg = Math.exp(gaussian);
+		// Debugger.debugToConsole("lnx = " + lnx);
+		// Debugger.debugToConsole("STD = " + std);
+		// Debugger.debugToConsole("The Gaussian is: " + gaussian);
+		// Debugger.debugToConsole("The Log Normal RVG: " + rvg);
+		return rvg;
 	}
 
 	/***********************************************************************/

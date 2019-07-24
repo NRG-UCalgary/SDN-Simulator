@@ -87,13 +87,14 @@ public class TrafficGenerator {
 
 	private void prepareFlowArrivals() {
 		interArrivalTimeRVG.resetRng();
+		traffic.arrivalTimePerFlowID.clear();
 		traffic.arrivalTimePerFlowID.put(0, firstFlowArrivalTime);
 		float previousArrival = firstFlowArrivalTime;
 		float interArrivalTime = 0;
 		for (int flowIndex = 1; flowIndex < numberOfFlows; flowIndex++) {
 			interArrivalTime = (float) interArrivalTimeRVG.getNextValue(interArrivalTimeDistribution,
 					interArrivalTimeMean, interArrivalTimeSTD);
-			while (interArrivalTime <= 0) {
+			while (interArrivalTime < 0) {
 				interArrivalTime = (float) interArrivalTimeRVG.getNextValue(interArrivalTimeDistribution,
 						interArrivalTimeMean, interArrivalTimeSTD);
 			}
@@ -104,10 +105,11 @@ public class TrafficGenerator {
 
 	private void prepareFlowSizes() {
 		flowSizeRVG.resetRng();
+		traffic.flowSizePerFlowID.clear();
 		int flowSize = 0;
 		for (int flowIndex = 0; flowIndex < numberOfFlows; flowIndex++) {
 			flowSize = (int) flowSizeRVG.getNextValue(flowSizeDistribution, flowSizeMean, flowSizeSTD);
-			while (flowSize <= 0) {
+			while (flowSize <= 0 || flowSize > 1100000) {
 				flowSize = (int) flowSizeRVG.getNextValue(flowSizeDistribution, flowSizeMean, flowSizeSTD);
 			}
 			traffic.flowSizePerFlowID.put(flowIndex, flowSize);

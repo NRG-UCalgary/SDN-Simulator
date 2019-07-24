@@ -79,16 +79,16 @@ public abstract class Controller extends Entity {
 		// TODO The ACK flow path must be set up too
 
 		/* Finding the bottleneck link and RTT for the flow */
-		float minBW = Float.MAX_VALUE;
+		float minBW = 0;
 		float rtt = 0;
 		for (Link link : result.values()) {
 			rtt += link.getTotalDelay(Keywords.Segments.Sizes.ACKSegSize)
 					+ link.getTotalDelay(Keywords.Segments.Sizes.DataSegSize);
-			if (link.getBandwidth() <= minBW) {
+			if (link.getID() == database.bottleneckLinkID) {
 				minBW = link.getBandwidth();
-				database.bottleneckLinkID = link.getID();
 			}
 		}
+
 		rtt += currentNetwork.hosts.get(currentSegment.getSrcHostID()).getAccessLinkRtt();
 		rtt += currentNetwork.hosts.get(currentSegment.getDstHostID()).getAccessLinkRtt();
 		database.btlBwOfFlowID.put(currentSegment.getFlowID(), minBW);
@@ -138,6 +138,10 @@ public abstract class Controller extends Entity {
 
 	public int getBottleneckLinkID() {
 		return database.bottleneckLinkID;
+	}
+
+	public void setBottleneckLinkID(int id) {
+		database.bottleneckLinkID = id;
 	}
 
 }

@@ -1,12 +1,21 @@
 package system;
 
-import experiments.scenarios.FlowSizeMeanAndSTDStudy;
+import experiments.scenarios.*;
 
 public class Main {
 
 	public static void main(String[] args) {
-		FlowSizeMeanAndSTDStudy study = new FlowSizeMeanAndSTDStudy();
-		study.executeTest();
+		// Scenario study = new FlowSizeMeanAndSTDStudy();
+		// study.executeTest();
+		// Main.print("First Study Completed. Running GC.");
+		// study = new FunctionalityMockScenario();
+		// study.executeTest();
+		// Main.print("Second Study Completed. Running GC.");
+		 NumberOfFlowsAndDelayTypes study = new NumberOfFlowsAndDelayTypes();
+		 study.executeTest();
+		// Main.print("Third Study Completed. Running GC.");
+		//MockCategoryFactorStudy study = new MockCategoryFactorStudy();
+		//study.executeTest();
 	}
 
 	public static void print(Object o) {

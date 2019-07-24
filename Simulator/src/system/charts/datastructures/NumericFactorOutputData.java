@@ -3,6 +3,7 @@ package system.charts.datastructures;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
+import system.utility.Keywords;
 import system.utility.Statistics;
 
 public class NumericFactorOutputData {
@@ -44,26 +45,27 @@ public class NumericFactorOutputData {
 		// All metric data structures must be mentioned here
 		avgCompletionTimeData.put(seriesName, new TreeMap<Float, Float>());
 		avgStartupDelayData.put(seriesName, new TreeMap<Float, Float>());
-		maxBtlBufferOccupancyData.put(seriesName, new TreeMap<Float, Float>());
-		varianceOfBtlUtilizationSharePerFlowSizeData.put(seriesName, new TreeMap<Float, Float>());
-		btlUtilizationData.put(seriesName, new TreeMap<Float, Float>());
 		avgFlowThroughputData.put(seriesName, new TreeMap<Float, Float>());
-		flowRejectionPercentageData.put(seriesName, new TreeMap<Float, Float>());
+		btlUtilizationData.put(seriesName, new TreeMap<Float, Float>());
+		varianceOfBtlUtilizationSharePerFlowSizeData.put(seriesName, new TreeMap<Float, Float>());
 		varianceOfFlowCompletionTimePerFlowSizeData.put(seriesName, new TreeMap<Float, Float>());
+		maxBtlBufferOccupancyData.put(seriesName, new TreeMap<Float, Float>());
+		flowRejectionPercentageData.put(seriesName, new TreeMap<Float, Float>());
 	}
 
 	private void insertValuesForAllMetrics(String seriesName, Float metricValue, Statistics stat) {
 		// All metric data structures must be mentioned here
 		avgCompletionTimeData.get(seriesName).put(metricValue, stat.getAvgFlowCompletionTime());
 		avgStartupDelayData.get(seriesName).put(metricValue, stat.getAvgStartupDelay());
-		maxBtlBufferOccupancyData.get(seriesName).put(metricValue, stat.getMaxBottleneckBufferOccupancy());
+		avgFlowThroughputData.get(seriesName).put(metricValue, stat.getAvgFlowThroughput());
+		btlUtilizationData.get(seriesName).put(metricValue, stat.getBottleneckUtilization());
 		varianceOfBtlUtilizationSharePerFlowSizeData.get(seriesName).put(metricValue,
 				stat.getVarianceOfBottleneckUtilizationSharePerFlowSize());
-		btlUtilizationData.get(seriesName).put(metricValue, stat.getBottleneckUtilization());
-		avgFlowThroughputData.get(seriesName).put(metricValue, stat.getAvgFlowThroughput());
-		flowRejectionPercentageData.get(seriesName).put(metricValue, stat.getFlowRejectionPercentage());
 		varianceOfFlowCompletionTimePerFlowSizeData.get(seriesName).put(metricValue,
 				stat.getVarianceOfFlowCompletionTimePerFlowSize());
+		maxBtlBufferOccupancyData.get(seriesName).put(metricValue, stat.getMaxBottleneckBufferOccupancy());
+		flowRejectionPercentageData.get(seriesName).put(metricValue, stat.getFlowRejectionPercentage());
+
 	}
 
 	public void prepareOutputSheets() {
@@ -72,10 +74,10 @@ public class NumericFactorOutputData {
 		addAvgStartupDelayData();
 		addAvgFlowThroughputData();
 		addBottleneckUtilizationData();
-		addFlowRejectionPercentageData();
-		addMaxBottlebeckBufferOccupancyData();
 		addVarianceOfBottleneckUtilizationSharePerFlowSizeData();
 		addVarianceOfFlowCompletionTimePerFlowSizeData();
+		addMaxBottlebeckBufferOccupancyData();
+		addFlowRejectionPercentageData();
 
 	}
 
@@ -83,7 +85,7 @@ public class NumericFactorOutputData {
 	private void addAvgCompletionTimeData() {
 		String sheetName = "AvgCompletionTime";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Avg Flow Completion Time (ms)";
+		String yAxisCaption = Keywords.Metrics.Names.AvgFlowCompletionTime;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgCompletionTimeData.keySet()) {
 			table.addSeriesToTable(seriesName, avgCompletionTimeData.get(seriesName));
@@ -94,7 +96,7 @@ public class NumericFactorOutputData {
 	private void addAvgStartupDelayData() {
 		String sheetName = "AvgStartupDelay";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Avg Startup Delay (ms)";
+		String yAxisCaption = Keywords.Metrics.Names.AvgFlowStartupDelay;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgStartupDelayData.keySet()) {
 			table.addSeriesToTable(seriesName, avgStartupDelayData.get(seriesName));
@@ -105,7 +107,7 @@ public class NumericFactorOutputData {
 	private void addMaxBottlebeckBufferOccupancyData() {
 		String sheetName = "MaxBtlBufferOccupancy";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Max Bottleneck Buffer Occupancy (Packets)";
+		String yAxisCaption = Keywords.Metrics.Names.MaxBtlBufferOccupancy;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : maxBtlBufferOccupancyData.keySet()) {
 			table.addSeriesToTable(seriesName, maxBtlBufferOccupancyData.get(seriesName));
@@ -116,7 +118,7 @@ public class NumericFactorOutputData {
 	private void addVarianceOfBottleneckUtilizationSharePerFlowSizeData() {
 		String sheetName = "VarianceOfBtlUtilSharePerFlowSize";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Variance of Bottleneck Utilization Share Per Flow Size (%)";
+		String yAxisCaption = Keywords.Metrics.Names.VarBtlUtilizationShareOverFlowSize;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : varianceOfBtlUtilizationSharePerFlowSizeData.keySet()) {
 			table.addSeriesToTable(seriesName, varianceOfBtlUtilizationSharePerFlowSizeData.get(seriesName));
@@ -127,7 +129,7 @@ public class NumericFactorOutputData {
 	private void addBottleneckUtilizationData() {
 		String sheetName = "BtlUtil";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Bttleneck Utilization (%?)";
+		String yAxisCaption = Keywords.Metrics.Names.BtlUtilization;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlUtilizationData.keySet()) {
 			table.addSeriesToTable(seriesName, btlUtilizationData.get(seriesName));
@@ -138,7 +140,7 @@ public class NumericFactorOutputData {
 	private void addAvgFlowThroughputData() {
 		String sheetName = "AvgFlowThroughput";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Avg Flow Throughput (%?)";
+		String yAxisCaption = Keywords.Metrics.Names.AvgFlowThroughput;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgFlowThroughputData.keySet()) {
 			table.addSeriesToTable(seriesName, avgFlowThroughputData.get(seriesName));
@@ -149,7 +151,7 @@ public class NumericFactorOutputData {
 	private void addFlowRejectionPercentageData() {
 		String sheetName = "flowRejectionRate";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Flow Rejection Rate (%)";
+		String yAxisCaption = Keywords.Metrics.Names.FlowRejectionRate;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : flowRejectionPercentageData.keySet()) {
 			table.addSeriesToTable(seriesName, flowRejectionPercentageData.get(seriesName));
@@ -160,7 +162,7 @@ public class NumericFactorOutputData {
 	private void addVarianceOfFlowCompletionTimePerFlowSizeData() {
 		String sheetName = "varianceOfFlowCompletionTime";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Variance of Flow Completion Time Per Flow Size (%?)";
+		String yAxisCaption = Keywords.Metrics.Names.VarFlowCompletionTimeOverFlowSize;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : varianceOfFlowCompletionTimePerFlowSizeData.keySet()) {
 			table.addSeriesToTable(seriesName, varianceOfFlowCompletionTimePerFlowSizeData.get(seriesName));

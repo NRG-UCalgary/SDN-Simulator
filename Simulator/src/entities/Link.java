@@ -62,6 +62,7 @@ public class Link extends Entity {
 			if (firstSegmentArrivalTime == 0) {
 				firstSegmentArrivalTime = currentTime;
 			}
+			lastSegmentTransmittedTime = currentTime + transmissionDelay;
 			if (utilizationTimePerFlowID.containsKey((float) flowID)) {
 				utilizationTimePerFlowID.put((float) flowID,
 						utilizationTimePerFlowID.get((float) flowID) + transmissionDelay);

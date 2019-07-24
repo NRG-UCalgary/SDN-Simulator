@@ -2,6 +2,7 @@ package system.charts.datastructures;
 
 import java.util.LinkedHashMap;
 
+import system.utility.Keywords;
 import system.utility.Statistics;
 
 public class CategoryFactorOutputData {
@@ -74,17 +75,17 @@ public class CategoryFactorOutputData {
 		addAvgStartupDelayData();
 		addAvgFlowThroughputData();
 		addBottleneckUtilizationData();
-		addFlowRejectionPercentageData();
-		addMaxBottlebeckBufferOccupancyData();
 		addVarianceOfBottleneckUtilizationSharePerFlowSizeData();
 		addVarianceOfFlowCompletionTimePerFlowSizeData();
+		addMaxBottlebeckBufferOccupancyData();
+		addFlowRejectionPercentageData();
 
 	}
 
 	private void addAvgCompletionTimeData() {
 		String sheetName = "AvgCompletionTime";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Avg Flow Completion Time (ms)";
+		String yAxisCaption = Keywords.Metrics.Names.AvgFlowCompletionTime;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgCompletionTimeData.keySet()) {
 			table.addSeriesToTable(seriesName, avgCompletionTimeData.get(seriesName));
@@ -95,7 +96,7 @@ public class CategoryFactorOutputData {
 	private void addAvgStartupDelayData() {
 		String sheetName = "AvgStartupDelay";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Avg Startup Delay (ms)";
+		String yAxisCaption = Keywords.Metrics.Names.AvgFlowStartupDelay;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgStartupDelayData.keySet()) {
 			table.addSeriesToTable(seriesName, avgStartupDelayData.get(seriesName));
@@ -106,7 +107,7 @@ public class CategoryFactorOutputData {
 	private void addMaxBottlebeckBufferOccupancyData() {
 		String sheetName = "MaxBtlBufferOccupancy";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Max Bottleneck Buffer Occupancy (Packets)";
+		String yAxisCaption = Keywords.Metrics.Names.MaxBtlBufferOccupancy;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : maxBtlBufferOccupancyData.keySet()) {
 			table.addSeriesToTable(seriesName, maxBtlBufferOccupancyData.get(seriesName));
@@ -117,7 +118,7 @@ public class CategoryFactorOutputData {
 	private void addVarianceOfBottleneckUtilizationSharePerFlowSizeData() {
 		String sheetName = "VarianceOfBtlUtilSharePerFlowSize";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Variance of Bottleneck Utilization Share Per Flow Size (%)";
+		String yAxisCaption = Keywords.Metrics.Names.VarBtlUtilizationShareOverFlowSize;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : varianceOfBtlUtilizationSharePerFlowSizeData.keySet()) {
 			table.addSeriesToTable(seriesName, varianceOfBtlUtilizationSharePerFlowSizeData.get(seriesName));
@@ -128,7 +129,7 @@ public class CategoryFactorOutputData {
 	private void addBottleneckUtilizationData() {
 		String sheetName = "BtlUtil";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Bttleneck Utilization (%?)";
+		String yAxisCaption = Keywords.Metrics.Names.BtlUtilization;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlUtilizationData.keySet()) {
 			table.addSeriesToTable(seriesName, btlUtilizationData.get(seriesName));
@@ -139,7 +140,7 @@ public class CategoryFactorOutputData {
 	private void addAvgFlowThroughputData() {
 		String sheetName = "AvgFlowThroughput";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Avg Flow Throughput (%?)";
+		String yAxisCaption = Keywords.Metrics.Names.AvgFlowThroughput;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgFlowThroughputData.keySet()) {
 			table.addSeriesToTable(seriesName, avgFlowThroughputData.get(seriesName));
@@ -150,7 +151,7 @@ public class CategoryFactorOutputData {
 	private void addFlowRejectionPercentageData() {
 		String sheetName = "flowRejectionRate";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Flow Rejection Rate (%)";
+		String yAxisCaption = Keywords.Metrics.Names.FlowRejectionRate;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : flowRejectionPercentageData.keySet()) {
 			table.addSeriesToTable(seriesName, flowRejectionPercentageData.get(seriesName));
@@ -161,7 +162,7 @@ public class CategoryFactorOutputData {
 	private void addVarianceOfFlowCompletionTimePerFlowSizeData() {
 		String sheetName = "varianceOfFlowCompletionTime";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = "Variance of Flow Completion Time Per Flow Size (%?)";
+		String yAxisCaption = Keywords.Metrics.Names.VarFlowCompletionTimeOverFlowSize;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : varianceOfFlowCompletionTimePerFlowSizeData.keySet()) {
 			table.addSeriesToTable(seriesName, varianceOfFlowCompletionTimePerFlowSizeData.get(seriesName));

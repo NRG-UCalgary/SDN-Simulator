@@ -33,7 +33,7 @@ public class Host extends Node {
 				|| packet.segment.getType() == Keywords.Segments.Types.UncontrolledFIN) {
 			/** ===== Statistical Counters ===== **/
 			transportAgent.flow.totalSentSegments++;
-			transportAgent.flow.dataSeqNumSendingTimes.put((float) packet.segment.getSeqNum(), net.getCurrentTime());
+			//transportAgent.flow.dataSeqNumSendingTimes.put((float) packet.segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
 		}
 	}

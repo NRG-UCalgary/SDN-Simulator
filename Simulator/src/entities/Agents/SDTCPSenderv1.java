@@ -57,7 +57,7 @@ public class SDTCPSenderv1 extends Agent {
 		mostRecentSegmentDepartureTime = nextTime;
 		/** ===== Statistical Counters ===== **/
 		this.flow.totalSentSegments++;
-		this.flow.dataSeqNumSendingTimes.put((float) synSegment.getSeqNum(), nextTime);
+		//this.flow.dataSeqNumSendingTimes.put((float) synSegment.getSeqNum(), nextTime);
 		/** ================================ **/
 	}
 
@@ -72,7 +72,7 @@ public class SDTCPSenderv1 extends Agent {
 			break;
 		case Keywords.Segments.Types.ACK:
 			/** ===== Statistical Counters ===== **/
-			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
+			//flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
 			if (isACKNumExpected(segment.getSeqNum())) {
 				if (segment.getSeqNum() == flow.getSize()) {
@@ -92,7 +92,7 @@ public class SDTCPSenderv1 extends Agent {
 		case Keywords.Segments.Types.SYNACK:
 			/** ===== Statistical Counters ===== **/
 			flow.dataSendingStartTime = net.getCurrentTime();
-			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
+			//flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
 			ACKedSeqNum = segment.getSeqNum();
 			prepareSegmentsToSend();
@@ -103,7 +103,7 @@ public class SDTCPSenderv1 extends Agent {
 		/* Maybe in future we can separate different types of ACKs */
 		case Keywords.Segments.Types.FINACK:
 			/** ===== Statistical Counters ===== **/
-			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
+			//flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
 			break;
 		case Keywords.Segments.Types.FIN:

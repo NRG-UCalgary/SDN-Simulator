@@ -160,7 +160,7 @@ public interface Keywords {
 	interface Charts {
 		interface Titles {
 			String SeqNumPlot = "Transport Protocol Sequence Number Plot";
-			String SeqNumPlotXAxisTitle = "Time(ms)";
+			String SeqNumPlotXAxisTitle = "Time(us)";
 			String SeqNumPlotYAxisTitle = "Segment Sequence Number";
 		}
 
@@ -181,7 +181,7 @@ public interface Keywords {
 		interface Metrics {
 			interface Titles {
 				String ArrtivalToBottleneckLink = "Arrival of segments to the bottleneck link";
-				String Time = "Time(ms)";
+				String Time = "Time(us)";
 				String FlowID = "Flow ID";
 			}
 		}
@@ -191,6 +191,20 @@ public interface Keywords {
 		interface Names {
 			String NumberOfFlowsStudy = "Number Of Flows Study";
 			String FlowSizeStudy = "Flow Size Study";
+		}
+	}
+
+	interface Metrics {
+		interface Names {
+			String AvgFlowCompletionTime = "Avg Flow Completion Time (us)";
+			String AvgFlowStartupDelay = "Avg Flow Setup Delay (us)";
+			String AvgFlowThroughput = "Avg Flow Throughput";
+			String BtlUtilization = "Bottleneck Link Utilization";
+			String MaxBtlBufferOccupancy = "Max Bottlenek Buffer Occupancy (Packets)";
+			String FlowRejectionRate = "Flow Rejection Rate (%)";
+			String VarFlowCompletionTimeOverFlowSize = "Var (Flow Completion Time / Flow Size)";
+			String VarBtlUtilizationShareOverFlowSize = "Var (Flow Btl Util Share / Flow Size)";
+
 		}
 	}
 

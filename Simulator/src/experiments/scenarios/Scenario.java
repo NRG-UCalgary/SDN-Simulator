@@ -27,7 +27,7 @@ public abstract class Scenario {
 		this.mainFactorName = mainFactorName;
 	}
 
-	protected void executeTest() {
+	public void executeTest() {
 
 	}
 

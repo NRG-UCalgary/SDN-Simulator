@@ -19,7 +19,11 @@ public class Statistics {
 	public HashMap<Integer, Flow> flows; // <FlowID, Flow>
 	public Controller controller;
 
-	public Statistics(Network net) {
+	public Statistics(Network net, int btlLinkID) {
+		this.bottleneckLinkID = btlLinkID;
+		if (btlLinkID != net.controller.getBottleneckLinkID()) {
+			Debugger.debug("Controller worked with wrong bottleneck.");
+		}
 		links = new HashMap<Integer, Link>();
 		switches = new HashMap<Integer, SDNSwitch>();
 		flows = new HashMap<Integer, Flow>();
@@ -35,9 +39,6 @@ public class Statistics {
 				this.flows.put(host.transportAgent.flow.getID(), host.transportAgent.flow);
 			}
 		}
-
-		bottleneckLinkID = net.controller.getBottleneckLinkID();
-
 	}
 
 	public float getAvgFlowCompletionTime() {
@@ -59,27 +60,24 @@ public class Statistics {
 	public float getAvgFlowThroughput() {
 		float sum = 0;
 		for (Flow flow : flows.values()) {
-			sum = flow.arrivalTime;
-			sum += 0;
+			sum += (flow.totalTransmissionTime / (float) (flow.FINSendingTime - flow.arrivalTime));
 		}
-		sum = 0;
 		return sum / (float) flows.size();
 	}
 
 	public float getBottleneckUtilization() {
 		Link bottleneck = links.get(bottleneckLinkID);
-		bottleneck.totalTransmissionTime = 0;
-		return 0;
+		float totalUpTime = bottleneck.lastSegmentTransmittedTime - bottleneck.firstSegmentArrivalTime;
+		float util = 0;
+		if (totalUpTime > 0) {
+			util = bottleneck.totalTransmissionTime / totalUpTime;
+		}
+		return util;
 	}
 
 	public float getMaxBottleneckBufferOccupancy() {
 		// TODO add the max occupancy of both data and ack stream
 		return links.get(bottleneckLinkID).buffer.maxOccupancy;
-	}
-
-	public float getAvgBottleneckBufferOccupancy() {
-		// TODO prepare the formula and counters
-		return 0;
 	}
 
 	public float getVarianceOfBottleneckUtilizationSharePerFlowSize() {
@@ -88,24 +86,36 @@ public class Statistics {
 		ArrayList<Float> values = new ArrayList<Float>();
 		for (float flowID : bottleneck.utilizationTimePerFlowID.keySet()) {
 			float utilizationShare = bottleneck.utilizationTimePerFlowID.get(flowID);
-			values.add((100 * utilizationShare)
-					/ ((float) (flows.get((int) flowID).getSize() * bottleneck.totalTransmissionTime)));
+			float bottleNeckTotalTransmissionTime = bottleneck.totalTransmissionTime;
+			float value = (100 * utilizationShare)
+					/ ((float) (flows.get((int) flowID).getSize() * bottleNeckTotalTransmissionTime));
+			values.add(value);
 		}
 		try {
 			variance = (float) Mathematics.variance(values);
 		} catch (Exception e) {
-			Main.print("Error::Statistics.getVarianceOfBottleneckUtilizationShare()");
 			e.printStackTrace();
 		}
-		variance = 0;
 		return variance;
 	}
 
 	public float getVarianceOfFlowCompletionTimePerFlowSize() {
-		return 0;
+		float variance = 0;
+		ArrayList<Float> completionTimes = new ArrayList<Float>();
+		for (Flow flow : flows.values()) {
+			completionTimes.add(flow.completionTime / (float) flow.getSize());
+		}
+		try {
+			variance = (float) Mathematics.variance(completionTimes);
+		} catch (Exception e) {
+			Main.error(this.getClass().getName(), "getVarianceOfFlowCompletionTimePerFlowSize",
+					"null values in completionTimes array.");
+		}
+		return variance;
 	}
 
 	public float getFlowRejectionPercentage() {
+		// TODO the counter update must be implemented
 		return 0;
 	}
 }
