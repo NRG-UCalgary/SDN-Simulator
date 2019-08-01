@@ -11,16 +11,18 @@ import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 
-import entities.Flow;
-import system.charts.datastructures.*;
-import system.utility.Statistics;
-import system.utility.excel.ExcelHandler;
+import simulator.entities.Flow;
+import utility.Statistics;
+import utility.excel.ExcelHandler;
+import utility.excel.charts.datastructures.CategoryFactorOutputData;
+import utility.excel.charts.datastructures.NumericFactorOutputData;
+import utility.excel.charts.datastructures.NumericFactorScatterTableData;
 
 public abstract class Scenario {
 	protected boolean functionalityOutput = false;
 
-	private String studyName;
 	private String mainFactorName;
+	private String studyName;
 
 	public Scenario(String studyName, String mainFactorName) {
 		this.studyName = studyName;
@@ -34,17 +36,6 @@ public abstract class Scenario {
 	/* ======================================================================== */
 	/* ============ Performance outputs ======================================= */
 	/* ======================================================================== */
-
-	public void generateNumericalFactorOutput(LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
-		String studyOutputPath = "output/" + studyName + "/";
-		new File(studyOutputPath).mkdirs();
-		NumericFactorOutputData outputData = new NumericFactorOutputData(mainFactorName, result);
-		try {
-			ExcelHandler.createNumericFactorStudyOutput(studyOutputPath, studyName, outputData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void generateCategoryFactorOutput(LinkedHashMap<String, LinkedHashMap<String, Statistics>> result) {
 		String studyOutputPath = "output/" + studyName + "/";
@@ -60,6 +51,39 @@ public abstract class Scenario {
 	/* ======================================================================== */
 	/* ============ Functionality outputs ===================================== */
 	/* ======================================================================== */
+
+	public void generateNumericalFactorOutput(LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
+		String studyOutputPath = "output/" + studyName + "/";
+		new File(studyOutputPath).mkdirs();
+		NumericFactorOutputData outputData = new NumericFactorOutputData(mainFactorName, result);
+		try {
+			ExcelHandler.createNumericFactorStudyOutput(studyOutputPath, studyName, outputData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void outOneCollumTextFile(ArrayList<String> output, String address) {
+
+		FileWriter file_writer;
+		BufferedWriter buffered_writer;
+		PrintWriter print_writer;
+		try {
+			file_writer = new FileWriter(address);
+			buffered_writer = new BufferedWriter(file_writer);
+			print_writer = new PrintWriter(buffered_writer);
+
+			for (String s : output) {
+				print_writer.println(s);
+			}
+			print_writer.close();
+			buffered_writer.close();
+			file_writer.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void outSegmentArrivalToBottleneckData(String outputPath, Statistics stat) {
 		NumericFactorScatterTableData bottleneckArrivals = new NumericFactorScatterTableData("Time (ms)", "FlowID");
@@ -97,28 +121,6 @@ public abstract class Scenario {
 			SeqNumDataForAllFlowIDs.put(flow.getID(), flowSeqNumData);
 		}
 
-	}
-
-	public void outOneCollumTextFile(ArrayList<String> output, String address) {
-
-		FileWriter file_writer;
-		BufferedWriter buffered_writer;
-		PrintWriter print_writer;
-		try {
-			file_writer = new FileWriter(address);
-			buffered_writer = new BufferedWriter(file_writer);
-			print_writer = new PrintWriter(buffered_writer);
-
-			for (String s : output) {
-				print_writer.println(s);
-			}
-			print_writer.close();
-			buffered_writer.close();
-			file_writer.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

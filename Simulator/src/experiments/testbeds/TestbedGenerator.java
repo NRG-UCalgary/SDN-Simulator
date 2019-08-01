@@ -1,7 +1,7 @@
 package experiments.testbeds;
 
 import system.Main;
-import system.utility.Keywords;
+import utility.Keywords;
 
 public class TestbedGenerator {
 

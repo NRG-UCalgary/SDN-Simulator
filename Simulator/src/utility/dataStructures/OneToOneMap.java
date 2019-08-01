@@ -1,0 +1,62 @@
+package utility.dataStructures;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class OneToOneMap {
+
+	private Map<Integer, String> keyToValue;
+
+	private Map<String, Integer> valueToKey;
+
+	public OneToOneMap() {
+		keyToValue = new HashMap<Integer, String>();
+		valueToKey = new HashMap<String, Integer>();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OneToOneMap other = (OneToOneMap) obj;
+		if (keyToValue == null) {
+			if (other.keyToValue != null)
+				return false;
+		} else if (!keyToValue.equals(other.keyToValue))
+			return false;
+		if (valueToKey == null) {
+			if (other.valueToKey != null)
+				return false;
+		} else if (!valueToKey.equals(other.valueToKey))
+			return false;
+		return true;
+	}
+
+	public Integer getKey(String value) {
+		return this.valueToKey.get(value);
+	}
+
+	public String getValue(int key) {
+		return this.keyToValue.get(key);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((keyToValue == null) ? 0 : keyToValue.hashCode());
+		result = prime * result + ((valueToKey == null) ? 0 : valueToKey.hashCode());
+		return result;
+	}
+
+	public void put(int key, String value) {
+		this.keyToValue.put(key, value);
+		this.valueToKey.put(value, key);
+	}
+
+	// Other method may be needed to be implemented
+
+}

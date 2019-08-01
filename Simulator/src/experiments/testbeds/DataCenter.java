@@ -1,7 +1,7 @@
 package experiments.testbeds;
 
 import experiments.traffic.Traffic;
-import system.utility.Statistics;
+import utility.Statistics;
 
 public class DataCenter extends Testbed {
 

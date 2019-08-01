@@ -3,38 +3,38 @@ package experiments.testbeds;
 import java.util.TreeMap;
 
 import experiments.traffic.Traffic;
-import system.utility.Keywords;
-import system.utility.Mathematics;
-import system.utility.RandomVariableGenerator;
-import system.utility.Statistics;
+import utility.Keywords;
+import utility.Mathematics;
+import utility.RandomVariableGenerator;
+import utility.Statistics;
 
 public abstract class Testbed {
-	protected float alpha = 1;
-	protected float SimEndTime;
-	protected RandomVariableGenerator rttRVG;
-
 	// Link Bandwidth
 	protected float AccessLinkBandwidth;
-	protected float NetworkLinkBandwidth;
+	/* Flow Properties */
+	public short AccessLinkPropagationDelayDistribution;
+	protected float alpha = 1;
+
+	protected double AverageAccessLinkPropagationDelay;
 	protected float controlLinkBandwidth;
+	protected float controlLinkPropagationDelay;
+
+	protected double MaxAccessLinkPropagationDelay;
+	protected double MinAccessLinkPropagationDelay;
+	protected float NetworkLinkBandwidth;
+	protected float NetworkLinkPropagationDelay;
+	protected int NumberOfHostsPerAccessSwitch;
+
+	protected int NumberOfNetworkSwitches;
+	/* Switch Properties */
+	protected int NumberOfSenderAccessSwitches;
 
 	// Link Propagation Delay
 	protected float ReceiverAccessLinkPropagationDelay;
-	protected double AverageAccessLinkPropagationDelay;
+	protected RandomVariableGenerator rttRVG;
+	protected float SimEndTime;
+
 	protected double StandardDeviationAccessLinkPropagationDelay;
-	protected double MinAccessLinkPropagationDelay;
-	protected double MaxAccessLinkPropagationDelay;
-
-	protected float NetworkLinkPropagationDelay;
-	protected float controlLinkPropagationDelay;
-
-	/* Switch Properties */
-	protected int NumberOfSenderAccessSwitches;
-	protected int NumberOfNetworkSwitches;
-	protected int NumberOfHostsPerAccessSwitch;
-
-	/* Flow Properties */
-	public short AccessLinkPropagationDelayDistribution;
 
 	public Testbed(short networkType) {
 		SimEndTime = Float.MAX_VALUE;

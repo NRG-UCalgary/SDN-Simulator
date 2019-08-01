@@ -1,28 +1,28 @@
 package experiments.traffic;
 
-import system.utility.*;
+import utility.*;
 
 public class TrafficGenerator {
 
-	private RandomVariableGenerator interArrivalTimeRVG;
-	private RandomVariableGenerator flowSizeRVG;
-	private RandomVariableGenerator numberOfFLowsRVG;
-
 	private float firstFlowArrivalTime;
-	private int numberOfFlows;
-	private Traffic traffic;
-
-	private short numberOfFlowsDistribution;
-	private double numberOfFlowsMean;
-	private double numberOfFlowsSTD;
-
-	private short interArrivalTimeDistribution;
-	private double interArrivalTimeMean;
-	private double interArrivalTimeSTD;
-
 	private short flowSizeDistribution;
 	private double flowSizeMean;
+
+	private RandomVariableGenerator flowSizeRVG;
 	private double flowSizeSTD;
+	private short interArrivalTimeDistribution;
+
+	private double interArrivalTimeMean;
+	private RandomVariableGenerator interArrivalTimeRVG;
+	private double interArrivalTimeSTD;
+
+	private int numberOfFlows;
+	private short numberOfFlowsDistribution;
+	private double numberOfFlowsMean;
+
+	private RandomVariableGenerator numberOfFLowsRVG;
+	private double numberOfFlowsSTD;
+	private Traffic traffic;
 
 	public TrafficGenerator(short trafficType, float firstFlowArrivalTime) {
 		interArrivalTimeRVG = new RandomVariableGenerator(
@@ -55,36 +55,6 @@ public class TrafficGenerator {
 		return traffic;
 	}
 
-	public void setNumberOfFlowsProperties(short distribution, double mean, double standardDeviation) {
-		numberOfFlowsDistribution = distribution;
-		numberOfFlowsMean = mean;
-		numberOfFlowsSTD = standardDeviation;
-
-	}
-
-	public void setFlowInterArrivalTimeProperties(short distribution, double mean, double standardDeviation) {
-		interArrivalTimeDistribution = distribution;
-		interArrivalTimeMean = mean;
-		interArrivalTimeSTD = standardDeviation;
-	}
-
-	public void setFlowSizeProperties(short distribution, double mean, double standardDeviation) {
-		flowSizeDistribution = distribution;
-		flowSizeMean = mean;
-		flowSizeSTD = standardDeviation;
-
-	}
-
-	private void prepareNumberOfFlows() {
-		numberOfFlows = (int) numberOfFLowsRVG.getNextValue(numberOfFlowsDistribution, numberOfFlowsMean,
-				numberOfFlowsSTD);
-		while (numberOfFlows <= 0) {
-			numberOfFlows = (int) numberOfFLowsRVG.getNextValue(numberOfFlowsDistribution, numberOfFlowsMean,
-					numberOfFlowsSTD);
-
-		}
-	}
-
 	private void prepareFlowArrivals() {
 		interArrivalTimeRVG.resetRng();
 		traffic.arrivalTimePerFlowID.clear();
@@ -114,6 +84,36 @@ public class TrafficGenerator {
 			}
 			traffic.flowSizePerFlowID.put(flowIndex, flowSize);
 		}
+	}
+
+	private void prepareNumberOfFlows() {
+		numberOfFlows = (int) numberOfFLowsRVG.getNextValue(numberOfFlowsDistribution, numberOfFlowsMean,
+				numberOfFlowsSTD);
+		while (numberOfFlows <= 0) {
+			numberOfFlows = (int) numberOfFLowsRVG.getNextValue(numberOfFlowsDistribution, numberOfFlowsMean,
+					numberOfFlowsSTD);
+
+		}
+	}
+
+	public void setFlowInterArrivalTimeProperties(short distribution, double mean, double standardDeviation) {
+		interArrivalTimeDistribution = distribution;
+		interArrivalTimeMean = mean;
+		interArrivalTimeSTD = standardDeviation;
+	}
+
+	public void setFlowSizeProperties(short distribution, double mean, double standardDeviation) {
+		flowSizeDistribution = distribution;
+		flowSizeMean = mean;
+		flowSizeSTD = standardDeviation;
+
+	}
+
+	public void setNumberOfFlowsProperties(short distribution, double mean, double standardDeviation) {
+		numberOfFlowsDistribution = distribution;
+		numberOfFlowsMean = mean;
+		numberOfFlowsSTD = standardDeviation;
+
 	}
 
 }

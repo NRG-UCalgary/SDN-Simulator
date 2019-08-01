@@ -3,8 +3,8 @@ package experiments.testbeds;
 import java.util.TreeMap;
 
 import experiments.traffic.Traffic;
-import system.Simulator;
-import system.utility.*;
+import simulator.Simulator;
+import utility.*;
 
 public class Dumbbell extends Testbed {
 
