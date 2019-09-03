@@ -7,11 +7,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import simulator.Network;
-import simulator.entities.CtrlMessage;
-import simulator.entities.Link;
-import simulator.entities.Packet;
-import simulator.entities.SDNSwitch;
-import simulator.entities.Segment;
+import simulator.entities.network.CtrlMessage;
+import simulator.entities.traffic.Packet;
+import simulator.entities.traffic.Segment;
 
 public class Debugger {
 
@@ -20,19 +18,6 @@ public class Debugger {
 
 	public static void connectivity(Network net) {
 		Debugger.debug("####################	Connectivity	####################");
-		for (SDNSwitch s : net.switches.values()) {
-			Debugger.debug("=======================");
-			Debugger.debug("The switch ID = " + s.getID());
-			Debugger.debug(" These are the access links: ");
-			for (Link l : s.accessLinks.values()) {
-				Debugger.debug("  link ID: " + l.getID() + " connected to hostID: " + l.getDstNodeID());
-			}
-			Debugger.debug(" These are the network links: ");
-			for (Link l : s.networkLinks.values()) {
-				Debugger.debug("  link ID: " + l.getID() + " connected to switchID: " + l.getDstNodeID());
-			}
-			Debugger.debug("=======================");
-		}
 		Debugger.debug("############################################################");
 	}
 
@@ -123,11 +108,7 @@ public class Debugger {
 	public static void stopFlag() {
 		debug("Stop Flag.");
 		ArrayList<Integer> test = new ArrayList<Integer>();
-		try {
-			test.get(0);
-		} catch (Exception e) {
-			System.out.println("Debugger Stop Flag.");
-		}
+		test.get(0);
 	}
 
 	public Debugger() {

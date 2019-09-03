@@ -13,6 +13,8 @@ public class Dumbbell extends Testbed {
 	}
 
 	public Statistics executeSimulation(Traffic traffic) {
+		int controlLinkIndex = 0;
+		String controllerLabel = Keywords.Entities.Labels.Prefixes.ControllerPrefix + "0";
 		NumberOfSenderAccessSwitches = 1;
 		NumberOfNetworkSwitches = 1;
 		NumberOfHostsPerAccessSwitch = traffic.flowSizePerFlowID.size();
@@ -20,14 +22,28 @@ public class Dumbbell extends Testbed {
 				AccessLinkPropagationDelayDistribution, NumberOfHostsPerAccessSwitch);
 		Debugger.debugToConsole("    ^^^^^^^^^^^^^ New Simulation ^^^^^^^^^^^^^");
 		Simulator sim = new Simulator();
+
+		// Creating the controller
+		sim.createController(controllerLabel, Keywords.Entities.Controllers.Types.Controller_1, alpha);
+
 		// Creating access switches
 		for (int acessSwitchIndex = 0; acessSwitchIndex < NumberOfSenderAccessSwitches; acessSwitchIndex++) {
 			String senderAccessSwitchLabel = Keywords.Entities.Labels.Prefixes.SenderAccessSwitchPrefix
 					+ acessSwitchIndex;
 			String receiverAccessSwitchLabel = Keywords.Entities.Labels.Prefixes.ReceiverAccessSwitchPrefix
 					+ acessSwitchIndex;
-			sim.createSwitch(senderAccessSwitchLabel, controlLinkPropagationDelay, controlLinkBandwidth);
-			sim.createSwitch(receiverAccessSwitchLabel, controlLinkPropagationDelay, controlLinkBandwidth);
+			sim.createSwitch(senderAccessSwitchLabel, Keywords.Entities.Switches.Types.Switch_1);
+			sim.createSwitch(receiverAccessSwitchLabel, Keywords.Entities.Switches.Types.Switch_1);
+
+			// Creating control links for the access switches
+			sim.createLink(Keywords.Entities.Labels.Prefixes.ControlLinkPrefix + controlLinkIndex,
+					senderAccessSwitchLabel, controllerLabel, controlLinkPropagationDelay, controlLinkBandwidth,
+					Keywords.Entities.Buffers.Size.Unlimited, false);
+			controlLinkIndex++;
+			sim.createLink(Keywords.Entities.Labels.Prefixes.ControlLinkPrefix + controlLinkIndex,
+					receiverAccessSwitchLabel, controllerLabel, controlLinkPropagationDelay, controlLinkBandwidth,
+					Keywords.Entities.Buffers.Size.Unlimited, false);
+			controlLinkIndex++;
 
 			// Creating hosts and connecting them to access switches
 			for (int hostIndex = 0; hostIndex < NumberOfHostsPerAccessSwitch; hostIndex++) {
@@ -37,13 +53,12 @@ public class Dumbbell extends Testbed {
 				String receiverAccessLinkLabel = Keywords.Entities.Labels.Prefixes.ReceiverAccessLinkPrefix + hostIndex;
 
 				sim.createHost(senderHostLabel);
-				sim.createAccessLink(senderAccessLinkLabel, senderHostLabel, senderAccessSwitchLabel,
+				sim.createLink(senderAccessLinkLabel, senderHostLabel, senderAccessSwitchLabel,
 						accessLinkPropagationDelayPerFlowID.get(hostIndex), AccessLinkBandwidth, Integer.MAX_VALUE,
-						Keywords.Buffers.Policy.FIFO);
+						false);
 				sim.createHost(receiverHostLabel);
-				sim.createAccessLink(receiverAccessLinkLabel, receiverHostLabel, receiverAccessSwitchLabel,
-						ReceiverAccessLinkPropagationDelay, AccessLinkBandwidth, Integer.MAX_VALUE,
-						Keywords.Buffers.Policy.FIFO);
+				sim.createLink(receiverAccessLinkLabel, receiverHostLabel, receiverAccessSwitchLabel,
+						ReceiverAccessLinkPropagationDelay, AccessLinkBandwidth, Integer.MAX_VALUE, false);
 			}
 		}
 
@@ -51,7 +66,12 @@ public class Dumbbell extends Testbed {
 		String networkSwitchLabel;
 		for (int networkSwitchIndex = 0; networkSwitchIndex < NumberOfNetworkSwitches; networkSwitchIndex++) {
 			networkSwitchLabel = Keywords.Entities.Labels.Prefixes.NetworkSwitchPrefix + networkSwitchIndex;
-			sim.createSwitch(networkSwitchLabel, controlLinkPropagationDelay, controlLinkBandwidth);
+			sim.createSwitch(networkSwitchLabel, Keywords.Entities.Switches.Types.Switch_1);
+
+			sim.createLink(Keywords.Entities.Labels.Prefixes.ControlLinkPrefix + controlLinkIndex, networkSwitchLabel,
+					controllerLabel, controlLinkPropagationDelay, controlLinkBandwidth,
+					Keywords.Entities.Buffers.Size.Unlimited, false);
+			controlLinkIndex++;
 		}
 
 		// Connecting AccessSwitches to the NetworkSwitch
@@ -66,20 +86,14 @@ public class Dumbbell extends Testbed {
 			String senderAccessSwitchLabel = Keywords.Entities.Labels.Prefixes.SenderAccessSwitchPrefix
 					+ accessSwitchIndex;
 			sim.createLink(networkLinkLabel, senderAccessSwitchLabel, firstNetworkSwitchLabel,
-					NetworkLinkPropagationDelay, NetworkLinkBandwidth, Integer.MAX_VALUE, Keywords.Buffers.Policy.FIFO,
-					true);
+					NetworkLinkPropagationDelay, NetworkLinkBandwidth, Keywords.Entities.Buffers.Size.Unlimited, true);
 			networkLinkLabel = Keywords.Entities.Labels.Prefixes.NetworkLinkPrefix + networkLinkIndex;
 			networkLinkIndex++;
 			String receiverAccessSwitchLabel = Keywords.Entities.Labels.Prefixes.ReceiverAccessSwitchPrefix
 					+ accessSwitchIndex;
 			sim.createLink(networkLinkLabel, lastNetworkSwitchLabel, receiverAccessSwitchLabel,
-					NetworkLinkPropagationDelay, NetworkLinkBandwidth, Integer.MAX_VALUE, Keywords.Buffers.Policy.FIFO,
-					false);
+					NetworkLinkPropagationDelay, NetworkLinkBandwidth, Keywords.Entities.Buffers.Size.Unlimited, false);
 		}
-
-		// Creating the controller
-		String controllerLabel = Keywords.Entities.Labels.Prefixes.ControllerPrefix + 0;
-		sim.createController(controllerLabel, alpha, Keywords.RoutingAlgorithms.Dijkstra);
 
 		// Creating the flows
 		for (int flowIndex : traffic.arrivalTimePerFlowID.keySet()) {
@@ -88,8 +102,8 @@ public class Dumbbell extends Testbed {
 			String flowLabel = Keywords.Entities.Labels.Prefixes.FlowPrefix + flowIndex;
 			String senderHostLabel = Keywords.Entities.Labels.Prefixes.SenderHostPrefix + flowIndex;
 			String receiverHostLabel = Keywords.Entities.Labels.Prefixes.ReceiverHostPrefix + flowIndex;
-			sim.generateFlow(flowLabel, Keywords.Agents.Types.SDTCP, senderHostLabel, receiverHostLabel,
-					traffic.flowSizePerFlowID.get(flowIndex), traffic.arrivalTimePerFlowID.get(flowIndex));
+			sim.generateFlow(flowLabel, senderHostLabel, receiverHostLabel, traffic.flowSizePerFlowID.get(flowIndex),
+					traffic.arrivalTimePerFlowID.get(flowIndex), Keywords.Entities.Agents.Types.SDTCP);
 		}
 		// Running the simulation
 		return sim.run(0, SimEndTime);

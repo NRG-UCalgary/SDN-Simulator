@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import simulator.Network;
-import simulator.entities.Controller;
-import simulator.entities.Flow;
-import simulator.entities.Host;
-import simulator.entities.Link;
-import simulator.entities.SDNSwitch;
+import simulator.entities.network.Controller;
+import simulator.entities.network.Host;
+import simulator.entities.network.Link;
+import simulator.entities.network.SDNSwitch;
+import simulator.entities.traffic.Flow;
 import system.Main;
 
 public class Statistics {
@@ -23,7 +23,7 @@ public class Statistics {
 
 	public Statistics(Network net, int btlLinkID) {
 		this.bottleneckLinkID = btlLinkID;
-		if (btlLinkID != net.controller.getBottleneckLinkID()) {
+		if (btlLinkID != net.controllers.get(10000).getBottleneckLinkID()) {
 			Debugger.debug("Controller worked with wrong bottleneck.");
 		}
 		links = new HashMap<Integer, Link>();
@@ -31,11 +31,7 @@ public class Statistics {
 		flows = new HashMap<Integer, Flow>();
 		this.controller = net.controller;
 		this.switches = net.switches;
-		for (SDNSwitch sdnSwitch : net.switches.values()) {
-			for (Link link : sdnSwitch.networkLinks.values()) {
-				this.links.put(link.getID(), link);
-			}
-		}
+		this.links = net.links;
 		for (Host host : net.hosts.values()) {
 			if (host.transportAgent.flow.getID() < 10000) {
 				this.flows.put(host.transportAgent.flow.getID(), host.transportAgent.flow);

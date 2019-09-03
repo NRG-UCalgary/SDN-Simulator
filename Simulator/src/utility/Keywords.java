@@ -1,20 +1,84 @@
 package utility;
 
 public interface Keywords {
+	interface Entities {
+		interface Agents {
+			interface Types {
+				short Default = 0;
+				short SDTCP = 1;
+				short TCP = 2;
+			}
+		}
 
-	interface Agents {
-		interface Types {
-			String RBTCP = "RBTCP";
-			String SDTCP = "SDTCP";
-			String TCP = "TCP";
+		interface Nodes {
+			interface Types {
+				short Host = 0;
+				short SDNSwitch = 1;
+				short Controller = 2;
+			}
+		}
+
+		interface Controllers {
+			interface Types {
+				short Default = 0;
+				short Controller_1 = 1;
+			}
+		}
+
+		interface Hosts {
+			interface Types {
+				short Default = 0;
+				short Host_1 = 1;
+			}
+		}
+
+		interface Switches {
+			interface Types {
+				short Default = 0;
+				short Switch_1 = 1;
+			}
+		}
+
+		interface Links {
+			interface Types {
+				short Default = 0;
+				short Link_1 = 1;
+			}
+		}
+
+		interface Buffers {
+			interface Types {
+				short Default = 0;
+				short Buffer_1 = 1;
+			}
+
+			interface Size {
+				int Unlimited = Integer.MAX_VALUE;
+				int Minimum = 1;
+			}
+
+			interface Policy {
+				short FIFO = 0;
+			}
+		}
+
+		interface Labels {
+			interface Prefixes {
+				String ControllerPrefix = "C_";
+				String FlowPrefix = "Flow_";
+				String ControlLinkPrefix = "CLink_";
+				String NetworkLinkPrefix = "NLink_";
+				String NetworkSwitchPrefix = "NSwitch_";
+				String ReceiverAccessLinkPrefix = "RALink_";
+				String ReceiverAccessSwitchPrefix = "RASwitch_";
+				String ReceiverHostPrefix = "R_";
+				String SenderAccessLinkPrefix = "SALink_";
+				String SenderAccessSwitchPrefix = "SASwitch_";
+				String SenderHostPrefix = "S_";
+			}
 		}
 	}
 
-	interface Buffers {
-		interface Policy {
-			short FIFO = 0;
-		}
-	}
 	interface Charts {
 		interface MainFactors {
 			interface Titles {
@@ -66,22 +130,7 @@ public interface Keywords {
 
 		float FirstFlowArrival = 0;
 	}
-	interface Entities {
-		interface Labels {
-			interface Prefixes {
-				String ControllerPrefix = "C_";
-				String FlowPrefix = "Flow_";
-				String NetworkLinkPrefix = "NLink_";
-				String NetworkSwitchPrefix = "NSwitch_";
-				String ReceiverAccessLinkPrefix = "RALink_";
-				String ReceiverAccessSwitchPrefix = "RASwitch_";
-				String ReceiverHostPrefix = "R_";
-				String SenderAccessLinkPrefix = "SALink_";
-				String SenderAccessSwitchPrefix = "SASwitch_";
-				String SenderHostPrefix = "S_";
-			}
-		}
-	}
+
 	interface Events {
 		interface Names {
 			interface Arrivals {
@@ -219,6 +268,10 @@ public interface Keywords {
 	}
 
 	short ACKStreamIDOffSet = 10000;
+
+	short ControllerNodeIDOffset = 10000;
+	short SwitchNodeIDOffset = 20000;
+	short HostNodeIDOffset = 30000;
 
 	short BroadcastDestination = -2;
 

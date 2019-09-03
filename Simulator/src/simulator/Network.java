@@ -1,10 +1,7 @@
 package simulator;
 
 import java.util.HashMap;
-
-import simulator.entities.Controller;
-import simulator.entities.Host;
-import simulator.entities.SDNSwitch;
+import simulator.entities.network.*;
 
 public class Network {
 
@@ -16,12 +13,16 @@ public class Network {
 	public EventList eventList;
 
 	/* Topology entities */
-	public HashMap<Integer, Host> hosts;
+	public HashMap<Integer, Controller> controllers;
 	public HashMap<Integer, SDNSwitch> switches;
+	public HashMap<Integer, Host> hosts;
+	public HashMap<Integer, Link> links;
 
 	public Network() {
+		controllers = new HashMap<Integer, Controller>();
 		hosts = new HashMap<Integer, Host>();
 		switches = new HashMap<Integer, SDNSwitch>();
+		links = new HashMap<Integer, Link>();
 		currentTime = 0;
 		eventList = new EventList();
 	}

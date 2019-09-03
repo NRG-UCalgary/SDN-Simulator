@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 
-import simulator.entities.Flow;
+import simulator.entities.traffic.Flow;
 import utility.Statistics;
 import utility.excel.ExcelHandler;
 import utility.excel.charts.datastructures.CategoryFactorOutputData;

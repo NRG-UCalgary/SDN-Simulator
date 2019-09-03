@@ -1,26 +1,19 @@
 package simulator;
 
-import simulator.entities.Agent;
-import simulator.entities.Flow;
-import simulator.entities.Host;
-import simulator.entities.Link;
-import simulator.entities.SDNSwitch;
-import simulator.entities.Agents.SDTCPReceiverv1;
-import simulator.entities.Agents.SDTCPSenderv1;
-import simulator.entities.controllers.Controllerv1;
-import simulator.entities.hosts.DefaultHost;
-import simulator.entities.links.DefaultLink;
-import simulator.entities.switches.SDNSwitchv1;
 import system.Main;
-import utility.Keywords;
-import utility.Mathematics;
-import utility.Statistics;
-import utility.dataStructures.OneToOneMap;
+import simulator.entities.network.*;
+import simulator.entities.network.agents.*;
+import simulator.entities.network.controllers.*;
+import simulator.entities.network.hosts.*;
+import simulator.entities.network.links.*;
+import simulator.entities.network.switches.*;
+import simulator.entities.traffic.*;
+import utility.*;
+import utility.dataStructures.*;
 
 public class Simulator {
 
-	/********* General Programming Methods **********/
-
+	/********* Static Programming Methods ***********/
 	public static int reverseFlowStreamID(int streamID) {
 		int offset = Keywords.ACKStreamIDOffSet;
 		if (streamID < offset) {
@@ -39,140 +32,244 @@ public class Simulator {
 		}
 	}
 
-	public int btllinkID = -1;
-	private int controllerCounter;
-	private OneToOneMap controllerLabels;
-	private int flowCounter;
+	public static short getNodeType(int nodeID) {
+		if (nodeID >= Keywords.HostNodeIDOffset) {
+			return Keywords.Entities.Nodes.Types.Host;
+		} else if (nodeID >= Keywords.SwitchNodeIDOffset) {
+			return Keywords.Entities.Nodes.Types.SDNSwitch;
+		} else if (nodeID >= Keywords.ControllerNodeIDOffset) {
+			return Keywords.Entities.Nodes.Types.Controller;
+		}
+		return -1;
+	}
+
+	/************************************************/
+	private OneToOneMap nodeLabels;
+	private OneToOneMap linkLabels;
 	private OneToOneMap flowLabels;
 
 	private int hostCounter;
-	private OneToOneMap hostLabels;
+	private int switchCounter;
+	private int controllerCounter;
 	private int linkCounter;
-	private OneToOneMap linkLabels;
+	private int flowCounter;
+
+	public final boolean OUTPUT = true;
+	public int btllinkID = -1;
+
 	/** ############### Variables ############### **/
 	private Network net;
 
-	public final boolean OUTPUT = true;
-
-	private int switchCounter;
-
 	/** ############### ID to Label Mappings ############### **/
-	private OneToOneMap switchLabels;
 
 	public Simulator() {
 		/* Default Settings of the Simulator */
-		switchLabels = new OneToOneMap();
-		hostLabels = new OneToOneMap();
+		nodeLabels = new OneToOneMap();
 		linkLabels = new OneToOneMap();
-		controllerLabels = new OneToOneMap();
 		flowLabels = new OneToOneMap();
-		switchCounter = 0;
-		hostCounter = 0;
+
+		controllerCounter = Keywords.ControllerNodeIDOffset;
+		switchCounter = Keywords.SwitchNodeIDOffset;
+		hostCounter = Keywords.HostNodeIDOffset;
 		linkCounter = 0;
-		controllerCounter = 0;
 		flowCounter = 0;
+
 		net = new Network();
 	}
 
-	/* Access link creation method */
-	public void createAccessLink(String label, String src, String dst, float propDelay, float bandwidth, int bufferSize,
-			int bufferPolicy) {
-		Link link = new DefaultLink(linkCounter, hostLabels.getKey(src), switchLabels.getKey(dst), propDelay,
-				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
-		net.hosts.get(hostLabels.getKey(src)).connectToNetwork(switchLabels.getKey(dst), link);
-		linkLabels.put(linkCounter, label);
-		link = new DefaultLink(reverseLinkID(linkCounter), switchLabels.getKey(dst), hostLabels.getKey(src), propDelay,
-				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
-		net.switches.get(switchLabels.getKey(dst)).accessLinks.put(hostLabels.getKey(src), link);
-		linkLabels.put(reverseLinkID(linkCounter), label + "r"); // TODO There should be a mechanism for handling
-		linkCounter++;
-	}
-
-	/*-------------------------------------------------------*/
-	/* Controller Creation Method */
-	public void createController(String label, float alpha, int routingAlgorithm) {
-		net.controller = new Controllerv1(controllerCounter, net, routingAlgorithm, alpha);
-		net.controller.setBottleneckLinkID(btllinkID);
-		for (SDNSwitch sdnSwitch : net.switches.values()) {
-			net.controller.connectSwitch(sdnSwitch.getID(), sdnSwitch.controlLink);
-		}
-		controllerLabels.put(controllerCounter, label);
-		controllerCounter++;
-	}
-	/*-------------------------------------------------------*/
-
-	/*-------------------------------------------------------*/
-	/* Host Creation Method */
-	public void createHost(String label) {
-		Host host = new DefaultHost(hostCounter);
-		net.hosts.put(hostCounter, host);
-		hostLabels.put(hostCounter, label);
-		hostCounter++;
-	}
-
-	/*-------------------------------------------------------*/
-	/* Link Creation Method */
-	public void createLink(String label, String src, String dst, float propDelay, float bandwidth, int bufferSize,
-			int bufferPolicy, boolean isMonitored) {
-		if (isMonitored) {
-			btllinkID = linkCounter;
-		}
-		Link link = new DefaultLink(linkCounter, switchLabels.getKey(src), switchLabels.getKey(dst), propDelay,
-				(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
-		net.switches.get(switchLabels.getKey(src)).networkLinks.put(switchLabels.getKey(dst), link);
-		linkLabels.put(linkCounter, label);
-		link.isMonitored = isMonitored;
-
-		link = new DefaultLink(reverseLinkID(linkCounter), switchLabels.getKey(dst), switchLabels.getKey(src),
-				propDelay, (float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferSize, bufferPolicy);
-		net.switches.get(switchLabels.getKey(dst)).networkLinks.put(switchLabels.getKey(src), link);
-		linkLabels.put(reverseLinkID(linkCounter), label + "r"); // TODO There should be a mechanism for handling
-		linkCounter++;
-	}
-
 	/********** Topology Creation methods ***********/
+	/* Controller Creation Method */
+	public void createController(String label, short controllerType, float alpha, short routingAlgorithm) {
+		Controller controller;
+		switch (controllerType) {
+		case Keywords.Entities.Controllers.Types.Controller_1:
+			controller = new Controllerv1(controllerCounter, routingAlgorithm, alpha);
+			break;
+		default:
+			controller = new DefaultController(controllerCounter, routingAlgorithm);
+			break;
+		}
+		net.controllers.put(controllerCounter, controller);
+		nodeLabels.put(controllerCounter, label);
+		controllerCounter++;
+
+	}
+
+	public void createController(String label, short controllerType, float alpha) {
+		createController(label, controllerType, alpha, Keywords.RoutingAlgorithms.Dijkstra);
+	}
+
+	public void createController(String label, short routingAlgorithm) {
+		createController(label, Keywords.Entities.Controllers.Types.Default, -1, routingAlgorithm);
+	}
+
+	public void createController(String label) {
+		createController(label, Keywords.RoutingAlgorithms.Dijkstra);
+	}
 
 	/*-------------------------------------------------------*/
+
 	/* Switch Creation Method */
-	public void createSwitch(String label, float ctrlLinkPropagationDelay, float ctrlLinkBandwidth) {
-		Link controlLink = new DefaultLink(Keywords.ControllerID, switchCounter, Keywords.ControllerID,
-				ctrlLinkPropagationDelay,
-				(float) Mathematics.bitPerSecondTobitPerMicroSecond((double) ctrlLinkBandwidth), Integer.MAX_VALUE,
-				Keywords.Buffers.Policy.FIFO);
-		SDNSwitch sw = new SDNSwitchv1(switchCounter, controlLink);
+	public void createSwitch(String label, short switchType) {
+		SDNSwitch sw;
+		switch (switchType) {
+		case Keywords.Entities.Switches.Types.Switch_1:
+			sw = new SDNSwitchv1(switchCounter);
+			break;
+		default:
+			sw = new DefaultSDNSwitch(switchCounter);
+			break;
+		}
 		net.switches.put(switchCounter, sw);
-		switchLabels.put(switchCounter, label);
+		nodeLabels.put(switchCounter, label);
 		switchCounter++;
 	}
 
-	/********* Flow Generation Methods **************/
+	public void createSwitch(String label) {
+		createSwitch(label, Keywords.Entities.Switches.Types.Default);
+	}
+	/*-------------------------------------------------------*/
 
-	public void generateFlow(String label, String type, String src, String dst, int size, float arrival_time) {
-
-		Flow flow = new Flow(flowCounter, hostLabels.getKey(src), hostLabels.getKey(dst), size, arrival_time);
-		flowLabels.put(flowCounter, label);
-		Agent src_agent = null;
-		Agent dst_agent = null;
-		switch (type) {
-		case Keywords.Agents.Types.SDTCP:
-			src_agent = new SDTCPSenderv1(flow);
-			flow = new Flow(reverseFlowStreamID(flowCounter), hostLabels.getKey(dst), hostLabels.getKey(src), size,
-					arrival_time);
-			dst_agent = new SDTCPReceiverv1(flow);
+	/* Host Creation Method */
+	public void createHost(String label, short hostType) {
+		Host host;
+		switch (hostType) {
+		case Keywords.Entities.Hosts.Types.Host_1:
+			host = new DefaultHost(hostCounter);
 			break;
 		default:
-			Main.error("Simulator", "generateFlow", "Invalid flow type (" + type + ").");
+			host = new DefaultHost(hostCounter);
 			break;
 		}
+		net.hosts.put(hostCounter, host);
+		nodeLabels.put(hostCounter, label);
+		hostCounter++;
+	}
+
+	public void createHost(String label) {
+		createHost(label, Keywords.Entities.Hosts.Types.Default);
+	}
+	/*-------------------------------------------------------*/
+
+	/* Link Creation Method */
+	public void createLink(String label, String srcNodeLabel, String dstNodeLabel, short linkType, float propDelay,
+			float bandwidth, short bufferType, int bufferSize, int bufferPolicy, boolean isMonitored) {
+
+		int srcNodeID = nodeLabels.getID(srcNodeLabel);
+		int dstNodeID = nodeLabels.getID(dstNodeLabel);
+
+		Link link;
+		Link reverseLink;
+		switch (linkType) {
+		case Keywords.Entities.Links.Types.Link_1:
+			link = new DefaultLink(linkCounter, srcNodeID, dstNodeID, propDelay,
+					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
+					bufferPolicy);
+			reverseLink = new DefaultLink(reverseLinkID(linkCounter), dstNodeID, srcNodeID, propDelay,
+					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
+					bufferPolicy);
+			break;
+		default:
+			link = new DefaultLink(linkCounter, srcNodeID, dstNodeID, propDelay,
+					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
+					bufferPolicy);
+			reverseLink = new DefaultLink(reverseLinkID(linkCounter), dstNodeID, srcNodeID, propDelay,
+					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
+					bufferPolicy);
+			break;
+		}
+		link.isMonitored = isMonitored;
+		net.links.put(link.getID(), link);
+		net.links.put(reverseLink.getID(), reverseLink);
+		linkLabels.put(linkCounter, label);
+		linkCounter++;
+
+		if (isMonitored) {
+			btllinkID = linkCounter;
+		}
+
+		switch (getNodeType(srcNodeID)) {
+		case Keywords.Entities.Nodes.Types.SDNSwitch:
+			net.switches.get(srcNodeID).connectToNode(link.getID(), dstNodeID, getNodeType(dstNodeID));
+			break;
+		case Keywords.Entities.Nodes.Types.Host:
+			net.hosts.get(srcNodeID).connectToNode(link.getID(), dstNodeID, getNodeType(dstNodeID));
+			break;
+		case Keywords.Entities.Nodes.Types.Controller:
+			net.controllers.get(srcNodeID).connectToNode(link.getID(), dstNodeID, getNodeType(dstNodeID));
+			break;
+		default:
+			break;
+		}
+		switch (getNodeType(dstNodeID)) {
+		case Keywords.Entities.Nodes.Types.SDNSwitch:
+			net.switches.get(dstNodeID).connectToNode(reverseLink.getID(), srcNodeID, getNodeType(srcNodeID));
+			break;
+		case Keywords.Entities.Nodes.Types.Host:
+			net.hosts.get(dstNodeID).connectToNode(reverseLink.getID(), srcNodeID, getNodeType(srcNodeID));
+			break;
+		case Keywords.Entities.Nodes.Types.Controller:
+			net.controllers.get(dstNodeID).connectToNode(reverseLink.getID(), srcNodeID, getNodeType(srcNodeID));
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	public void createLink(String label, String srcNodeLabel, String dstNodeLabel, float propDelay, float bandwidth,
+			int bufferSize, boolean isMonitored) {
+		createLink(label, srcNodeLabel, dstNodeLabel, Keywords.Entities.Links.Types.Default, propDelay, bandwidth,
+				Keywords.Entities.Buffers.Types.Default, bufferSize, Keywords.Entities.Buffers.Policy.FIFO,
+				isMonitored);
+
+	}
+
+	/********* Traffic Generation Methods **************/
+	public void generateFlow(String label, String srcHostLabel, String dstHostLabel, int size, float arrivalTime,
+			short agentType, int initialSWnd) {
+		int srcHostID = nodeLabels.getID(srcHostLabel);
+		int dstHostID = nodeLabels.getID(dstHostLabel);
+		Flow flow = new Flow(flowCounter, srcHostID, dstHostID, size, arrivalTime);
+		Flow reverseFlow = new Flow(reverseFlowStreamID(flow.getID()), dstHostID, srcHostID, size, arrivalTime);
 		flowCounter++;
-		net.hosts.get(hostLabels.getKey(src)).transportAgent = src_agent;
-		net.hosts.get(hostLabels.getKey(dst)).transportAgent = dst_agent;
-		net.hosts.get(hostLabels.getKey(src)).initialize(net);
+		flowLabels.put(flow.getID(), label);
+
+		Agent srcAgent;
+		Agent dstAgent;
+		switch (agentType) {
+		case Keywords.Entities.Agents.Types.SDTCP:
+			srcAgent = new SDTCPSenderv1(flow);
+			dstAgent = new SDTCPReceiverv1(reverseFlow);
+			break;
+		default:
+			srcAgent = new DefaultSender(flow, initialSWnd);
+			dstAgent = new DefaultReceiver(reverseFlow);
+			break;
+		}
+
+		net.hosts.get(srcHostID).transportAgent = srcAgent;
+		net.hosts.get(dstHostID).transportAgent = dstAgent;
+		net.hosts.get(srcHostID).initialize(net);
+	}
+
+	public void generateFlow(String label, String srcHostLabel, String dstHostLabel, int size, float arrivalTime,
+			short agentType) {
+		generateFlow(label, srcHostLabel, dstHostLabel, size, arrivalTime, agentType, 1);
 	}
 
 	/********** Run **********/
+	private void initialize() {
+		// Initialize everyThing here
+		for (Controller controller : net.controllers.values()) {
+			controller.setNetwokInformation(net);
+			controller.setBottleneckLinkID(btllinkID); // TODO resolve this issue
+		}
+	}
+
 	public Statistics run(float start_time, float end_time) {
 		/* Other Default settings of the Simulator */
+		initialize();
 		// Debugger.connectivity(net);
 		/* Reading the first Event from Network Event List */
 		/* Main Loop */
@@ -185,6 +282,7 @@ public class Simulator {
 			net.eventList.getEvent().execute(net);
 			net.eventList.removeEvent();
 			timeCheck = net.getCurrentTime();
+			Debugger.debugToConsole("-------------------------------------------------------------");
 		}
 
 		return new Statistics(net, btllinkID);
