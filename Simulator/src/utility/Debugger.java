@@ -6,20 +6,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import simulator.Network;
 import simulator.entities.network.CtrlMessage;
-import simulator.entities.traffic.Packet;
-import simulator.entities.traffic.Segment;
 
 public class Debugger {
+	
 
 	private static String DebugFileAddress = "debug/debug.txt";
 	private static ArrayList<String> debugLines = new ArrayList<String>();;
-
-	public static void connectivity(Network net) {
-		Debugger.debug("####################	Connectivity	####################");
-		Debugger.debug("############################################################");
-	}
 
 	public static void controlMessage(CtrlMessage message) {
 	}
@@ -56,30 +49,67 @@ public class Debugger {
 		}
 	}
 
-	public static void event(String eventType, double eventTime, int nodeID, Segment segment, CtrlMessage message) {
-		debug("====================================================");
-		debug("+ Event: " + eventType + " " + nodeID + " --- time " + Double.toString(eventTime) + "ms");
-		if (segment != null) {
-			debug("++	FlowID: " + segment.getFlowID() + ", " + " SeqNumber: " + segment.getSeqNum() + ", dst: Host "
-					+ segment.getDstHostID() + " (segment type: " + segmentType(segment.getType()) + ")");
-		} else {
-			debug("++	Control Message");
+	public static void debugEvent(String eventType, float eventTime, Object note) {
+		boolean eventDEB = true;
+		if (eventDEB) {
+			printLine("=", 80);
+			System.out.println("===== " + eventType + " at Time: " + eventTime);
+			debugLines.add("===== " + eventType + " at Time: " + eventTime);
+			if (note != null) {
+				System.out.println("===== Note: " + note);
+				debugLines.add("===== Note: " + note);
+			}
+			printLine("=", 80);
 		}
-		debug("====================================================");
-
 	}
 
-	public static void pacekt(Packet packet) {
-		switch (packet.type) {
-		case Keywords.Packets.Types.Segment:
-			String segmentType = segmentType(packet.segment.getType());
-			debug("" + segmentType);
-			break;
-		case Keywords.Packets.Types.SDNControl:
+	public static void methodEntrance(String className, String methodName, String note) {
+		boolean DEB = true;
+		if (DEB) {
+			System.out.println("++++++++ " + className + "." + methodName + "(): Entrance");
+			debugLines.add("++++++++ " + className + "." + methodName + "(): Entrance");
+			System.out.println("------------ Note: " + note);
+			debugLines.add("------------ Note: " + note);
+		}
+	}
 
-			break;
-		default:
-			break;
+	public static void methodExit(String className, String methodName, Object note) {
+		boolean DEB = true;
+		if (DEB) {
+			System.out.println("^^^^^^^^ Exiting " + className + "." + methodName + "()");
+			debugLines.add("^^^^^^^^ Exiting " + className + "." + methodName + "()");
+		}
+	}
+
+	public static void interMethodDebug(Object o) {
+		boolean interMethodDEB = true;
+		if (interMethodDEB) {
+			System.out.println("               " + o);
+			debugLines.add("               " + o);
+		}
+	}
+
+	public static void error(String className, String methodName, String errorMessage) {
+		boolean DEB = true;
+		if (DEB) {
+			printLine("#", 80);
+			printLine("#", 80);
+			System.out.println("Error--inClass--" + className + "." + methodName + "()::" + errorMessage);
+			debugLines.add("Error--inClass--" + className + "." + methodName + "()::" + errorMessage);
+			printLine("#", 80);
+			printLine("#", 80);
+		}
+	}
+
+	public static void printLine(String character, int size) {
+		boolean DEB = true;
+		if (DEB) {
+			String line = "";
+			for (int i = 0; i < size; i++) {
+				line += character;
+			}
+			System.out.println(line);
+			debugLines.add(line);
 		}
 	}
 

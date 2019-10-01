@@ -1,8 +1,14 @@
 package system;
 
 import experiments.Validation;
+import experiments.Validationv2;
 
 public class Main {
+	public static void main(String[] args) {
+
+		Validationv2 vTest = new Validationv2();
+		vTest.validate();
+	}
 
 	public static void error(String className, String methodName, String errorMessage) {
 		print("Error--inClass--" + className + "." + methodName + "()::" + errorMessage);
@@ -10,23 +16,6 @@ public class Main {
 
 	public static void generatingOutputFiles() {
 		print("Generating the output files...");
-	}
-
-	public static void main(String[] args) {
-		// Scenario study = new FlowSizeMeanAndSTDStudy();
-		// study.executeTest();
-		// Main.print("First Study Completed. Running GC.");
-		// study = new FunctionalityMockScenario();
-		// study.executeTest();
-		// Main.print("Second Study Completed. Running GC.");
-		// NumberOfFlowsAndDelayTypes study = new NumberOfFlowsAndDelayTypes();
-		// study.executeTest();
-		// Main.print("Third Study Completed. Running GC.");
-		// MockCategoryFactorStudy study = new MockCategoryFactorStudy();
-		// study.executeTest();
-
-		Validation vTest = new Validation();
-		vTest.validate();
 	}
 
 	public static void outputGenerationDone() {

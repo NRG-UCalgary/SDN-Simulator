@@ -85,4 +85,9 @@ public class SDNSwitchv1 extends SDNSwitch {
 		}
 	}
 
+	@Override
+	public void executeTimeOut(Network net, int timerID) {
+		// The switch does not have timer for now
+	}
+
 }

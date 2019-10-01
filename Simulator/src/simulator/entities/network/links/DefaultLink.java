@@ -3,10 +3,8 @@ package simulator.entities.network.links;
 import simulator.Network;
 import simulator.entities.network.Link;
 import simulator.entities.traffic.Packet;
-import simulator.events.ArrivalToNode;
-import simulator.events.DepartureFromNode;
-import utility.Debugger;
-import utility.Mathematics;
+import simulator.events.*;
+import utility.*;
 
 public class DefaultLink extends Link {
 
@@ -22,48 +20,34 @@ public class DefaultLink extends Link {
 
 		float bufferTime = buffer.enQueue(net.getCurrentTime(), getTransmissionDelay(packet.getSize()));
 		if (bufferTime >= 0) {
+			float transmissionDelay = getTransmissionDelay(packet.getSize());
 			float nextTime = Mathematics.addFloat(net.getCurrentTime(), bufferTime);
+			nextTime = Mathematics.addFloat(nextTime, transmissionDelay);
 			net.eventList.addEvent(new DepartureFromNode(nextTime, this.ID, packet));
 
-			if (packet.segment == null) {
-				Debugger.debugToConsole(
-						"   Contrl message buffered by link: " + ID + " at time: " + net.getCurrentTime());
-				Debugger.debugToConsole("   The message will be transmitted at: " + nextTime);
-			}
 			/** ===== Statistical Counters ===== **/
-			// TODO what will you do about statistical counters
 			if (isMonitored) {
-				net.hosts.get(packet.segment.getSrcHostID()).updateFlowTotalBufferTime(bufferTime);
+				if (packet.segment != null) {
+					net.hosts.get(packet.segment.getSrcHostID()).updateFlowTotalBufferTime(bufferTime);
+					net.hosts.get(packet.segment.getSrcHostID())
+							.updateDataSegmentsDepartures(packet.segment.getSeqNum(), net.getCurrentTime());
+					updateUtilizationCounters(net.getCurrentTime(), packet.segment.getFlowID(), transmissionDelay);
+				}
 			}
+			if (buffer.occupancy > 1) {
+				//Debugger.debugToConsole(" Buffer Size = "+ buffer.occupancy);
+			}
+			// TODO what will you do about statistical counters
 			/** ================================ **/
-
 		} else {
+			Debugger.debugToConsole("Packet drop happens");
 			// Packet Drop happens here
 		}
 	}
 
 	public void transmitPacket(Network net, Packet packet) {
-		/** ===== Statistical Counters ===== **/
-		// TODO what will you do about statistical counters
-		if (isMonitored) {
-			net.hosts.get(packet.segment.getSrcHostID()).updateDataSegmentsDepartures(packet.segment.getSeqNum(),
-					net.getCurrentTime());
-		}
-		/** ================================ **/
-		float transmissionDelay = getTransmissionDelay(packet.getSize());
 		buffer.deQueue();
-		if (packet.segment != null) {
-			updateUtilizationCounters(net.getCurrentTime(), packet.segment.getFlowID(), transmissionDelay);
-		}
-
-		float nextTime = Mathematics.addFloat(net.getCurrentTime(), getTotalDelay(packet.getSize()));
+		float nextTime = Mathematics.addFloat(net.getCurrentTime(), getPropagationDelay());
 		net.eventList.addEvent(new ArrivalToNode(nextTime, srcNodeID, dstNodeID, packet));
-
-		if (packet.segment == null) {
-			Debugger.debugToConsole(
-					"Contrl message starts to trasnmitted by link: " + ID + " at time: " + net.getCurrentTime());
-			Debugger.debugToConsole("The message will arrive to node: " + dstNodeID + " at: " + nextTime);
-		}
-
 	}
 }

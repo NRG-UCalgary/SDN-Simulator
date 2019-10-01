@@ -1,6 +1,7 @@
 package utility;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class Mathematics {
@@ -9,6 +10,27 @@ public class Mathematics {
 		BigDecimal ap = BigDecimal.valueOf(Double.valueOf(Float.toString(a)));
 		BigDecimal bp = BigDecimal.valueOf(Double.valueOf(Float.toString(b)));
 		float result = ap.add(bp).floatValue();
+		return result;
+	}
+
+	public static float subtractFloat(float a, float b) {
+		BigDecimal ap = BigDecimal.valueOf(Double.valueOf(Float.toString(a)));
+		BigDecimal bp = BigDecimal.valueOf(Double.valueOf(Float.toString(b)));
+		float result = ap.subtract(bp).floatValue();
+		return result;
+	}
+
+	public static float multiplyFloat(float a, float b) {
+		BigDecimal ap = BigDecimal.valueOf(Double.valueOf(Float.toString(a)));
+		BigDecimal bp = BigDecimal.valueOf(Double.valueOf(Float.toString(b)));
+		float result = ap.multiply(bp).floatValue();
+		return result;
+	}
+
+	public static float divideFloat(float a, float b) {
+		BigDecimal ap = BigDecimal.valueOf(Double.valueOf(Float.toString(a)));
+		BigDecimal bp = BigDecimal.valueOf(Double.valueOf(Float.toString(b)));
+		float result = ap.divide(bp, 6, RoundingMode.HALF_UP).floatValue();
 		return result;
 	}
 
@@ -23,13 +45,6 @@ public class Mathematics {
 
 	public static double bitPerSecondTobitPerMicroSecond(double band) {
 		return band * Math.pow(10, -6);
-	}
-
-	public static float divideFloat(float a, float b) {
-		BigDecimal ap = BigDecimal.valueOf(Double.valueOf(Float.toString(a)));
-		BigDecimal bp = BigDecimal.valueOf(Double.valueOf(Float.toString(b)));
-		float result = ap.divide(bp).floatValue();
-		return result;
 	}
 
 	public static double gigabitPerSecondTobitPerMicroSecond(double band) {
@@ -123,6 +138,10 @@ public class Mathematics {
 		return num / Math.pow(10, 6);
 	}
 
+	public static double baseToMicro(double num) {
+		return num * Math.pow(10, 6);
+	}
+
 	public static double microToMilli(double num) {
 		return num / Math.pow(10, 3);
 	}
@@ -135,7 +154,7 @@ public class Mathematics {
 		return num * Math.pow(10, 3);
 	}
 
-	public static double minInteger(double a, double b) {
+	public static double minDouble(double a, double b) {
 		if (a <= b) {
 			return a;
 		} else {
@@ -147,13 +166,6 @@ public class Mathematics {
 		return Math.sqrt(variance(values));
 	}
 
-	public static float subtractFloat(float a, float b) {
-		BigDecimal ap = BigDecimal.valueOf(Double.valueOf(Float.toString(a)));
-		BigDecimal bp = BigDecimal.valueOf(Double.valueOf(Float.toString(b)));
-		float result = ap.subtract(bp).floatValue();
-		return result;
-	}
-
 	public static double variance(ArrayList<Float> values) throws NullPointerException {
 		double sum = 0;
 		double mean = average(values);
@@ -163,6 +175,4 @@ public class Mathematics {
 		return sum / (double) values.size();
 	}
 
-	public Mathematics() {
-	}
 }

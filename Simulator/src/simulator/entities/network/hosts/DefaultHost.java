@@ -1,12 +1,9 @@
 package simulator.entities.network.hosts;
 
-import java.util.ArrayList;
-
 import simulator.Network;
 import simulator.entities.network.Host;
-import simulator.entities.traffic.Packet;
-import simulator.entities.traffic.Segment;
-import utility.Debugger;
+import simulator.entities.traffic.*;
+import simulator.events.ArrivalToNode;
 
 public class DefaultHost extends Host {
 
@@ -18,18 +15,26 @@ public class DefaultHost extends Host {
 	/* ---------- Inherited methods (from Host) ---------- */
 	/* --------------------------------------------------- */
 	public void initialize(Network net) {
-		sendSegments(net, transportAgent.sendFirst(net));
-
+		transportAgent.sendFirst(net);
+		net.eventList.addEvent(new ArrivalToNode(transportAgent.flow.arrivalTime, -1, this.ID,
+				new Packet(transportAgent.segmentsToSend.get(0), null)));
+		transportAgent.segmentsToSend.clear();
 	}
 
 	/* --------------------------------------------------- */
 	/* ---------- Inherited methods (from Node) ---------- */
 	/* --------------------------------------------------- */
 	public void recvPacket(Network net, int srcNodeID, Packet packet) {
-		Debugger.debugToConsole("========== Arrival To Host ===================");
-		ArrayList<Segment> segmentsToSend = transportAgent.recvSegment(net, packet.segment);
-		sendSegments(net, segmentsToSend);
-		Debugger.debugToConsole("==============================================");
+		transportAgent.recvSegment(net, packet.segment);
+		sendSegments(net);
+	}
+
+	@Override
+	public void executeTimeOut(Network net, int timerID) {
+		// The host must pass the timeout notification to the agent
+		transportAgent.timeout(net, timerID);
+		sendSegments(net);
+
 	}
 
 }

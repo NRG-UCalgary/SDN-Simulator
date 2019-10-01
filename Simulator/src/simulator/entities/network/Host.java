@@ -1,10 +1,10 @@
 package simulator.entities.network;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import simulator.Network;
 import simulator.entities.traffic.*;
+import system.Main;
 import utility.*;
 
 public abstract class Host extends Node {
@@ -41,9 +41,13 @@ public abstract class Host extends Node {
 	/* --------------------------------------------------- */
 	/* ---------- Implemented methods -------------------- */
 	/* --------------------------------------------------- */
-	protected void sendSegments(Network net, ArrayList<Segment> segmentsToSend) {
-		for (int i = 0; i < segmentsToSend.size(); i++) {
-			sendSegment(net, segmentsToSend.get(i));
+	protected void sendSegments(Network net) {
+		for (Segment segment : transportAgent.segmentsToSend) {
+			sendSegment(net, segment);
+		}
+		transportAgent.segmentsToSend.clear();
+		if (transportAgent.segmentsToSend.size() > 0) {
+			Debugger.error("Host", "sendSegments", "The sendingBuffer of host is not empty after sending.");
 		}
 	}
 

@@ -1,10 +1,9 @@
 package simulator.entities.network.switches;
 
 import simulator.Network;
-import simulator.entities.network.CtrlMessage;
-import simulator.entities.network.SDNSwitch;
+import simulator.entities.network.*;
 import simulator.entities.traffic.Packet;
-import utility.Debugger;
+import utility.*;
 import utility.Keywords;
 
 public class DefaultSDNSwitch extends SDNSwitch {
@@ -35,13 +34,11 @@ public class DefaultSDNSwitch extends SDNSwitch {
 	/* ---------- Inherited methods (from Node) ---------- */
 	/* --------------------------------------------------- */
 	public void recvPacket(Network net, int srcNodeID, Packet packet) {
-		Debugger.debugToConsole("========== Arrival To Switch =================");
 		switch (packet.type) {
 		case Keywords.Packets.Types.SDNControl:
 			/* ================================================ */
 			/* ========== Control message stays in switch ===== */
 			/* ================================================ */
-			Debugger.debugToConsole("Control Message received by switch: " + ID);
 			recvCtrlMessage(net, packet.controlMessage);
 			break;
 		case Keywords.Packets.Types.Segment:
@@ -56,29 +53,32 @@ public class DefaultSDNSwitch extends SDNSwitch {
 			/* ================================================ */
 			else if (isConnectedToHost(packet.segment.getDstHostID())) {
 				forwardToHost(net, packet.segment.getDstHostID(), packet);
-				Debugger.debugToConsole(" Packet forwarded to host: " + packet.segment.getDstHostID());
 			}
 			/* ================================================ */
 			/* ========== Packet to next switch =============== */
 			/* ================================================ */
 			else if (hasFlowEntry(packet.segment.getFlowID())) {
-				forwardToSwitch(net, packet.segment.getFlowID(), packet);
-				Debugger.debugToConsole(" Packet forwarded to switch: "
-						+ net.links.get(flowTable.get(packet.segment.getFlowID())).getDstNodeID());
-
+				if (packet.segment.getType() == Keywords.Segments.Types.UncontrolledFIN) {
+					forwardToController(net, packet);
+				} else {
+					forwardToSwitch(net, packet.segment.getFlowID(), packet);
+				}
 			}
 			/* ================================================ */
 			/* ========== Packet to controller ================ */
 			/* ================================================ */
 			else {
 				forwardToController(net, packet);
-				Debugger.debugToConsole(" Packet forwarded to controller.");
 			}
 			break;
 		default:
 			break;
 		}
-		Debugger.debugToConsole("==============================================");
+	}
+
+	@Override
+	public void executeTimeOut(Network net, int timerID) {
+		// The switch does not have timer for now
 	}
 
 }

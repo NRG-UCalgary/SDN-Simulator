@@ -9,7 +9,7 @@ import simulator.entities.traffic.Segment;
 import utility.Keywords;
 import utility.Mathematics;
 
-public class SDTCPSenderv1 extends Agent {
+public class ESDTCPSenderv1 extends Agent {
 
 	// indicates the sequence number of the latest received ACK
 	private int ACKedSeqNum; // Do we need this?! yes!
@@ -30,7 +30,7 @@ public class SDTCPSenderv1 extends Agent {
 	private int sWnd_;
 	private int toSend;
 
-	public SDTCPSenderv1(Flow flow) {
+	public ESDTCPSenderv1(Flow flow) {
 		super(flow);
 		srcHostID = flow.getSrcHostID();
 		dstHostID = flow.getDstHostID();
@@ -92,7 +92,7 @@ public class SDTCPSenderv1 extends Agent {
 	/* =========== Segment creation methods=============== */
 	private void prepareSegmentsToSend() {
 		segmentsToSend.clear();
-		toSend = (int) Mathematics.minInteger(sWnd_ - inFlight, remainingSegments);
+		toSend = (int) Mathematics.minDouble(sWnd_ - inFlight, remainingSegments);
 		for (int i = 0; i < toSend; i++) {
 			seqNum++;
 			segmentsToSend.add(genDATASegment());
@@ -100,7 +100,7 @@ public class SDTCPSenderv1 extends Agent {
 		}
 	}
 
-	public ArrayList<Segment> recvSegment(Network net, Segment segment) {
+	public void recvSegment(Network net, Segment segment) {
 		segmentsToSend.clear();
 		switch (segment.getType()) {
 		case Keywords.Segments.Types.CTRL:
@@ -139,13 +139,15 @@ public class SDTCPSenderv1 extends Agent {
 		default:
 			break;
 		}
-		return segmentsToSend;
 	}
 
 	/* ########## Public ################################# */
-	public ArrayList<Segment> sendFirst(Network net) {
-		ArrayList<Segment> segmentsToSend = new ArrayList<Segment>();
+	public void sendFirst(Network net) {
 		segmentsToSend.add(genSYN());
-		return segmentsToSend;
+	}
+
+	@Override
+	public void timeout(Network net, int timerID) {
+
 	}
 }

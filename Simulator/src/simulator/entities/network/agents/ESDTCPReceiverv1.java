@@ -1,28 +1,24 @@
 package simulator.entities.network.agents;
 
-import java.util.ArrayList;
-
 import simulator.Network;
 import simulator.entities.network.Agent;
-import simulator.entities.traffic.Flow;
-import simulator.entities.traffic.Segment;
+import simulator.entities.traffic.*;
 import system.Main;
-import utility.Debugger;
-import utility.Keywords;
+import utility.*;
 
-public class SDTCPReceiverv1 extends Agent {
+public class ESDTCPReceiverv1 extends Agent {
 
 	// indicates the sequence number of the latest received ACK
 	private int ACKNum;
 
-	public SDTCPReceiverv1(Flow flow) {
+	public ESDTCPReceiverv1(Flow flow) {
 		super(flow);
 		srcHostID = flow.getSrcHostID();
 		dstHostID = flow.getDstHostID();
 		ACKNum = 0;
 	}
 
-	public ArrayList<Segment> recvSegment(Network net, Segment segment) {
+	public void recvSegment(Network net, Segment segment) {
 		segmentsToSend.clear();
 		/* Updating the ACKNum_ state variable */
 
@@ -50,13 +46,11 @@ public class SDTCPReceiverv1 extends Agent {
 			Debugger.debug("SDTCPReceiverv1.recv().case\"default\"::We should not get here.");
 			break;
 		}
-		return segmentsToSend;
 	}
 
 	// TODO Design bug which should be resolved later
 	@Override
-	public ArrayList<Segment> sendFirst(Network net) {
-		return null;
+	public void sendFirst(Network net) {
 	}
 
 	/** ###################################################### **/
@@ -66,6 +60,11 @@ public class SDTCPReceiverv1 extends Agent {
 		if (recvdSeqNum == ACKNum + 1) {
 			ACKNum++;
 		}
+	}
+
+	@Override
+	public void timeout(Network net, int timerID) {
+
 	}
 
 }

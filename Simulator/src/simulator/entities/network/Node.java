@@ -17,6 +17,8 @@ public abstract class Node extends Entity {
 
 	public abstract void recvPacket(Network net, int srcNodeID, Packet packet);
 
+	public abstract void executeTimeOut(Network net, int timerID);
+
 	public void updateStatisticalCounters() {
 
 	}

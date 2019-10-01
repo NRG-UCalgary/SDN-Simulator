@@ -1,12 +1,9 @@
 package simulator.entities.network.agents;
 
-import java.util.ArrayList;
-
 import simulator.Network;
 import simulator.entities.network.Agent;
-import simulator.entities.traffic.Flow;
-import simulator.entities.traffic.Segment;
-import utility.Keywords;
+import simulator.entities.traffic.*;
+import utility.*;
 
 public class DefaultReceiver extends Agent {
 
@@ -19,7 +16,7 @@ public class DefaultReceiver extends Agent {
 		ACKNum = 0;
 	}
 
-	public ArrayList<Segment> recvSegment(Network net, Segment segment) {
+	public void recvSegment(Network net, Segment segment) {
 		segmentsToSend.clear();
 		switch (segment.getType()) {
 		case Keywords.Segments.Types.SYN:
@@ -41,13 +38,11 @@ public class DefaultReceiver extends Agent {
 		default:
 			break;
 		}
-		return segmentsToSend;
 	}
 
 	// TODO design bug and must be resolved later
 	@Override
-	public ArrayList<Segment> sendFirst(Network net) {
-		return null;
+	public void sendFirst(Network net) {
 	}
 
 	/** ###################################################### **/
@@ -57,6 +52,12 @@ public class DefaultReceiver extends Agent {
 		if (recvdSeqNum == ACKNum + 1) {
 			ACKNum++;
 		}
+	}
+
+	@Override
+	public void timeout(Network net, int timerID) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

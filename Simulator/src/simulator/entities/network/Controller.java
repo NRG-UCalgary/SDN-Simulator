@@ -14,7 +14,7 @@ public abstract class Controller extends Node {
 	// New design
 	protected HashMap<Integer, Integer> controlLinksIDs; // <NodeID(Switch), LinkID>
 
-	protected Segment currentSegment;
+	protected Segment recvdSegment;
 	public float numberOfAdmittedFlows;
 
 	/** ========== Statistical Counters ========== **/
@@ -44,7 +44,7 @@ public abstract class Controller extends Node {
 		default:
 			break;
 		}
-		currentSegment = new Segment(-1, -1, -1, -1, -1, -1);
+		recvdSegment = new Segment(-1, -1, -1, -1, -1, -1);
 
 	}
 
@@ -63,9 +63,9 @@ public abstract class Controller extends Node {
 
 	protected void handleRouting(Network net, int srcAccessSwitchID, int dstAccessSwitchID) {
 		HashMap<Integer, Integer> dataStreamPath = router.run(net, srcAccessSwitchID, dstAccessSwitchID);
-		Debugger.debugToConsole("Router has found the shortest path...");
+		//Debugger.debugToConsole("Router has found the shortest path...");
 		for (int switchID : dataStreamPath.keySet()) {
-			Debugger.debugToConsole(" From Switch: " + switchID + " to Switch: " + dataStreamPath.get(switchID));
+			//Debugger.debugToConsole(" From Switch: " + switchID + " to Switch: " + dataStreamPath.get(switchID));
 		}
 		HashMap<Integer, CtrlMessage> messagesToSwitchID = new HashMap<Integer, CtrlMessage>();
 
@@ -76,22 +76,31 @@ public abstract class Controller extends Node {
 			if (!messagesToSwitchID.containsKey(switchID)) {
 				messagesToSwitchID.put(switchID, new CtrlMessage(Keywords.SDNMessages.Types.FlowSetUp));
 			}
-			messagesToSwitchID.get(switchID).addFlowSetUpEntry(currentSegment.getFlowID(),
+			messagesToSwitchID.get(switchID).addFlowSetUpEntry(recvdSegment.getFlowID(),
 					net.switches.get(switchID).getNetworkLinksIDs().get(nextSwitchID));
 			// ACK stream entry
 			if (!messagesToSwitchID.containsKey(nextSwitchID)) {
 				messagesToSwitchID.put(nextSwitchID, new CtrlMessage(Keywords.SDNMessages.Types.FlowSetUp));
 			}
 			messagesToSwitchID.get(nextSwitchID).addFlowSetUpEntry(
-					Simulator.reverseFlowStreamID(currentSegment.getFlowID()),
+					Simulator.reverseFlowStreamID(recvdSegment.getFlowID()),
 					net.switches.get(nextSwitchID).getNetworkLinksIDs().get(switchID));
 		}
 
 		// Sending flow setup messages to the switches
 		for (int switchID : messagesToSwitchID.keySet()) {
-			Debugger.debugToConsole("Sending flow setup message to switch: " + switchID);
+			//Debugger.debugToConsole("Sending flow setup message to switch: " + switchID);
 			sendPacketToSwitch(net, switchID, new Packet(null, messagesToSwitchID.get(switchID)));
 		}
+
+		// Update the database pathOfFlowID
+		database.pathOfFlowID.put(recvdSegment.getFlowID(), dataStreamPath);
+
+		// FIXME Update sharedEgressLink for the single access switch
+		database.sharedEgressLinkBw = net.links
+				.get(net.switches.get(srcAccessSwitchID).networkLinksIDs.get(dataStreamPath.get(srcAccessSwitchID)))
+				.getBandwidth();
+		//Debugger.debugToConsole("=============================================================");
 	}
 
 	/* -------------------------------------------------------------------------- */
@@ -125,22 +134,4 @@ public abstract class Controller extends Node {
 		database.bottleneckLinkID = id;
 	}
 
-	// ###########################################################################
-	// Version 2. Only for Dumbbell Topology
-	public void setDumbbellSharedLinkID(int id) {
-		database.sharedLinkID = id;
-	}
-
-	public int getDumbbellSharedLinkID() {
-		return database.sharedLinkID;
-	}
-
-	public void setDumbbellBottleneckLinkIDofFlowID(int flowID, int linkID) {
-		database.bottleneckLinkIDOfFlowID.put(flowID, linkID);
-	}
-
-	public int getDUmbbellBottleneckLinkIDofFlowID(int flowID) {
-		return database.bottleneckLinkIDOfFlowID.get(flowID);
-	}
-	// ##############################################################################
 }

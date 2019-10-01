@@ -74,7 +74,7 @@ public class Controllerv1 extends Controller {
 			CtrlMessage singleMessage = new CtrlMessage(Keywords.SDNMessages.Types.BufferTokenUpdate);
 			HashMap<Integer, BufferToken> preparedTokens = new HashMap<Integer, BufferToken>();
 			int i = 0; // The flow ID index
-			float accessLinkRttOfFlowZero = 0; // d_i
+			// float accessLinkRttOfFlowZero = 0; // d_i
 			float interFlowDelay = 0;
 			float initialCycleDelay = 0;
 			float steadyCycleDelay = 0;
@@ -110,22 +110,22 @@ public class Controllerv1 extends Controller {
 		Segment segment = packet.segment;
 		this.currentSwitchID = switchID;
 		// this.currentNetwork = net;
-		this.currentSegment = segment;
+		this.recvdSegment = segment;
 		switch (segment.getType()) {
 		case Keywords.Segments.Types.SYN:
 			database.addFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
-			handleRouting(net, switchID, getAccessSwitchID(net, currentSegment.getDstHostID()));
+			handleRouting(net, switchID, getAccessSwitchID(net, recvdSegment.getDstHostID()));
 
 			break;
 		case Keywords.Segments.Types.UncontrolledFIN:
 			database.removeFlow(switchID, segment.getSrcHostID(), segment.getFlowID());
-			currentSegment.changeType(Keywords.Segments.Types.FIN);
+			recvdSegment.changeType(Keywords.Segments.Types.FIN);
 			break;
 		default:
 			break;
 		}
 		handleCongestionControl(net);
-		sendPacketToSwitch(net, switchID, new Packet(currentSegment, null));
+		sendPacketToSwitch(net, switchID, new Packet(recvdSegment, null));
 	}
 
 	private void updateBigRTT() {
@@ -156,7 +156,7 @@ public class Controllerv1 extends Controller {
 	private void updateInterSegmentDelay() {
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
 			interSegmentDelay = Keywords.Segments.Sizes.DataSegSize
-					/ database.btlBwOfFlowID.get(currentSegment.getFlowID());
+					/ database.btlBwOfFlowID.get(recvdSegment.getFlowID());
 		} else {
 			interSegmentDelay = 0;
 		}
@@ -167,7 +167,7 @@ public class Controllerv1 extends Controller {
 		// note that this is only for the single bottleneck scenario
 		previousSWnd = sWnd;
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
-			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(currentSegment.getFlowID())
+			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(recvdSegment.getFlowID())
 					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID)
 							* Keywords.Segments.Sizes.DataSegSize)));
 			if (this.sWnd == 0) {
@@ -180,6 +180,12 @@ public class Controllerv1 extends Controller {
 		} else {
 			Debugger.debugToConsole("WE should not get here");
 		}
+	}
+
+	@Override
+	public void executeTimeOut(Network net, int timerID) {
+		// Controller does not need Timer for now
+
 	}
 
 }

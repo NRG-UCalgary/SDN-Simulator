@@ -7,6 +7,14 @@ public interface Keywords {
 				short Default = 0;
 				short SDTCP = 1;
 				short TCP = 2;
+				short v2 = 3;
+			}
+
+			interface TimerTypes {
+				short TimeToCycleTimer = 0;
+				short InitialDelayTimer = 1;
+				short IntervalTimer = 2;
+				short InterSegmentDelayTimer = 3;
 			}
 		}
 
@@ -22,6 +30,7 @@ public interface Keywords {
 			interface Types {
 				short Default = 0;
 				short Controller_1 = 1;
+				short Controller_2 = 2;
 			}
 		}
 
@@ -221,20 +230,20 @@ public interface Keywords {
 			short ACKSegSize = 40 * 8;
 			short CtrlMessageSize = 40 * 80;
 			short CTRLSegSize = 40 * 8;
-			short DataSegSize = 1000 * 8;
 			short FINSegSize = 40 * 8;
 			short SYNSegSize = 40 * 8;
+			short DataSegSize = 1000 * 8;
 
 		}
 
 		interface SpecialSequenceNumbers {
 			short CTRLSeqNum = -1;
-			short SYNACKSeqNum = 1;
 			short SYNSeqNum = 0;
 		}
 
 		interface Types {
 			short ACK = 2;
+			short NACK = 8;
 			short CTRL = 6;
 			short DATA = 3;
 			short FIN = 4;
@@ -242,6 +251,7 @@ public interface Keywords {
 			short SYN = 0;
 			short SYNACK = 1;
 			short UncontrolledFIN = 7;
+
 		}
 	}
 

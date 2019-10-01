@@ -6,6 +6,7 @@ import simulator.entities.network.buffers.BufferToken;
 import utility.Keywords;
 
 public class CtrlMessage {
+
 	// BufferUpdate information
 	public HashMap<Integer, BufferToken> ccTokenOfHostID; // <HostID, tokenForEachBuffer>
 

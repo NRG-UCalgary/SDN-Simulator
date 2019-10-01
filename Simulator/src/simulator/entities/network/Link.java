@@ -15,11 +15,12 @@ import utility.Mathematics;
 
 public abstract class Link extends Entity {
 	public boolean isMonitored;
-	
+	public boolean isNetworkBottleneck;
+	public boolean isPathBottleneck;
+
 	public Buffer buffer;
 	protected float bandwidth;
 	protected float propagationDelay;
-	
 
 	protected int srcNodeID;
 	protected int dstNodeID;
@@ -36,6 +37,9 @@ public abstract class Link extends Entity {
 	public Link(int ID, int sourceID, int destinationID, float propagationDelay, float band, short bufferType,
 			int bufferSize, int bufferPolicy) {
 		super(ID);
+		isMonitored = false;
+		isNetworkBottleneck = false;
+		isPathBottleneck = false;
 		this.bandwidth = band;// bits/microsecond
 		this.propagationDelay = propagationDelay; // microsecond
 		this.srcNodeID = sourceID;
@@ -78,12 +82,6 @@ public abstract class Link extends Entity {
 		return Mathematics.divideFloat(segmentSize, bandwidth);
 	}
 
-	public void updateSegementArrivalToLinkCounters(float segmentArrivalTime, int flowID) {
-		if (isMonitored) {
-			segmentArrivalTimeOfFlowID.add(new Pair<Float, Float>((float) flowID, segmentArrivalTime));
-		}
-	}
-
 	/*---------- Statistical counter methods ---------- */
 	public void updateUtilizationCounters(float currentTime, int flowID, float transmissionDelay) {
 		if (isMonitored) {
@@ -100,6 +98,12 @@ public abstract class Link extends Entity {
 			totalTransmissionTime = Mathematics.addFloat(totalTransmissionTime, transmissionDelay);
 		}
 
+	}
+
+	public void updateSegementArrivalToLinkCounters(float segmentArrivalTime, int flowID) {
+		if (isMonitored) {
+			segmentArrivalTimeOfFlowID.add(new Pair<Float, Float>((float) flowID, segmentArrivalTime));
+		}
 	}
 
 	/*------------------- Getters ------------------------*/

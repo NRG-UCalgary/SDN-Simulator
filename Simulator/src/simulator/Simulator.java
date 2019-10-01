@@ -79,11 +79,14 @@ public class Simulator {
 
 	/********** Topology Creation methods ***********/
 	/* Controller Creation Method */
-	public void createController(String label, short controllerType, float alpha, short routingAlgorithm) {
+	public void createController(String label, short controllerType, float alpha, float beta, short routingAlgorithm) {
 		Controller controller;
 		switch (controllerType) {
 		case Keywords.Entities.Controllers.Types.Controller_1:
 			controller = new Controllerv1(controllerCounter, routingAlgorithm, alpha);
+			break;
+		case Keywords.Entities.Controllers.Types.Controller_2:
+			controller = new Controllerv2(controllerCounter, routingAlgorithm, alpha, beta);
 			break;
 		default:
 			controller = new DefaultController(controllerCounter, routingAlgorithm);
@@ -95,8 +98,8 @@ public class Simulator {
 
 	}
 
-	public void createController(String label, short controllerType, float alpha) {
-		createController(label, controllerType, alpha, Keywords.RoutingAlgorithms.Dijkstra);
+	public void createController(String label, short controllerType, float alpha, float beta) {
+		createController(label, controllerType, alpha, beta, Keywords.RoutingAlgorithms.Dijkstra);
 	}
 
 	public void createController(String label, short routingAlgorithm) {
@@ -162,18 +165,20 @@ public class Simulator {
 		Link reverseLink;
 		switch (linkType) {
 		case Keywords.Entities.Links.Types.Link_1:
-			link = new DefaultLink(linkCounter, srcNodeID, dstNodeID, propDelay,
+			link = new DefaultLink(linkCounter, srcNodeID, dstNodeID, (float) Mathematics.baseToMicro(propDelay),
 					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
 					bufferPolicy);
-			reverseLink = new DefaultLink(reverseLinkID(linkCounter), dstNodeID, srcNodeID, propDelay,
+			reverseLink = new DefaultLink(reverseLinkID(linkCounter), dstNodeID, srcNodeID,
+					(float) Mathematics.baseToMicro(propDelay),
 					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
 					bufferPolicy);
 			break;
 		default:
-			link = new DefaultLink(linkCounter, srcNodeID, dstNodeID, propDelay,
+			link = new DefaultLink(linkCounter, srcNodeID, dstNodeID, (float) Mathematics.baseToMicro(propDelay),
 					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
 					bufferPolicy);
-			reverseLink = new DefaultLink(reverseLinkID(linkCounter), dstNodeID, srcNodeID, propDelay,
+			reverseLink = new DefaultLink(reverseLinkID(linkCounter), dstNodeID, srcNodeID,
+					(float) Mathematics.baseToMicro(propDelay),
 					(float) Mathematics.bitPerSecondTobitPerMicroSecond(bandwidth), bufferType, bufferSize,
 					bufferPolicy);
 			break;
@@ -239,8 +244,12 @@ public class Simulator {
 		Agent dstAgent;
 		switch (agentType) {
 		case Keywords.Entities.Agents.Types.SDTCP:
-			srcAgent = new SDTCPSenderv1(flow);
-			dstAgent = new SDTCPReceiverv1(reverseFlow);
+			srcAgent = new ESDTCPSenderv1(flow);
+			dstAgent = new ESDTCPReceiverv1(reverseFlow);
+			break;
+		case Keywords.Entities.Agents.Types.v2:
+			srcAgent = new Senderv2(flow);
+			dstAgent = new Receiverv2(reverseFlow);
 			break;
 		default:
 			srcAgent = new DefaultSender(flow, initialSWnd);
@@ -282,7 +291,6 @@ public class Simulator {
 			net.eventList.getEvent().execute(net);
 			net.eventList.removeEvent();
 			timeCheck = net.getCurrentTime();
-			Debugger.debugToConsole("-------------------------------------------------------------");
 		}
 
 		return new Statistics(net, btllinkID);

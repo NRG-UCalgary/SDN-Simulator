@@ -15,7 +15,6 @@ public class DepartureFromNode extends PacketEvent {
 
 	@Override
 	public void execute(Network net) {
-		Debugger.debugToConsole("-------------------- Departure Event ------------------------");
 		net.updateTime(eventTime);
 		net.links.get(linkID).transmitPacket(net, packet);
 	}

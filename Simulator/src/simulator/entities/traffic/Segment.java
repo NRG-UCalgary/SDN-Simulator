@@ -2,6 +2,15 @@ package simulator.entities.traffic;
 
 public class Segment {
 
+	/*-------------------------------------*/
+	/* Version 2 design */
+	public int sWnd = 0;
+	public float timeToNextCycle = 0;
+	public float sInitialDelay = 0;
+	public float sInterval = 0;
+	public float sInterSegmentDelay = 0;
+	/*-------------------------------------*/
+
 	public int bigRTT_;
 	private int dstHostID;
 	/**************************/

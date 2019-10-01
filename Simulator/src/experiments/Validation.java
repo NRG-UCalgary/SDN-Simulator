@@ -24,13 +24,13 @@ public class Validation {
 
 	public void validate() {
 		generateOutput("Single Flow Validation", singleFlowTest());
-		//generateOutput("Single Flow Validation", doubleFlowTest());
+		// generateOutput("Single Flow Validation", doubleFlowTest());
 	}
 
 	private Statistics singleFlowTest() {
 		Simulator sim = new Simulator();
 		// Creating Controller
-		sim.createController("Controller");
+		sim.createController("Controller", Keywords.Entities.Controllers.Types.Default, 1, 1);
 
 		// Creating Switches
 		sim.createSwitch("Sw_0");

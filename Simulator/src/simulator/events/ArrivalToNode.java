@@ -3,8 +3,7 @@ package simulator.events;
 import simulator.Network;
 import simulator.Simulator;
 import simulator.entities.traffic.Packet;
-import utility.Debugger;
-import utility.Keywords;
+import utility.*;
 
 public class ArrivalToNode extends PacketEvent {
 
@@ -19,7 +18,6 @@ public class ArrivalToNode extends PacketEvent {
 
 	@Override
 	public void execute(Network net) {
-		Debugger.debugToConsole("-------------------- Arrival Event --------------------------");
 		net.updateTime(eventTime);
 		short nodeType = Simulator.getNodeType(nodeID);
 		switch (nodeType) {

@@ -44,7 +44,7 @@ public class DefaultSender extends Agent {
 	/* --------------------------------------------------- */
 	/* ---------- Inherited methods (from Agent) --------- */
 	/* --------------------------------------------------- */
-	public ArrayList<Segment> recvSegment(Network net, Segment segment) {
+	public void recvSegment(Network net, Segment segment) {
 		segmentsToSend.clear();
 		switch (segment.getType()) {
 		case Keywords.Segments.Types.SYNACK:
@@ -77,7 +77,6 @@ public class DefaultSender extends Agent {
 		default:
 			break;
 		}
-		return segmentsToSend;
 	}
 
 	/* ########## Private ################################ */
@@ -121,7 +120,7 @@ public class DefaultSender extends Agent {
 	/* =========== Segment creation methods=============== */
 	private void prepareSegmentsToSend() {
 		segmentsToSend.clear();
-		toSend = (int) Mathematics.minInteger(sWnd_ - inFlight, remainingSegments);
+		toSend = (int) Mathematics.minDouble(sWnd_ - inFlight, remainingSegments);
 		for (int i = 0; i < toSend; i++) {
 			seqNum++;
 			segmentsToSend.add(genDATASegment());
@@ -130,9 +129,13 @@ public class DefaultSender extends Agent {
 	}
 
 	/* ########## Public ################################# */
-	public ArrayList<Segment> sendFirst(Network net) {
+	public void sendFirst(Network net) {
 		segmentsToSend.clear();
 		segmentsToSend.add(genSYN());
-		return segmentsToSend;
+	}
+
+	@Override
+	public void timeout(Network net, int timerID) {
+
 	}
 }

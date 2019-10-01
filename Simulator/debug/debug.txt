@@ -1,0 +1,19 @@
+++++++++ Controllerv2.calSYNACKDelay(): Entrance
+------------ Note: flowID = 0, TransDelay = 0.04, PropDelay = 1.0, ACLink totalDelay = 1.04
+               SYNRTT = 8.32
+               ControlLinkBufferTime = 0.08
+               SYNACK Delay = 8.4
+^^^^^^^^ Exiting Controllerv2.calSYNACKDelay()
+               controllerDelayToNextCycle = 8.4
+               sInterval = 12.16
+--------------------------------------------------
+                FlowID = 0
+                sWnd = 12
+                sInterSegmentDelay = 1.0
+                Delay to receive CTRL for flowID = 0 is = 2.12
+                timeToNextCycle_0 = 11.28
+                sInitialDelay_0 = 0.0
+++++++++ Receiverv2.recvPacket(): Entrance
+------------ Note: Segment Type: SYN
+++++++++ Receiverv2.recvPacket(): Entrance
+------------ Note: Segment Type: FIN

@@ -24,7 +24,7 @@ public class Dumbbell extends Testbed {
 		Simulator sim = new Simulator();
 
 		// Creating the controller
-		sim.createController(controllerLabel, Keywords.Entities.Controllers.Types.Controller_1, alpha);
+		sim.createController(controllerLabel, Keywords.Entities.Controllers.Types.Controller_1, alpha, 1);
 
 		// Creating access switches
 		for (int acessSwitchIndex = 0; acessSwitchIndex < NumberOfSenderAccessSwitches; acessSwitchIndex++) {
