@@ -2,6 +2,7 @@ package utility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import simulator.Network;
 import simulator.entities.network.Controller;
@@ -16,6 +17,7 @@ public class Statistics {
 	// Temporary
 	public int bottleneckLinkID;
 
+	public Link bottleneckLink;
 	public Controller controller;
 	public HashMap<Integer, Flow> flows; // <FlowID, Flow>
 	public HashMap<Integer, Link> links; // <LinkID, Link>
@@ -37,6 +39,11 @@ public class Statistics {
 				this.flows.put(host.transportAgent.flow.getID(), host.transportAgent.flow);
 			}
 		}
+		for (Link link : links.values()) {
+			if (link.isMonitored) {
+				bottleneckLink = link;
+			}
+		}
 
 	}
 
@@ -51,70 +58,88 @@ public class Statistics {
 	public float getAvgFlowThroughput() {
 		float sum = 0;
 		for (Flow flow : flows.values()) {
-			sum += (flow.totalTransmissionTime / (float) (flow.FINSendingTime - flow.arrivalTime));
+			sum = Mathematics.addFloat(sum, calculateFlowThroughput(flow));
 		}
-		return sum / (float) flows.size();
+		return 100 * (sum / (float) flows.size());
 	}
 
 	public float getAvgStartupDelay() {
 		float sum = 0;
 		for (Flow flow : flows.values()) {
-			sum += (flow.dataSendingStartTime - flow.arrivalTime);
+			float startupDelay = (Mathematics.subtractFloat(flow.dataSendingStartTime, flow.arrivalTime));
+			if (startupDelay < 0) {
+				Main.error("Statistics", "getAvgStartupDelay",
+						"Invalid startupDelay = " + startupDelay + ", flowID = " + flow.getID());
+			}
+			sum = Mathematics.addFloat(sum, startupDelay);
 		}
-		return sum / (float) flows.size();
+		return Mathematics.divideFloat(sum, (float) flows.size());
+	}
+
+	public float getFairnessIndex() {
+		float f = 0;
+		float numinator = 0;
+		float denuminator = 0;
+		for (Flow flow : flows.values()) {
+			float flowThroughput = calculateFlowThroughput(flow);
+			numinator = Mathematics.addFloat(numinator, flowThroughput);
+			denuminator = Mathematics.addFloat(denuminator, Mathematics.multiplyFloat(flowThroughput, flowThroughput));
+		}
+		numinator = Mathematics.multiplyFloat(numinator, numinator);
+		denuminator = Mathematics.multiplyFloat(flows.size(), denuminator);
+		f = Mathematics.divideFloat(numinator, denuminator);
+		return f;
 	}
 
 	public float getBottleneckUtilization() {
-		Link bottleneck = links.get(bottleneckLinkID);
-		float totalUpTime = bottleneck.lastSegmentTransmittedTime - bottleneck.firstSegmentArrivalTime;
-		float util = 0;
+		float utilization = 0;
+		float totalUpTime = Mathematics.subtractFloat(bottleneckLink.lastSegmentTransmittedTime,
+				bottleneckLink.firstSegmentArrivalTime);
 		if (totalUpTime > 0) {
-			util = bottleneck.totalTransmissionTime / totalUpTime;
+			utilization = Mathematics.divideFloat(bottleneckLink.totalTransmissionTime, totalUpTime);
+		} else {
+			Debugger.error("Statistics", "getBottleneckUtilization", "Invalid link totalUpTime = " + totalUpTime);
 		}
-		return util;
+		if (utilization < 0 || utilization > 1) {
+			Debugger.error("Statistics", "getBottleneckUtilization", "Invalid link utilization = " + utilization);
+		}
+		return utilization;
 	}
 
-	public float getFlowRejectionPercentage() {
-		// TODO the counter update must be implemented
-		return 0;
+	public float getBtlAvgQueueLength() {
+		TreeMap<Float, Float> queueTimeSeries = bottleneckLink.queueLength;
+		float avgQueuelength = 0;
+		int n = queueTimeSeries.size();
+		float numinator = 0;
+		float denuminator = Mathematics.subtractFloat(queueTimeSeries.lastKey(), queueTimeSeries.firstKey());
+		for (int i = 0; i < n - 1; i++) {
+			float lenght = queueTimeSeries.get(queueTimeSeries.firstKey());
+			float tNow = queueTimeSeries.firstKey();
+			float tNext = queueTimeSeries.higherKey(tNow);
+			queueTimeSeries.remove(tNow);
+			numinator = Mathematics.addFloat(numinator,
+					Mathematics.multiplyFloat(lenght, Mathematics.subtractFloat(tNext, tNow)));
+		}
+		if (denuminator > 0) {
+			avgQueuelength = Mathematics.divideFloat(numinator, denuminator);
+		} else {
+			Debugger.error("Statistics", "getBtlAvgQueueLength", "Invalid Q total time = " + denuminator);
+		}
+		return avgQueuelength;
 	}
 
-	public float getMaxBottleneckBufferOccupancy() {
-		// TODO add the max occupancy of both data and ack stream
-		return links.get(bottleneckLinkID).buffer.maxOccupancy;
+	public float getBtlMaxQueueLength() {
+		return bottleneckLink.maxQeueLength;
 	}
 
-	public float getVarianceOfBottleneckUtilizationSharePerFlowSize() {
-		float variance = 0;
-		Link bottleneck = links.get(bottleneckLinkID);
-		ArrayList<Float> values = new ArrayList<Float>();
-		for (float flowID : bottleneck.utilizationTimePerFlowID.keySet()) {
-			float utilizationShare = bottleneck.utilizationTimePerFlowID.get(flowID);
-			float bottleNeckTotalTransmissionTime = bottleneck.totalTransmissionTime;
-			float value = (100 * utilizationShare)
-					/ ((float) (flows.get((int) flowID).getSize() * bottleNeckTotalTransmissionTime));
-			values.add(value);
+	/***********************************************************************/
+	private float calculateFlowThroughput(Flow flow) {
+		float throughput = Mathematics.divideFloat(flow.totalTransmissionTime,
+				Mathematics.subtractFloat(flow.FINSendingTime, flow.arrivalTime));
+		if (throughput < 0 || throughput > 1) {
+			Main.error("Statistics", "calculateFlowThroughput",
+					"Ivalid Throughput for flowID = " + flow.getID() + ", value = " + throughput);
 		}
-		try {
-			variance = (float) Mathematics.variance(values);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return variance;
-	}
-
-	public float getVarianceOfFlowCompletionTimePerFlowSize() {
-		float variance = 0;
-		ArrayList<Float> completionTimes = new ArrayList<Float>();
-		for (Flow flow : flows.values()) {
-			completionTimes.add(flow.completionTime / (float) flow.getSize());
-		}
-		try {
-			variance = (float) Mathematics.variance(completionTimes);
-		} catch (Exception e) {
-			Main.error(this.getClass().getName(), "getVarianceOfFlowCompletionTimePerFlowSize",
-					"null values in completionTimes array.");
-		}
-		return variance;
+		return throughput;
 	}
 }

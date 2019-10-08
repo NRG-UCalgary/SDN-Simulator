@@ -30,7 +30,7 @@ public class Validation {
 	private Statistics singleFlowTest() {
 		Simulator sim = new Simulator();
 		// Creating Controller
-		sim.createController("Controller", Keywords.Entities.Controllers.Types.Default, 1, 1);
+		sim.createController("Controller", Keywords.Entities.Controllers.Types.Default, 1, 1, 1);
 
 		// Creating Switches
 		sim.createSwitch("Sw_0");

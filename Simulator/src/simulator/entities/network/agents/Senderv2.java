@@ -13,8 +13,10 @@ import utility.*;
 
 public class Senderv2 extends Agent {
 
-	private float RTT = 12.16f;
+	private boolean validationReport = false;
+
 	private boolean hasRecvdSYNACK;
+	private boolean hasStartedSending;
 	private boolean hasSentFIN;
 
 	private HashMap<Integer, Timer> timerOfTimerID;
@@ -29,13 +31,11 @@ public class Senderv2 extends Agent {
 	private int mostRecentSequenceNum;
 	private int lastSentSeqNum;
 	private TreeMap<Integer, Boolean> negativeACKWaitingList; // <NACKSequenceNumber, isRetransmission>
-
 	private TreeMap<Integer, Boolean> seqNumbersToSend; // <SequenceNumber, isRetransmission>
 
 	public Senderv2(Flow flow) {
 		super(flow);
-		hasRecvdSYNACK = false;
-		hasSentFIN = false;
+
 		timerOfTimerID = new HashMap<Integer, Timer>();
 		timeToNextCycleTimerIDs = new ArrayList<Integer>();
 		timerIndex = -1;
@@ -49,6 +49,9 @@ public class Senderv2 extends Agent {
 
 		validation = true;
 		verification = true;
+		hasRecvdSYNACK = false;
+		hasSentFIN = false;
+		hasStartedSending = false;
 
 	}
 
@@ -60,13 +63,23 @@ public class Senderv2 extends Agent {
 
 	@Override
 	public void recvSegment(Network net, Segment segment) {
-		if (!hasSentFIN) {
-			switch (segment.getType()) {
-			case Keywords.Segments.Types.SYN:
-				segmentsToSend.clear();
-				segmentsToSend.add(segment);
-				break;
-			case Keywords.Segments.Types.CTRL:
+		// if (!hasSentFIN) {
+		switch (segment.getType()) {
+		case Keywords.Segments.Types.SYN:
+			segmentsToSend.clear();
+			segmentsToSend.add(segment);
+			break;
+		case Keywords.Segments.Types.CTRL:
+			if (validationReport) {
+				Debugger.debugToConsole(
+						"********* Flow: " + flow.getID() + ", recvd CTRL at Time: " + net.getCurrentTime());
+				Debugger.debugToConsole("     sCycle should start at time = "
+						+ Mathematics.addFloat(net.getCurrentTime(), segment.timeToNextCycle));
+			}
+			// Stop all running TimeToNextCycleTimers
+			deactivateSendingCycleTimers();
+			// Create the new TimetToNextCycleTimer
+			if (!hasSentFIN) {
 				timerIndex++;
 				Timer timeToNextCycleTimer = new Timer(timerIndex,
 						Keywords.Entities.Agents.TimerTypes.TimeToCycleTimer);
@@ -77,36 +90,44 @@ public class Senderv2 extends Agent {
 				nextCCParamsOfTimerID.put(timeToNextCycleTimer.id, new CCParams(segment.sWnd,
 						segment.sInterSegmentDelay, segment.sInterval, segment.sInitialDelay));
 				timeToNextCycleTimerIDs.add(timeToNextCycleTimer.id);
-				break;
-			case Keywords.Segments.Types.SYNACK:
-				/** ===== Statistical Counters ===== **/
-				flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
-				/** ================================ **/
-				hasRecvdSYNACK = true;
-				// startSendingCycle(net);
-				break;
-			case Keywords.Segments.Types.ACK:
-				/** ===== Statistical Counters ===== **/
-				flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
-				/** ================================ **/
-				if (remainingSegments == 0 && negativeACKWaitingList.isEmpty()
-						&& segment.getSeqNum() == lastSentSeqNum) {
-					segmentsToSend.add(genFIN());
-					for (int timerID : timerOfTimerID.keySet()) {
-						timerOfTimerID.get(timerID).isActive = false;
-					}
-				}
-				break;
-			case Keywords.Segments.Types.NACK:
-				negativeACKWaitingList.put(segment.getSeqNum(), true);
-				break;
-			case Keywords.Segments.Types.FINACK:
-				break;
-			default:
-				Main.error("Senderv2", "recvSegment", "Invalid segmentType.");
-				break;
 			}
+			break;
+		case Keywords.Segments.Types.SYNACK:
+			if (validationReport) {
+				Debugger.debugToConsole(
+						"********* SYNACK of Flow: " + flow.getID() + ", arrived at Time: " + net.getCurrentTime());
+			}
+			/** ===== Statistical Counters ===== **/
+			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
+			/** ================================ **/
+			hasRecvdSYNACK = true;
+			break;
+		case Keywords.Segments.Types.ACK:
+			/** ===== Statistical Counters ===== **/
+			flow.ackSeqNumArrivalTimes.put((float) segment.getSeqNum(), net.getCurrentTime());
+			/** ================================ **/
+			if (remainingSegments == 0 && negativeACKWaitingList.isEmpty() && segment.getSeqNum() == lastSentSeqNum) {
+				segmentsToSend.add(genFIN());
+				for (int timerID : timerOfTimerID.keySet()) {
+					timerOfTimerID.get(timerID).isActive = false;
+				}
+				/** ===== Statistical Counters ===== **/
+				flow.completionTime = net.getCurrentTime();
+				flow.FINSendingTime = net.getCurrentTime();
+				/** ================================ **/
+			}
+			break;
+		case Keywords.Segments.Types.NACK:
+			negativeACKWaitingList.put(segment.getSeqNum(), true);
+			break;
+		case Keywords.Segments.Types.FINACK:
+			break;
+		default:
+			Main.error("Senderv2", "recvSegment", "Invalid segmentType.");
+			Debugger.stopFlag();
+			break;
 		}
+		// }
 	}
 
 	@Override
@@ -116,18 +137,19 @@ public class Senderv2 extends Agent {
 		if (currentTimer.isActive) {
 			switch (currentTimer.type) {
 			case Keywords.Entities.Agents.TimerTypes.TimeToCycleTimer:
-
-				for (int id : timerOfTimerID.keySet()) {
-					//if (!timeToNextCycleTimerIDs.contains(id)) {
-						timerOfTimerID.get(id).isActive = false;
-					//}
-				}
+				// Clear seqNum to send
+				seqNumbersToSend.clear();
+				// Deactivate all running timers
+				deactivateAllTimers();
+				// Update ccParams
 				ccParams = nextCCParamsOfTimerID.get(timerID);
 				nextCCParamsOfTimerID.remove(timerID);
 				if (hasRecvdSYNACK) {
 					startSendingCycle(net);
 				} else {
-					Debugger.error("Senderv2", "timeOut", "Cycle starts before SYNACK arrival.");
+					Debugger.error("Senderv2", "timeOut", "Cycle starts before SYNACK arrival. Time = "
+							+ net.getCurrentTime() + ", flowID = " + flow.getID());
+					Debugger.stopFlag();
 				}
 				break;
 			case Keywords.Entities.Agents.TimerTypes.InitialDelayTimer:
@@ -146,6 +168,10 @@ public class Senderv2 extends Agent {
 	}
 
 	private void startSendingCycle(Network net) {
+		if (validationReport) {
+			Debugger.debugToConsole(
+					"********* sCycle of Flow: " + flow.getID() + ", starts at Time: " + net.getCurrentTime());
+		}
 		if (ccParams.sInitialDelay == 0) {
 			startSendingInterval(net);
 		} else if (ccParams.sInitialDelay > 0) {
@@ -156,10 +182,15 @@ public class Senderv2 extends Agent {
 					srcHostID, initialDelayTimer.id));
 		} else {
 			Debugger.error("Senderv2", "startSendingCycle", "Invalid sInitialDelay (= " + ccParams.sInitialDelay + ")");
+			Debugger.stopFlag();
 		}
 	}
 
 	private void startSendingInterval(Network net) {
+		if (!hasStartedSending) {
+			flow.updateDataSendingStartTime(net.getCurrentTime());
+			hasStartedSending = true;
+		}
 		if (!hasSentFIN) {
 			for (int seqNumCount = 0; seqNumCount < ccParams.sWnd; seqNumCount++) {
 				if (!negativeACKWaitingList.isEmpty()) {
@@ -241,5 +272,26 @@ public class Senderv2 extends Agent {
 			return null;
 		}
 
+	}
+
+	private void deactivateAllTimers() {
+		for (int timerID : timerOfTimerID.keySet()) {
+			timerOfTimerID.get(timerID).isActive = false;
+		}
+		timeToNextCycleTimerIDs.clear();
+
+	}
+
+	private void deactivateSendingCycleTimers() {
+		for (int timerID : timeToNextCycleTimerIDs) {
+			if (timerOfTimerID.containsKey(timerID)) {
+				timerOfTimerID.get(timerID).isActive = false;
+			}
+		}
+		timeToNextCycleTimerIDs.clear();
+	}
+
+	private void deactivateTimer(int timerID) {
+		timerOfTimerID.get(timerID).isActive = false;
 	}
 }

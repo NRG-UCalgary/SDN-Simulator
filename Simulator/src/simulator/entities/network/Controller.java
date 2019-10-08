@@ -15,6 +15,7 @@ public abstract class Controller extends Node {
 	protected HashMap<Integer, Integer> controlLinksIDs; // <NodeID(Switch), LinkID>
 
 	protected Segment recvdSegment;
+	protected Network currentNetwork;
 	public float numberOfAdmittedFlows;
 
 	/** ========== Statistical Counters ========== **/

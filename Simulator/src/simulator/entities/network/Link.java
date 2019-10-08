@@ -2,6 +2,7 @@ package simulator.entities.network;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -27,10 +28,13 @@ public abstract class Link extends Entity {
 
 	/** ========== Statistical Counters ========== **/
 	public float totalTransmissionTime;
-	public HashMap<Float, Float> utilizationTimePerFlowID; // <FlowID, utilizationzTime>
-	public ArrayList<Pair<Float, Float>> segmentArrivalTimeOfFlowID; // Array<<FlowID, ArrivalTime>>
 	public float firstSegmentArrivalTime;
 	public float lastSegmentTransmittedTime;
+	public float maxQeueLength;
+	public TreeMap<Float, Float> queueLength;
+
+	public HashMap<Float, Float> utilizationTimePerFlowID; // <FlowID, utilizationzTime>
+	public ArrayList<Pair<Float, Float>> segmentArrivalTimeOfFlowID; // Array<<FlowID, ArrivalTime>>
 
 	/** ========================================== **/
 
@@ -57,6 +61,8 @@ public abstract class Link extends Entity {
 		totalTransmissionTime = 0;
 		firstSegmentArrivalTime = 0;
 		lastSegmentTransmittedTime = 0;
+		maxQeueLength = 0;
+		queueLength = new TreeMap<Float, Float>();
 		utilizationTimePerFlowID = new HashMap<Float, Float>();
 		segmentArrivalTimeOfFlowID = new ArrayList<Pair<Float, Float>>();
 		/** ==================================================== **/
@@ -88,6 +94,7 @@ public abstract class Link extends Entity {
 			if (firstSegmentArrivalTime == 0) {
 				firstSegmentArrivalTime = currentTime;
 			}
+			totalTransmissionTime = Mathematics.addFloat(totalTransmissionTime, transmissionDelay);
 			lastSegmentTransmittedTime = Mathematics.addFloat(currentTime, transmissionDelay);
 			if (utilizationTimePerFlowID.containsKey((float) flowID)) {
 				utilizationTimePerFlowID.put((float) flowID,
@@ -95,9 +102,15 @@ public abstract class Link extends Entity {
 			} else {
 				utilizationTimePerFlowID.put((float) flowID, transmissionDelay);
 			}
-			totalTransmissionTime = Mathematics.addFloat(totalTransmissionTime, transmissionDelay);
 		}
 
+	}
+
+	public void updateQueueLenghtCounter(float time, int bufferOccupancy) {
+		if (bufferOccupancy > maxQeueLength) {
+			maxQeueLength = bufferOccupancy;
+		}
+		queueLength.put(time, (float) (bufferOccupancy));
 	}
 
 	public void updateSegementArrivalToLinkCounters(float segmentArrivalTime, int flowID) {

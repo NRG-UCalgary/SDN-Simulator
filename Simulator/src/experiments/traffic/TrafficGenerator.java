@@ -55,6 +55,11 @@ public class TrafficGenerator {
 		return traffic;
 	}
 
+	public Traffic generateDCNElephantMouseTraffic() {
+		// Create an Elephant flow
+		return traffic;
+	}
+
 	private void prepareFlowArrivals() {
 		interArrivalTimeRVG.resetRng();
 		traffic.arrivalTimePerFlowID.clear();

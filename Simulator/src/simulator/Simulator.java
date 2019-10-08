@@ -79,14 +79,15 @@ public class Simulator {
 
 	/********** Topology Creation methods ***********/
 	/* Controller Creation Method */
-	public void createController(String label, short controllerType, float alpha, float beta, short routingAlgorithm) {
+	public void createController(String label, short controllerType, float alpha, float beta, float gamma,
+			short routingAlgorithm) {
 		Controller controller;
 		switch (controllerType) {
 		case Keywords.Entities.Controllers.Types.Controller_1:
 			controller = new Controllerv1(controllerCounter, routingAlgorithm, alpha);
 			break;
 		case Keywords.Entities.Controllers.Types.Controller_2:
-			controller = new Controllerv2(controllerCounter, routingAlgorithm, alpha, beta);
+			controller = new Controllerv2(controllerCounter, routingAlgorithm, alpha, beta, gamma);
 			break;
 		default:
 			controller = new DefaultController(controllerCounter, routingAlgorithm);
@@ -98,12 +99,12 @@ public class Simulator {
 
 	}
 
-	public void createController(String label, short controllerType, float alpha, float beta) {
-		createController(label, controllerType, alpha, beta, Keywords.RoutingAlgorithms.Dijkstra);
+	public void createController(String label, short controllerType, float alpha, float beta, float gamma) {
+		createController(label, controllerType, alpha, beta, gamma, Keywords.RoutingAlgorithms.Dijkstra);
 	}
 
 	public void createController(String label, short routingAlgorithm) {
-		createController(label, Keywords.Entities.Controllers.Types.Default, -1, routingAlgorithm);
+		createController(label, Keywords.Entities.Controllers.Types.Default, -1, -1, -1, routingAlgorithm);
 	}
 
 	public void createController(String label) {
@@ -187,6 +188,8 @@ public class Simulator {
 		net.links.put(link.getID(), link);
 		net.links.put(reverseLink.getID(), reverseLink);
 		linkLabels.put(linkCounter, label);
+		//Debugger.debugToConsole(
+		//		"	LinkLabel: " + label + ", LinkID: " + linkCounter + ", ReverseID: " + reverseLink.getID());
 		linkCounter++;
 
 		if (isMonitored) {

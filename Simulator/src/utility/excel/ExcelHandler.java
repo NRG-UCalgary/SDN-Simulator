@@ -103,7 +103,7 @@ public class ExcelHandler {
 		xAxisStyle = workbook.createCellStyle();
 		xAxisStyle.setDataFormat(format.getFormat("#.####"));
 		yAxisStyle = workbook.createCellStyle();
-		yAxisStyle.setDataFormat(format.getFormat("#"));
+		yAxisStyle.setDataFormat(format.getFormat("#.####"));
 		for (String sheetName : outputData.outputSheets.keySet()) {
 			XSSFSheet sheet = workbook.createSheet(sheetName);
 			createNumericScatterTableInSheet(sheet, outputData.outputSheets.get(sheetName));

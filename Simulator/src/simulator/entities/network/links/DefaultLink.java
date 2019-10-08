@@ -7,6 +7,7 @@ import simulator.events.*;
 import utility.*;
 
 public class DefaultLink extends Link {
+	boolean flag = false;
 
 	public DefaultLink(int ID, int sourceID, int destinationID, float propagationDelay, float band, short bufferType,
 			int bufferSize, int bufferPolicy) {
@@ -14,6 +15,7 @@ public class DefaultLink extends Link {
 	}
 
 	public void bufferPacket(Network net, Packet packet) {
+
 		if (packet.segment != null) {
 			updateSegementArrivalToLinkCounters(net.getCurrentTime(), packet.segment.getFlowID());
 		}
@@ -32,12 +34,10 @@ public class DefaultLink extends Link {
 					net.hosts.get(packet.segment.getSrcHostID())
 							.updateDataSegmentsDepartures(packet.segment.getSeqNum(), net.getCurrentTime());
 					updateUtilizationCounters(net.getCurrentTime(), packet.segment.getFlowID(), transmissionDelay);
+					updateQueueLenghtCounter(net.getCurrentTime(), buffer.occupancy);
 				}
+
 			}
-			if (buffer.occupancy > 1) {
-				//Debugger.debugToConsole(" Buffer Size = "+ buffer.occupancy);
-			}
-			// TODO what will you do about statistical counters
 			/** ================================ **/
 		} else {
 			Debugger.debugToConsole("Packet drop happens");
@@ -49,5 +49,8 @@ public class DefaultLink extends Link {
 		buffer.deQueue();
 		float nextTime = Mathematics.addFloat(net.getCurrentTime(), getPropagationDelay());
 		net.eventList.addEvent(new ArrivalToNode(nextTime, srcNodeID, dstNodeID, packet));
+		/** ===== Statistical Counters ===== **/
+		updateQueueLenghtCounter(net.getCurrentTime(), buffer.occupancy);
+		/** ================================ **/
 	}
 }

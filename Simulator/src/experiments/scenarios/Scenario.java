@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import org.apache.commons.math3.util.Pair;
 
 import simulator.entities.traffic.Flow;
+import utility.Debugger;
 import utility.Statistics;
 import utility.excel.ExcelHandler;
 import utility.excel.charts.datastructures.CategoryFactorOutputData;
@@ -38,6 +39,7 @@ public abstract class Scenario {
 	/* ======================================================================== */
 
 	public void generateCategoryFactorOutput(LinkedHashMap<String, LinkedHashMap<String, Statistics>> result) {
+		Debugger.debugToConsole("Generating the output...");
 		String studyOutputPath = "output/" + studyName + "/";
 		new File(studyOutputPath).mkdirs();
 		CategoryFactorOutputData outputData = new CategoryFactorOutputData(mainFactorName, result);
@@ -53,6 +55,7 @@ public abstract class Scenario {
 	/* ======================================================================== */
 
 	public void generateNumericalFactorOutput(LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
+		Debugger.debugToConsole("Generating the output...");
 		String studyOutputPath = "output/" + studyName + "/";
 		new File(studyOutputPath).mkdirs();
 		NumericFactorOutputData outputData = new NumericFactorOutputData(mainFactorName, result);

@@ -20,7 +20,6 @@ public class Receiverv2 extends Agent {
 		segmentsToSend.clear();
 		switch (segment.getType()) {
 		case Keywords.Segments.Types.SYN:
-			Debugger.methodEntrance("Receiverv2", "recvPacket", "Segment Type: SYN");
 			ACKNum = 0;
 			segmentsToSend.add(new Segment(flow.getID(), Keywords.Segments.Types.SYNACK,
 					Keywords.Segments.SpecialSequenceNumbers.SYNSeqNum, Keywords.Segments.Sizes.SYNSegSize,
@@ -32,7 +31,6 @@ public class Receiverv2 extends Agent {
 					Keywords.Segments.Sizes.ACKSegSize, this.srcHostID, this.dstHostID));
 			break;
 		case Keywords.Segments.Types.FIN:
-			Debugger.methodEntrance("Receiverv2", "recvPacket", "Segment Type: FIN");
 			/*
 			 * segmentsToSend.add(new Segment(flow.getID(), Keywords.Segments.Types.FINACK,
 			 * segment.getSeqNum(), Keywords.Segments.Sizes.FINSegSize, this.srcHostID,

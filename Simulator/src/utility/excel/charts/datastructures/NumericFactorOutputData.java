@@ -11,13 +11,12 @@ public class NumericFactorOutputData {
 	private LinkedHashMap<String, TreeMap<Float, Float>> avgFlowThroughputData;
 	private LinkedHashMap<String, TreeMap<Float, Float>> avgStartupDelayData;
 	private LinkedHashMap<String, TreeMap<Float, Float>> btlUtilizationData;
-	private LinkedHashMap<String, TreeMap<Float, Float>> flowRejectionPercentageData;
+	private LinkedHashMap<String, TreeMap<Float, Float>> fairnessIndexData;
+	private LinkedHashMap<String, TreeMap<Float, Float>> btlMaxQueueLengthData;
+	private LinkedHashMap<String, TreeMap<Float, Float>> btlAvgQueueLengthData;
+
 	private String mainFactorName;
-	private LinkedHashMap<String, TreeMap<Float, Float>> maxBtlBufferOccupancyData;
 	public LinkedHashMap<String, NumericFactorScatterTableData> outputSheets;
-	private LinkedHashMap<String, TreeMap<Float, Float>> varianceOfBtlUtilizationSharePerFlowSizeData;
-	
-	private LinkedHashMap<String, TreeMap<Float, Float>> varianceOfFlowCompletionTimePerFlowSizeData;
 
 	public NumericFactorOutputData(String mainFactorName, LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
 		this.mainFactorName = mainFactorName;
@@ -25,12 +24,11 @@ public class NumericFactorOutputData {
 
 		avgCompletionTimeData = new LinkedHashMap<String, TreeMap<Float, Float>>();
 		avgStartupDelayData = new LinkedHashMap<String, TreeMap<Float, Float>>();
-		maxBtlBufferOccupancyData = new LinkedHashMap<String, TreeMap<Float, Float>>();
-		varianceOfBtlUtilizationSharePerFlowSizeData = new LinkedHashMap<String, TreeMap<Float, Float>>();
-		btlUtilizationData = new LinkedHashMap<String, TreeMap<Float, Float>>();
 		avgFlowThroughputData = new LinkedHashMap<String, TreeMap<Float, Float>>();
-		flowRejectionPercentageData = new LinkedHashMap<String, TreeMap<Float, Float>>();
-		varianceOfFlowCompletionTimePerFlowSizeData = new LinkedHashMap<String, TreeMap<Float, Float>>();
+		fairnessIndexData = new LinkedHashMap<String, TreeMap<Float, Float>>();
+		btlUtilizationData = new LinkedHashMap<String, TreeMap<Float, Float>>();
+		btlMaxQueueLengthData = new LinkedHashMap<String, TreeMap<Float, Float>>();
+		btlAvgQueueLengthData = new LinkedHashMap<String, TreeMap<Float, Float>>();
 
 		for (String seriesName : result.keySet()) {
 			initializedSeriesForAllMetrics(seriesName);
@@ -75,7 +73,18 @@ public class NumericFactorOutputData {
 		outputSheets.put(sheetName, table);
 	}
 
-	private void addBottleneckUtilizationData() {
+	private void addFairnessIndexData() {
+		String sheetName = "FairnessIndex";
+		String xAxisCaption = mainFactorName;
+		String yAxisCaption = Keywords.Metrics.Names.FairnessIndex;
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
+		for (String seriesName : fairnessIndexData.keySet()) {
+			table.addSeriesToTable(seriesName, fairnessIndexData.get(seriesName));
+		}
+		outputSheets.put(sheetName, table);
+	}
+
+	private void addBtlUtilizationData() {
 		String sheetName = "BtlUtil";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.BtlUtilization;
@@ -86,46 +95,24 @@ public class NumericFactorOutputData {
 		outputSheets.put(sheetName, table);
 	}
 
-	private void addFlowRejectionPercentageData() {
-		String sheetName = "flowRejectionRate";
-		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.FlowRejectionRate;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : flowRejectionPercentageData.keySet()) {
-			table.addSeriesToTable(seriesName, flowRejectionPercentageData.get(seriesName));
-		}
-		outputSheets.put(sheetName, table);
-	}
-
-	private void addMaxBottlebeckBufferOccupancyData() {
+	private void addBtlMaxQueueLengthData() {
 		String sheetName = "MaxBtlBufferOccupancy";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.MaxBtlBufferOccupancy;
+		String yAxisCaption = Keywords.Metrics.Names.MaxBtlQueueLength;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : maxBtlBufferOccupancyData.keySet()) {
-			table.addSeriesToTable(seriesName, maxBtlBufferOccupancyData.get(seriesName));
+		for (String seriesName : btlMaxQueueLengthData.keySet()) {
+			table.addSeriesToTable(seriesName, btlMaxQueueLengthData.get(seriesName));
 		}
 		outputSheets.put(sheetName, table);
 	}
 
-	private void addVarianceOfBottleneckUtilizationSharePerFlowSizeData() {
-		String sheetName = "VarianceOfBtlUtilSharePerFlowSize";
+	private void addBtlAvgQueueLengthData() {
+		String sheetName = "AvgBtlBufferOccupancy";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.VarBtlUtilizationShareOverFlowSize;
+		String yAxisCaption = Keywords.Metrics.Names.AvgBtlQueueLength;
 		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : varianceOfBtlUtilizationSharePerFlowSizeData.keySet()) {
-			table.addSeriesToTable(seriesName, varianceOfBtlUtilizationSharePerFlowSizeData.get(seriesName));
-		}
-		outputSheets.put(sheetName, table);
-	}
-
-	private void addVarianceOfFlowCompletionTimePerFlowSizeData() {
-		String sheetName = "varianceOfFlowCompletionTime";
-		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.VarFlowCompletionTimeOverFlowSize;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : varianceOfFlowCompletionTimePerFlowSizeData.keySet()) {
-			table.addSeriesToTable(seriesName, varianceOfFlowCompletionTimePerFlowSizeData.get(seriesName));
+		for (String seriesName : btlAvgQueueLengthData.keySet()) {
+			table.addSeriesToTable(seriesName, btlAvgQueueLengthData.get(seriesName));
 		}
 		outputSheets.put(sheetName, table);
 	}
@@ -135,11 +122,11 @@ public class NumericFactorOutputData {
 		avgCompletionTimeData.put(seriesName, new TreeMap<Float, Float>());
 		avgStartupDelayData.put(seriesName, new TreeMap<Float, Float>());
 		avgFlowThroughputData.put(seriesName, new TreeMap<Float, Float>());
+		fairnessIndexData.put(seriesName, new TreeMap<Float, Float>());
 		btlUtilizationData.put(seriesName, new TreeMap<Float, Float>());
-		varianceOfBtlUtilizationSharePerFlowSizeData.put(seriesName, new TreeMap<Float, Float>());
-		varianceOfFlowCompletionTimePerFlowSizeData.put(seriesName, new TreeMap<Float, Float>());
-		maxBtlBufferOccupancyData.put(seriesName, new TreeMap<Float, Float>());
-		flowRejectionPercentageData.put(seriesName, new TreeMap<Float, Float>());
+		btlMaxQueueLengthData.put(seriesName, new TreeMap<Float, Float>());
+		btlAvgQueueLengthData.put(seriesName, new TreeMap<Float, Float>());
+
 	}
 
 	private void insertValuesForAllMetrics(String seriesName, Float metricValue, Statistics stat) {
@@ -147,13 +134,10 @@ public class NumericFactorOutputData {
 		avgCompletionTimeData.get(seriesName).put(metricValue, stat.getAvgFlowCompletionTime());
 		avgStartupDelayData.get(seriesName).put(metricValue, stat.getAvgStartupDelay());
 		avgFlowThroughputData.get(seriesName).put(metricValue, stat.getAvgFlowThroughput());
+		fairnessIndexData.get(seriesName).put(metricValue, stat.getFairnessIndex());
 		btlUtilizationData.get(seriesName).put(metricValue, stat.getBottleneckUtilization());
-		varianceOfBtlUtilizationSharePerFlowSizeData.get(seriesName).put(metricValue,
-				stat.getVarianceOfBottleneckUtilizationSharePerFlowSize());
-		varianceOfFlowCompletionTimePerFlowSizeData.get(seriesName).put(metricValue,
-				stat.getVarianceOfFlowCompletionTimePerFlowSize());
-		maxBtlBufferOccupancyData.get(seriesName).put(metricValue, stat.getMaxBottleneckBufferOccupancy());
-		flowRejectionPercentageData.get(seriesName).put(metricValue, stat.getFlowRejectionPercentage());
+		btlMaxQueueLengthData.get(seriesName).put(metricValue, stat.getBtlMaxQueueLength());
+		btlAvgQueueLengthData.get(seriesName).put(metricValue, stat.getBtlAvgQueueLength());
 
 	}
 
@@ -162,11 +146,10 @@ public class NumericFactorOutputData {
 		addAvgCompletionTimeData();
 		addAvgStartupDelayData();
 		addAvgFlowThroughputData();
-		addBottleneckUtilizationData();
-		addVarianceOfBottleneckUtilizationSharePerFlowSizeData();
-		addVarianceOfFlowCompletionTimePerFlowSizeData();
-		addMaxBottlebeckBufferOccupancyData();
-		addFlowRejectionPercentageData();
+		addFairnessIndexData();
+		addBtlUtilizationData();
+		addBtlMaxQueueLengthData();
+		addBtlAvgQueueLengthData();
 
 	}
 

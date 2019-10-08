@@ -13,7 +13,10 @@ public abstract class Testbed {
 	protected float AccessLinkBandwidth;
 	/* Flow Properties */
 	public short AccessLinkPropagationDelayDistribution;
-	protected float alpha = 1;
+
+	public float alpha = 1;
+	public float beta = 2f;
+	public float gamma = 1.5f;
 
 	protected double AverageAccessLinkPropagationDelay;
 	protected float controlLinkBandwidth;
@@ -42,30 +45,42 @@ public abstract class Testbed {
 				Keywords.RandomVariableGenerator.StartingSeeds.AccessLinkPropagationDelayStartingSeed);
 		switch (networkType) {
 		case Keywords.Testbeds.Types.WAN:
-			AccessLinkBandwidth = (float) Mathematics.megaToBase(500);
-			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
-			ReceiverAccessLinkPropagationDelay = 10;
-			NetworkLinkPropagationDelay = 10000;
-			//NetworkLinkPropagationDelay = 10;
+			AccessLinkBandwidth = (float) Mathematics.megaToBase(10);
+			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(10);
+			ReceiverAccessLinkPropagationDelay = (float) Mathematics.milliToBase(5);
+			NetworkLinkPropagationDelay = (float) Mathematics.milliToBase(10);
 
-			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Uniform;
-			MinAccessLinkPropagationDelay = 1.0;
-			MaxAccessLinkPropagationDelay = 10.0;
-			AverageAccessLinkPropagationDelay = 5.0;
-			StandardDeviationAccessLinkPropagationDelay = 4.0;
+			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Constant;
+			MinAccessLinkPropagationDelay = (float) Mathematics.milliToBase(5);
+			MaxAccessLinkPropagationDelay = (float) Mathematics.milliToBase(5);
+			AverageAccessLinkPropagationDelay = (float) Mathematics.milliToBase(5);
+			StandardDeviationAccessLinkPropagationDelay = (float) Mathematics.milliToBase(5);
 
 			break;
 		case Keywords.Testbeds.Types.LAN:
-			AccessLinkBandwidth = (float) Mathematics.megaToBase(500);
-			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
-			ReceiverAccessLinkPropagationDelay = 1;
-			NetworkLinkPropagationDelay = 10;
+			AccessLinkBandwidth = (float) Mathematics.gigaToBase(10);
+			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(10);
+			ReceiverAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
+			NetworkLinkPropagationDelay = (float) Mathematics.microToBase(10);
 
-			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Uniform;
-			MinAccessLinkPropagationDelay = 1.0;
-			MaxAccessLinkPropagationDelay = 5.0;
-			AverageAccessLinkPropagationDelay = 2.0;
-			StandardDeviationAccessLinkPropagationDelay = 1.0;
+			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Constant;
+			MinAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
+			MaxAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
+			AverageAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
+			StandardDeviationAccessLinkPropagationDelay = 0;
+
+			break;
+		case Keywords.Testbeds.Types.Custom:
+			AccessLinkBandwidth = (float) Mathematics.gigaToBase(10);
+			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(10);
+			ReceiverAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
+			NetworkLinkPropagationDelay = (float) Mathematics.microToBase(2);
+
+			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Constant;
+			MinAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
+			MaxAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
+			AverageAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
+			StandardDeviationAccessLinkPropagationDelay = 0;
 
 			break;
 		default:
@@ -81,8 +96,8 @@ public abstract class Testbed {
 		TreeMap<Integer, Float> accessLinkPropagationDelayPerFlowID = new TreeMap<Integer, Float>();
 		rttRVG.resetRng();
 		for (int flowIndex = 0; flowIndex < totalNumberOfFlows; flowIndex++) {
-			accessLinkPropagationDelayPerFlowID.put(flowIndex,
-					(float) rttRVG.getNextUniform(MinAccessLinkPropagationDelay, MaxAccessLinkPropagationDelay));
+			accessLinkPropagationDelayPerFlowID.put(flowIndex, (float) rttRVG.getNextValue(distribution,
+					MinAccessLinkPropagationDelay, StandardDeviationAccessLinkPropagationDelay));
 		}
 		return accessLinkPropagationDelayPerFlowID;
 	}

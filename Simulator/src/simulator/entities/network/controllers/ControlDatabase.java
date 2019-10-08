@@ -16,11 +16,15 @@ public class ControlDatabase {
 	public int accessSwitchID = -1;
 	public float maxRTT = 0;
 	public float sharedEgressLinkBw = 0;
+	public int totalNumberOfFlows = 0;
+	public HashMap<Integer, Float> maxRTTOfAccessSwitchID = new HashMap<Integer, Float>(); // TODO give value somewhere
 	public HashMap<Integer, Integer> flowIDOfHostID = new HashMap<Integer, Integer>();// <HostID, FlowID>
+	public TreeMap<Integer, TreeMap<Integer, Integer>> flowIDOfHostIDOfAccessSwitchID; // <switchID,<hostID,flowID>>
 	public HashMap<Integer, HashMap<Integer, Integer>> pathOfFlowID; // <FlowID, Map<switchID,nextSwitchID>>
 	public HashMap<Integer, Float> RTTOfFlowID = new HashMap<Integer, Float>();
 	public HashMap<Integer, Float> SYNRTTOfFlowID = new HashMap<Integer, Float>();
 	public HashMap<Integer, Integer> btlLinkIDOfFlowID = new HashMap<Integer, Integer>();
+	public HashMap<Integer, Integer> networkBtlLinkIDOfFlowID = new HashMap<Integer, Integer>();
 	public HashMap<Integer, Link> accessLinkOfFlowID = new HashMap<Integer, Link>();
 	/*----------------------------------------------------------------------------------------*/
 
@@ -32,7 +36,6 @@ public class ControlDatabase {
 	// FlowID>>
 
 	/* Topology related information */
-	public TreeMap<Integer, TreeMap<Integer, Integer>> flowIDOfHostIDOfAccessSwitchID; // <AccessSwitchID, <HostID,
 
 	public HashMap<Integer, Float> rttOfFlowID; // <FlowID, RTT>
 
@@ -86,15 +89,6 @@ public class ControlDatabase {
 		return maxRTT;
 	}
 
-	public int getNumberOfFlowsForAccessSwitch(int accessSwitchID) {
-		int sum = 0;
-		for (int switchID : flowIDOfHostIDOfAccessSwitchID.keySet()) {
-			sum += flowIDOfHostIDOfAccessSwitchID.get(switchID).size();
-		}
-		return sum;
-		// TODO Must change later for multiple accessSwitch scenario
-	}
-
 	public float getRttForAccessSwitchIDAndHostID(int accessSwitchID, int hostID) {
 		return rttOfFlowID.get(flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).get(hostID));
 	}
@@ -105,12 +99,15 @@ public class ControlDatabase {
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-	public void arrivalOfFINForFlowID(int flowID, int srcHostID) {
+	public void arrivalOfFINForFlowID(int accessSwitchID, int flowID, int srcHostID) {
 		flowIDOfHostID.remove(srcHostID);
+		flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).remove(srcHostID);
 		pathOfFlowID.remove(flowID);
 		RTTOfFlowID.remove(flowID);
 		btlLinkIDOfFlowID.remove(flowID);
 		accessLinkOfFlowID.remove(flowID);
+		updateMaxRTTOfAccessSwitch(accessSwitchID);
+		totalNumberOfFlows++;
 	}
 
 	public void arrivalOfSYNForFlowID(Network net, Segment segment, int accessSwitchID) {
@@ -118,8 +115,16 @@ public class ControlDatabase {
 		this.accessSwitchID = accessSwitchID;
 		// Add the flowID to database
 		flowIDOfHostID.put(segment.getSrcHostID(), segment.getFlowID());
+		if (flowIDOfHostIDOfAccessSwitchID.containsKey(accessSwitchID)) {
+			flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).put(segment.getSrcHostID(), segment.getFlowID());
+		} else {
+			flowIDOfHostIDOfAccessSwitchID.put(accessSwitchID, new TreeMap<Integer, Integer>());
+			flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).put(segment.getSrcHostID(), segment.getFlowID());
+		}
 		// Update RTT information of database
 		updateRTTOfFlowID(net, segment);
+		updateMaxRTTOfAccessSwitch(accessSwitchID);
+		totalNumberOfFlows--;
 	}
 
 	public void updateRTTOfFlowID(Network net, Segment segment) {
@@ -145,7 +150,7 @@ public class ControlDatabase {
 		synRtt = Mathematics.multiplyFloat(2, senderAccessLink.getTotalDelay(Keywords.Segments.Sizes.ACKSegSize));
 		synRtt = Mathematics.addFloat(synRtt,
 				Mathematics.multiplyFloat(2, receiverAccessLink.getTotalDelay(Keywords.Segments.Sizes.ACKSegSize)));
-
+		float networkMinBand = Float.MAX_VALUE;
 		for (int srcSwitchID : pathOfFlowID.get(segment.getFlowID()).keySet()) {
 			int dstSwitchID = pathOfFlowID.get(segment.getFlowID()).get(srcSwitchID);
 			int linkID = net.switches.get(srcSwitchID).getNetworkLinksIDs().get(dstSwitchID);
@@ -158,15 +163,37 @@ public class ControlDatabase {
 				minBand = link.getBandwidth();
 				btlLinkIDOfFlowID.put(segment.getFlowID(), link.getID());
 			}
+			// TODO check to see if works correctly
+			if (link.getBandwidth() < networkMinBand) {
+				networkMinBand = link.getBandwidth();
+				networkBtlLinkIDOfFlowID.put(segment.getFlowID(), link.getID());
+			}
 		}
 		SYNRTTOfFlowID.put(segment.getFlowID(), synRtt);
 		RTTOfFlowID.put(segment.getFlowID(), rtt);
 		if (rtt > maxRTT) {
 			maxRTT = rtt;
+			maxRTTOfAccessSwitchID.put(accessSwitchID, maxRTT);
 		}
 
 		// update accesslinkIDOfFlowID
 		accessLinkOfFlowID.put(segment.getFlowID(), senderAccessLink);
+	}
+
+	public int getNumberOfFlowsForAccessSwitch(int accessSwitchID) {
+		return flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).keySet().size();
+	}
+
+	public void updateMaxRTTOfAccessSwitch(int accessSwitchID) {
+		float maxRTT = 0;
+		for (int hostID : flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).keySet()) {
+			int flowID = flowIDOfHostIDOfAccessSwitchID.get(accessSwitchID).get(hostID);
+			if (RTTOfFlowID.get(flowID) > maxRTT) {
+				maxRTT = RTTOfFlowID.get(flowID);
+			}
+		}
+		maxRTTOfAccessSwitchID.put(accessSwitchID, maxRTT);
+
 	}
 
 }

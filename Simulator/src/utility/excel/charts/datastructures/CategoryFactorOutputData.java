@@ -9,14 +9,13 @@ public class CategoryFactorOutputData {
 	private LinkedHashMap<String, LinkedHashMap<String, Float>> avgCompletionTimeData;
 	private LinkedHashMap<String, LinkedHashMap<String, Float>> avgFlowThroughputData;
 	private LinkedHashMap<String, LinkedHashMap<String, Float>> avgStartupDelayData;
+	private LinkedHashMap<String, LinkedHashMap<String, Float>> fairnessIndexData;
 	private LinkedHashMap<String, LinkedHashMap<String, Float>> btlUtilizationData;
-	private LinkedHashMap<String, LinkedHashMap<String, Float>> flowRejectionPercentageData;
-	private String mainFactorName;
-	private LinkedHashMap<String, LinkedHashMap<String, Float>> maxBtlBufferOccupancyData;
-	public LinkedHashMap<String, CategoryFactorBarTableData> outputSheets;
-	private LinkedHashMap<String, LinkedHashMap<String, Float>> varianceOfBtlUtilizationSharePerFlowSizeData;
+	private LinkedHashMap<String, LinkedHashMap<String, Float>> btlMaxQueueLengthData;
+	private LinkedHashMap<String, LinkedHashMap<String, Float>> btlAvgQueueLengthData;
 
-	private LinkedHashMap<String, LinkedHashMap<String, Float>> varianceOfFlowCompletionTimePerFlowSizeData;
+	private String mainFactorName;
+	public LinkedHashMap<String, CategoryFactorBarTableData> outputSheets;
 
 	public CategoryFactorOutputData(String mainFactorName,
 			LinkedHashMap<String, LinkedHashMap<String, Statistics>> result) {
@@ -26,12 +25,11 @@ public class CategoryFactorOutputData {
 		// All metric data structures must be initialized here
 		avgCompletionTimeData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
 		avgStartupDelayData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
-		maxBtlBufferOccupancyData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
-		varianceOfBtlUtilizationSharePerFlowSizeData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
-		btlUtilizationData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
 		avgFlowThroughputData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
-		flowRejectionPercentageData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
-		varianceOfFlowCompletionTimePerFlowSizeData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
+		fairnessIndexData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
+		btlUtilizationData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
+		btlMaxQueueLengthData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
+		btlAvgQueueLengthData = new LinkedHashMap<String, LinkedHashMap<String, Float>>();
 
 		for (String seriesName : result.keySet()) {
 			initializedSeriesForAllMetrics(seriesName);
@@ -76,6 +74,17 @@ public class CategoryFactorOutputData {
 		outputSheets.put(sheetName, table);
 	}
 
+	private void addFairnessIndexData() {
+		String sheetName = "FairnessIndex";
+		String xAxisCaption = mainFactorName;
+		String yAxisCaption = Keywords.Metrics.Names.FairnessIndex;
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
+		for (String seriesName : fairnessIndexData.keySet()) {
+			table.addSeriesToTable(seriesName, fairnessIndexData.get(seriesName));
+		}
+		outputSheets.put(sheetName, table);
+	}
+
 	private void addBottleneckUtilizationData() {
 		String sheetName = "BtlUtil";
 		String xAxisCaption = mainFactorName;
@@ -87,46 +96,24 @@ public class CategoryFactorOutputData {
 		outputSheets.put(sheetName, table);
 	}
 
-	private void addFlowRejectionPercentageData() {
-		String sheetName = "flowRejectionRate";
+	private void addBtlMaxQueueLengthData() {
+		String sheetName = "BtlMaxQueueLengthData";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.FlowRejectionRate;
+		String yAxisCaption = Keywords.Metrics.Names.MaxBtlQueueLength;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : flowRejectionPercentageData.keySet()) {
-			table.addSeriesToTable(seriesName, flowRejectionPercentageData.get(seriesName));
+		for (String seriesName : btlMaxQueueLengthData.keySet()) {
+			table.addSeriesToTable(seriesName, btlMaxQueueLengthData.get(seriesName));
 		}
 		outputSheets.put(sheetName, table);
 	}
 
-	private void addMaxBottlebeckBufferOccupancyData() {
-		String sheetName = "MaxBtlBufferOccupancy";
+	private void addBtlAvgQueueLengthData() {
+		String sheetName = "BtlAvgQueueLengthData";
 		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.MaxBtlBufferOccupancy;
+		String yAxisCaption = Keywords.Metrics.Names.AvgBtlQueueLength;
 		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : maxBtlBufferOccupancyData.keySet()) {
-			table.addSeriesToTable(seriesName, maxBtlBufferOccupancyData.get(seriesName));
-		}
-		outputSheets.put(sheetName, table);
-	}
-
-	private void addVarianceOfBottleneckUtilizationSharePerFlowSizeData() {
-		String sheetName = "VarianceOfBtlUtilSharePerFlowSize";
-		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.VarBtlUtilizationShareOverFlowSize;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : varianceOfBtlUtilizationSharePerFlowSizeData.keySet()) {
-			table.addSeriesToTable(seriesName, varianceOfBtlUtilizationSharePerFlowSizeData.get(seriesName));
-		}
-		outputSheets.put(sheetName, table);
-	}
-
-	private void addVarianceOfFlowCompletionTimePerFlowSizeData() {
-		String sheetName = "varianceOfFlowCompletionTime";
-		String xAxisCaption = mainFactorName;
-		String yAxisCaption = Keywords.Metrics.Names.VarFlowCompletionTimeOverFlowSize;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
-		for (String seriesName : varianceOfFlowCompletionTimePerFlowSizeData.keySet()) {
-			table.addSeriesToTable(seriesName, varianceOfFlowCompletionTimePerFlowSizeData.get(seriesName));
+		for (String seriesName : btlAvgQueueLengthData.keySet()) {
+			table.addSeriesToTable(seriesName, btlAvgQueueLengthData.get(seriesName));
 		}
 		outputSheets.put(sheetName, table);
 	}
@@ -135,26 +122,24 @@ public class CategoryFactorOutputData {
 		// All metric data structures must be mentioned here
 		avgCompletionTimeData.put(seriesName, new LinkedHashMap<String, Float>());
 		avgStartupDelayData.put(seriesName, new LinkedHashMap<String, Float>());
-		maxBtlBufferOccupancyData.put(seriesName, new LinkedHashMap<String, Float>());
-		varianceOfBtlUtilizationSharePerFlowSizeData.put(seriesName, new LinkedHashMap<String, Float>());
-		btlUtilizationData.put(seriesName, new LinkedHashMap<String, Float>());
 		avgFlowThroughputData.put(seriesName, new LinkedHashMap<String, Float>());
-		flowRejectionPercentageData.put(seriesName, new LinkedHashMap<String, Float>());
-		varianceOfFlowCompletionTimePerFlowSizeData.put(seriesName, new LinkedHashMap<String, Float>());
+		fairnessIndexData.put(seriesName, new LinkedHashMap<String, Float>());
+		btlUtilizationData.put(seriesName, new LinkedHashMap<String, Float>());
+		btlMaxQueueLengthData.put(seriesName, new LinkedHashMap<String, Float>());
+		btlAvgQueueLengthData.put(seriesName, new LinkedHashMap<String, Float>());
+
 	}
 
 	private void insertValuesForAllMetrics(String seriesName, String metricValue, Statistics stat) {
 		// All metric data structures must be mentioned here
 		avgCompletionTimeData.get(seriesName).put(metricValue, stat.getAvgFlowCompletionTime());
 		avgStartupDelayData.get(seriesName).put(metricValue, stat.getAvgStartupDelay());
-		maxBtlBufferOccupancyData.get(seriesName).put(metricValue, stat.getMaxBottleneckBufferOccupancy());
-		varianceOfBtlUtilizationSharePerFlowSizeData.get(seriesName).put(metricValue,
-				stat.getVarianceOfBottleneckUtilizationSharePerFlowSize());
-		btlUtilizationData.get(seriesName).put(metricValue, stat.getBottleneckUtilization());
 		avgFlowThroughputData.get(seriesName).put(metricValue, stat.getAvgFlowThroughput());
-		flowRejectionPercentageData.get(seriesName).put(metricValue, stat.getFlowRejectionPercentage());
-		varianceOfFlowCompletionTimePerFlowSizeData.get(seriesName).put(metricValue,
-				stat.getVarianceOfFlowCompletionTimePerFlowSize());
+		fairnessIndexData.get(seriesName).put(metricValue, stat.getFairnessIndex());
+		btlUtilizationData.get(seriesName).put(metricValue, stat.getBottleneckUtilization());
+		btlMaxQueueLengthData.get(seriesName).put(metricValue, stat.getBtlMaxQueueLength());
+		btlAvgQueueLengthData.get(seriesName).put(metricValue, stat.getBtlAvgQueueLength());
+
 	}
 
 	public void prepareOutputSheets() {
@@ -163,10 +148,9 @@ public class CategoryFactorOutputData {
 		addAvgStartupDelayData();
 		addAvgFlowThroughputData();
 		addBottleneckUtilizationData();
-		addVarianceOfBottleneckUtilizationSharePerFlowSizeData();
-		addVarianceOfFlowCompletionTimePerFlowSizeData();
-		addMaxBottlebeckBufferOccupancyData();
-		addFlowRejectionPercentageData();
+		addFairnessIndexData();
+		addBtlMaxQueueLengthData();
+		addBtlAvgQueueLengthData();
 
 	}
 }

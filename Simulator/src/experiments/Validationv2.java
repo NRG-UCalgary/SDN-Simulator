@@ -18,19 +18,74 @@ import utility.excel.charts.datastructures.NumericFactorScatterTableData;
 
 public class Validationv2 {
 	float alpha = 1;
-	float beta = 1;
+	float beta = 1.5f;
+	float gamma = 1.5f;
 
 	public void validate() {
-		 generateOutput("Single Flow Validation", singleFlowTest());
-		// generateOutput("Double Flow Validation", doubleFlowTest());
-		//generateOutput("Triple Flow Validation", tripleFlowTest());
+		Debugger.debugToConsole("===========================================================");
+		Debugger.debugToConsole("================ SingleFlow ===============================");
+		Debugger.debugToConsole("===========================================================");
+		generateOutput("Single Flow", singleFlowTest());
+		Debugger.debugToConsole("===========================================================");
+		Debugger.debugToConsole("================ Multiple Flow - Homogeneous ==============");
+		Debugger.debugToConsole("===========================================================");
+		generateOutput("Multiple Flow - Homogeneous", multipleFlowHomogeneousTest());
+		Debugger.debugToConsole("===========================================================");
+		Debugger.debugToConsole("================ Multiple Flows - Heterogeneous ===========");
+		Debugger.debugToConsole("===========================================================");
+		generateOutput("Multiple Flows - Heterogeneous", multipleFlowHeteroTest());
+		// generateOutput("Double Flow", doubleFlowTest());
 		Debugger.debugOutPut();
 	}
 
-	private Statistics tripleFlowTest() {
+	// Final
+	private Statistics singleFlowTest() {
 		Simulator sim = new Simulator();
 		// Creating Controller
-		sim.createController("Controller", Keywords.Entities.Controllers.Types.Controller_2, alpha, beta);
+		sim.createController("Controller", Keywords.Entities.Controllers.Types.Controller_2, alpha, beta, gamma);
+
+		// Creating Switches
+		sim.createSwitch("Sw_0");
+		sim.createSwitch("Sw_1");
+		sim.createSwitch("Sw_2");
+
+		// Creating Hosts
+		sim.createHost("S_0");
+		sim.createHost("R_0");
+
+		// Creating Control Links
+		sim.createLink("CL_0", "Sw_0", "Controller", (float) Mathematics.microToBase(1),
+				(float) Mathematics.gigaToBase(8), 1000, false);
+		sim.createLink("CL_1", "Sw_1", "Controller", (float) Mathematics.microToBase(1),
+				(float) Mathematics.gigaToBase(8), 1000, false);
+		sim.createLink("CL_2", "Sw_2", "Controller", (float) Mathematics.microToBase(1),
+				(float) Mathematics.gigaToBase(8), 1000, false);
+
+		// Creating Access Links
+		sim.createLink("SL_0", "S_0", "Sw_0", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
+				1000, true);
+		sim.createLink("RL_0", "R_0", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
+				1000, false);
+
+		// Creating Network Links
+		sim.createLink("NL_0", "Sw_0", "Sw_1", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
+				1000, false);
+		sim.createLink("NL_1", "Sw_1", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
+				1000, false);
+
+		// Generating the Flows
+		sim.generateFlow("Flow_0", "S_0", "R_0", 50, 0, Keywords.Entities.Agents.Types.v2);
+
+		// Running the Simulation
+		return sim.run(0, Float.MAX_VALUE);
+
+	}
+
+	// Final
+	private Statistics multipleFlowHomogeneousTest() {
+		Simulator sim = new Simulator();
+		// Creating Controller
+		sim.createController("Controller", Keywords.Entities.Controllers.Types.Controller_2, alpha, beta, gamma);
 
 		// Creating Switches
 		sim.createSwitch("Sw_0");
@@ -63,30 +118,31 @@ public class Validationv2 {
 		sim.createLink("RL_1", "R_1", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
 				1000, false);
 		sim.createLink("SL_2", "S_2", "Sw_0", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
-				1000, false);
+				1000, true);
 		sim.createLink("RL_2", "R_2", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
 				1000, false);
 
 		// Creating Network Links
 		sim.createLink("NL_0", "Sw_0", "Sw_1", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
-				1000, true); // This is the SharedBottleneckLink
+				1000, false); // This is the SharedBottleneckLink
 		sim.createLink("NL_1", "Sw_1", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
 				1000, false);
 
 		// Generating the Flows
-		sim.generateFlow("Flow_0", "S_0", "R_0", 50, 0, Keywords.Entities.Agents.Types.v2);
-		sim.generateFlow("Flow_1", "S_1", "R_1", 20, 10, Keywords.Entities.Agents.Types.v2);
-		sim.generateFlow("Flow_2", "S_2", "R_2", 10, 30, Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_0", "S_0", "R_0", 150, 0, Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_1", "S_1", "R_1", 80, 30, Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_2", "S_2", "R_2", 20, 100, Keywords.Entities.Agents.Types.v2);
 
 		// Running the Simulation
 		return sim.run(0, Float.MAX_VALUE);
 
 	}
 
-	private Statistics doubleFlowTest() {
+	// Final
+	private Statistics multipleFlowHeteroTest() {
 		Simulator sim = new Simulator();
 		// Creating Controller
-		sim.createController("Controller", Keywords.Entities.Controllers.Types.Controller_2, alpha, beta);
+		sim.createController("Controller", Keywords.Entities.Controllers.Types.Controller_2, alpha, beta, gamma);
 
 		// Creating Switches
 		sim.createSwitch("Sw_0");
@@ -98,6 +154,8 @@ public class Validationv2 {
 		sim.createHost("R_0");
 		sim.createHost("S_1");
 		sim.createHost("R_1");
+		sim.createHost("S_2");
+		sim.createHost("R_2");
 
 		// Creating Control Links
 		sim.createLink("CL_0", "Sw_0", "Controller", (float) Mathematics.microToBase(1),
@@ -112,9 +170,13 @@ public class Validationv2 {
 				1000, true);
 		sim.createLink("RL_0", "R_0", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
 				1000, false);
-		sim.createLink("SL_1", "S_1", "Sw_0", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
+		sim.createLink("SL_1", "S_1", "Sw_0", (float) Mathematics.microToBase(2), (float) Mathematics.gigaToBase(8),
 				1000, true);
 		sim.createLink("RL_1", "R_1", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
+				1000, false);
+		sim.createLink("SL_2", "S_2", "Sw_0", (float) Mathematics.microToBase(4), (float) Mathematics.gigaToBase(8),
+				1000, true);
+		sim.createLink("RL_2", "R_2", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
 				1000, false);
 
 		// Creating Network Links
@@ -124,18 +186,20 @@ public class Validationv2 {
 				1000, false);
 
 		// Generating the Flows
-		sim.generateFlow("Flow_0", "S_0", "R_0", 100, 0, Keywords.Entities.Agents.Types.v2);
-		sim.generateFlow("Flow_1", "S_1", "R_1", 40, 30, Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_0", "S_0", "R_0", 150, 0, Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_1", "S_1", "R_1", 80, 30, Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_2", "S_2", "R_2", 20, 100, Keywords.Entities.Agents.Types.v2);
 
 		// Running the Simulation
 		return sim.run(0, Float.MAX_VALUE);
 
 	}
 
-	private Statistics singleFlowTest() {
+	// Not mentioned in Thesis
+	private Statistics doubleFlowTest() {
 		Simulator sim = new Simulator();
 		// Creating Controller
-		sim.createController("Controller", Keywords.Entities.Controllers.Types.Controller_2, alpha, beta);
+		sim.createController("Controller", Keywords.Entities.Controllers.Types.Controller_2, alpha, beta, gamma);
 
 		// Creating Switches
 		sim.createSwitch("Sw_0");
@@ -145,29 +209,38 @@ public class Validationv2 {
 		// Creating Hosts
 		sim.createHost("S_0");
 		sim.createHost("R_0");
+		sim.createHost("S_1");
+		sim.createHost("R_1");
 
 		// Creating Control Links
-		sim.createLink("CL_0", "Sw_0", "Controller", (float) Mathematics.microToBase(1),
-				(float) Mathematics.gigaToBase(8), 10, false);
-		sim.createLink("CL_1", "Sw_1", "Controller", (float) Mathematics.microToBase(1),
-				(float) Mathematics.gigaToBase(8), 10, false);
-		sim.createLink("CL_2", "Sw_2", "Controller", (float) Mathematics.microToBase(1),
-				(float) Mathematics.gigaToBase(8), 10, false);
+		sim.createLink("CL_0", "Sw_0", "Controller", (float) Mathematics.microToBase(10),
+				(float) Mathematics.gigaToBase(10), 1000, false);
+		sim.createLink("CL_1", "Sw_1", "Controller", (float) Mathematics.microToBase(10),
+				(float) Mathematics.gigaToBase(10), 1000, false);
+		sim.createLink("CL_2", "Sw_2", "Controller", (float) Mathematics.microToBase(10),
+				(float) Mathematics.gigaToBase(10), 1000, false);
 
 		// Creating Access Links
-		sim.createLink("SL_0", "S_0", "Sw_0", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8), 10,
-				true);
-		sim.createLink("RL_0", "R_0", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8), 10,
-				false);
+		sim.createLink("SL_0", "S_0", "Sw_0", (float) Mathematics.microToBase(10), (float) Mathematics.gigaToBase(10),
+				1000, true);
+		sim.createLink("RL_0", "R_0", "Sw_2", (float) Mathematics.microToBase(10), (float) Mathematics.gigaToBase(10),
+				1000, false);
+		sim.createLink("SL_1", "S_1", "Sw_0", (float) Mathematics.microToBase(10), (float) Mathematics.gigaToBase(10),
+				1000, true);
+		sim.createLink("RL_1", "R_1", "Sw_2", (float) Mathematics.microToBase(10), (float) Mathematics.gigaToBase(10),
+				1000, false);
 
 		// Creating Network Links
-		sim.createLink("NL_0", "Sw_0", "Sw_1", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
-				10, false);
-		sim.createLink("NL_1", "Sw_1", "Sw_2", (float) Mathematics.microToBase(1), (float) Mathematics.gigaToBase(8),
-				10, false);
+		sim.createLink("NL_0", "Sw_0", "Sw_1", (float) Mathematics.microToBase(10), (float) Mathematics.gigaToBase(10),
+				1000, false); // This is the SharedBottleneckLink
+		sim.createLink("NL_1", "Sw_1", "Sw_2", (float) Mathematics.microToBase(10), (float) Mathematics.gigaToBase(10),
+				1000, false);
 
 		// Generating the Flows
-		sim.generateFlow("Flow_0", "S_0", "R_0", 50, 0, Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_0", "S_0", "R_0", 100, (float) Mathematics.milliToMicro(10),
+				Keywords.Entities.Agents.Types.v2);
+		sim.generateFlow("Flow_1", "S_1", "R_1", 100, (float) Mathematics.milliToMicro(20),
+				Keywords.Entities.Agents.Types.v2);
 
 		// Running the Simulation
 		return sim.run(0, Float.MAX_VALUE);

@@ -6,9 +6,9 @@ import experiments.traffic.Traffic;
 import simulator.Simulator;
 import utility.*;
 
-public class Dumbbell extends Testbed {
+public class Dumbbell2 extends Testbed {
 
-	public Dumbbell(short networkType) {
+	public Dumbbell2(short networkType) {
 		super(networkType);
 	}
 
@@ -18,13 +18,16 @@ public class Dumbbell extends Testbed {
 		NumberOfSenderAccessSwitches = 1;
 		NumberOfNetworkSwitches = 1;
 		NumberOfHostsPerAccessSwitch = traffic.flowSizePerFlowID.size();
+
 		TreeMap<Integer, Float> accessLinkPropagationDelayPerFlowID = prepareAccessLinksPropagationDelay(
 				AccessLinkPropagationDelayDistribution, NumberOfHostsPerAccessSwitch);
-		Debugger.debugToConsole("    ^^^^^^^^^^^^^ New Simulation ^^^^^^^^^^^^^");
+		Debugger.debugToConsole("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		Debugger.debugToConsole("^^^^^^^^^^^^^^^^^^^^^ New Simulation ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		Debugger.debugToConsole("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		Simulator sim = new Simulator();
-
+		Debugger.debugToConsole("Creating Topology...");
 		// Creating the controller
-		sim.createController(controllerLabel, Keywords.Entities.Controllers.Types.Controller_1, alpha, 1, 1);
+		sim.createController(controllerLabel, Keywords.Entities.Controllers.Types.Controller_2, alpha, beta, gamma);
 
 		// Creating access switches
 		for (int acessSwitchIndex = 0; acessSwitchIndex < NumberOfSenderAccessSwitches; acessSwitchIndex++) {
@@ -32,8 +35,8 @@ public class Dumbbell extends Testbed {
 					+ acessSwitchIndex;
 			String receiverAccessSwitchLabel = Keywords.Entities.Labels.Prefixes.ReceiverAccessSwitchPrefix
 					+ acessSwitchIndex;
-			sim.createSwitch(senderAccessSwitchLabel, Keywords.Entities.Switches.Types.Switch_1);
-			sim.createSwitch(receiverAccessSwitchLabel, Keywords.Entities.Switches.Types.Switch_1);
+			sim.createSwitch(senderAccessSwitchLabel);
+			sim.createSwitch(receiverAccessSwitchLabel);
 
 			// Creating control links for the access switches
 			sim.createLink(Keywords.Entities.Labels.Prefixes.ControlLinkPrefix + controlLinkIndex,
@@ -66,7 +69,7 @@ public class Dumbbell extends Testbed {
 		String networkSwitchLabel;
 		for (int networkSwitchIndex = 0; networkSwitchIndex < NumberOfNetworkSwitches; networkSwitchIndex++) {
 			networkSwitchLabel = Keywords.Entities.Labels.Prefixes.NetworkSwitchPrefix + networkSwitchIndex;
-			sim.createSwitch(networkSwitchLabel, Keywords.Entities.Switches.Types.Switch_1);
+			sim.createSwitch(networkSwitchLabel);
 
 			sim.createLink(Keywords.Entities.Labels.Prefixes.ControlLinkPrefix + controlLinkIndex, networkSwitchLabel,
 					controllerLabel, controlLinkPropagationDelay, controlLinkBandwidth,
@@ -94,18 +97,21 @@ public class Dumbbell extends Testbed {
 			sim.createLink(networkLinkLabel, lastNetworkSwitchLabel, receiverAccessSwitchLabel,
 					NetworkLinkPropagationDelay, NetworkLinkBandwidth, Keywords.Entities.Buffers.Size.Unlimited, false);
 		}
-
+		Debugger.debugToConsole("-------------------------------------------------------");
+		Debugger.debugToConsole("Creating Flows...");
 		// Creating the flows
 		for (int flowIndex : traffic.arrivalTimePerFlowID.keySet()) {
-			Debugger.debugToConsole("    Flow_" + flowIndex + " with size: " + traffic.flowSizePerFlowID.get(flowIndex)
+			Debugger.debugToConsole("	Flow_" + flowIndex + " with size: " + traffic.flowSizePerFlowID.get(flowIndex)
 					+ " arrives at: " + traffic.arrivalTimePerFlowID.get(flowIndex));
 			String flowLabel = Keywords.Entities.Labels.Prefixes.FlowPrefix + flowIndex;
 			String senderHostLabel = Keywords.Entities.Labels.Prefixes.SenderHostPrefix + flowIndex;
 			String receiverHostLabel = Keywords.Entities.Labels.Prefixes.ReceiverHostPrefix + flowIndex;
 			sim.generateFlow(flowLabel, senderHostLabel, receiverHostLabel, traffic.flowSizePerFlowID.get(flowIndex),
-					traffic.arrivalTimePerFlowID.get(flowIndex), Keywords.Entities.Agents.Types.SDTCP);
+					traffic.arrivalTimePerFlowID.get(flowIndex), Keywords.Entities.Agents.Types.v2);
 		}
 		// Running the simulation
+		Debugger.debugToConsole("-------------------------------------------------------");
+		Debugger.debugToConsole("Running the simulation...");
 		return sim.run(0, SimEndTime);
 	}
 

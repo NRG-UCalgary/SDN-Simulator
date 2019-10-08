@@ -162,8 +162,10 @@ public interface Keywords {
 			String AvgFlowStartupDelay = "Avg Flow Setup Delay (us)";
 			String AvgFlowThroughput = "Avg Flow Throughput";
 			String BtlUtilization = "Bottleneck Link Utilization";
+			String FairnessIndex = "Fairness Index";
 			String FlowRejectionRate = "Flow Rejection Rate (%)";
-			String MaxBtlBufferOccupancy = "Max Bottlenek Buffer Occupancy (Packets)";
+			String MaxBtlQueueLength = "Max Bottleneck Queue Length (Segments)";
+			String AvgBtlQueueLength = "Avg Bottleneck Queue Length (Segments)";
 			String VarBtlUtilizationShareOverFlowSize = "Var (Flow Btl Util Share / Flow Size)";
 			String VarFlowCompletionTimeOverFlowSize = "Var (Flow Completion Time / Flow Size)";
 
@@ -228,7 +230,7 @@ public interface Keywords {
 	interface Segments {
 		interface Sizes {
 			short ACKSegSize = 40 * 8;
-			short CtrlMessageSize = 40 * 80;
+			short CtrlMessageSize = 40 * 8;
 			short CTRLSegSize = 40 * 8;
 			short FINSegSize = 40 * 8;
 			short SYNSegSize = 40 * 8;
@@ -263,6 +265,7 @@ public interface Keywords {
 		}
 
 		interface Types {
+			short Custom = 3;
 			short DataCenter = 2;
 			short LAN = 1;
 			short WAN = 0;

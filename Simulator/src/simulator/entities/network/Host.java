@@ -52,6 +52,10 @@ public abstract class Host extends Node {
 	}
 
 	private void sendSegment(Network net, Segment segment) {
+		/** ===== Statistical Counters ===== **/
+		transportAgent.flow.totalTransmissionTime = Mathematics.addFloat(transportAgent.flow.totalTransmissionTime,
+				net.links.get(accessLinkID).getTransmissionDelay(segment.getSize()));
+		/** ================================ **/
 		net.links.get(accessLinkID).bufferPacket(net, new Packet(segment, null));
 	}
 
