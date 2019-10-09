@@ -11,6 +11,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 
+import experiments.testbeds.Testbed;
+import experiments.traffic.TrafficGenerator;
 import simulator.entities.traffic.Flow;
 import utility.Debugger;
 import utility.Statistics;
@@ -25,19 +27,33 @@ public abstract class Scenario {
 	private String mainFactorName;
 	private String studyName;
 
+	// Needed entities for each study
+	protected TrafficGenerator trafficGen;
+	protected Testbed testbed;
+
 	public Scenario(String studyName, String mainFactorName) {
 		this.studyName = studyName;
 		this.mainFactorName = mainFactorName;
 	}
 
-	public void executeTest() {
-
-	}
+	public abstract void executeTest();
 
 	/* ======================================================================== */
 	/* ============ Performance outputs ======================================= */
 	/* ======================================================================== */
 
+	public void generateNumericalFactorOutput(LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
+		Debugger.debugToConsole("Generating the output...");
+		String studyOutputPath = "output/" + studyName + "/";
+		new File(studyOutputPath).mkdirs();
+		NumericFactorOutputData outputData = new NumericFactorOutputData(mainFactorName, result);
+		try {
+			ExcelHandler.createNumericFactorStudyOutput(studyOutputPath, studyName, outputData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void generateCategoryFactorOutput(LinkedHashMap<String, LinkedHashMap<String, Statistics>> result) {
 		Debugger.debugToConsole("Generating the output...");
 		String studyOutputPath = "output/" + studyName + "/";
@@ -54,17 +70,7 @@ public abstract class Scenario {
 	/* ============ Functionality outputs ===================================== */
 	/* ======================================================================== */
 
-	public void generateNumericalFactorOutput(LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
-		Debugger.debugToConsole("Generating the output...");
-		String studyOutputPath = "output/" + studyName + "/";
-		new File(studyOutputPath).mkdirs();
-		NumericFactorOutputData outputData = new NumericFactorOutputData(mainFactorName, result);
-		try {
-			ExcelHandler.createNumericFactorStudyOutput(studyOutputPath, studyName, outputData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	
 
 	public void outOneCollumTextFile(ArrayList<String> output, String address) {
 
@@ -124,6 +130,36 @@ public abstract class Scenario {
 			SeqNumDataForAllFlowIDs.put(flow.getID(), flowSeqNumData);
 		}
 
+	}
+
+	protected void generateSequenceNumGraphOutput(String testName, Statistics stat) {
+		String studyOutputPath = "validation/" + testName + "/";
+		new File(studyOutputPath).mkdirs();
+		LinkedHashMap<String, NumericFactorScatterTableData> outputData = new LinkedHashMap<String, NumericFactorScatterTableData>();
+		for (Flow flow : stat.flows.values()) {
+			NumericFactorScatterTableData flowSeqNumData = new NumericFactorScatterTableData("Time (us)",
+					"Sequence Number");
+			ArrayList<Pair<Float, Float>> dataSerie = new ArrayList<Pair<Float, Float>>();
+			for (float seqNum : flow.dataSeqNumSendingTimes.keySet()) {
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.dataSeqNumSendingTimes.get(seqNum),
+						seqNum);
+				dataSerie.add(singleEntry);
+			}
+			flowSeqNumData.data.put("Data Segments", dataSerie);
+
+			ArrayList<Pair<Float, Float>> ackSerie = new ArrayList<Pair<Float, Float>>();
+			for (float seqNum : flow.ackSeqNumArrivalTimes.keySet()) {
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.ackSeqNumArrivalTimes.get(seqNum), seqNum);
+				ackSerie.add(singleEntry);
+			}
+			flowSeqNumData.data.put("ACKs", ackSerie);
+			outputData.put("Flow_" + Integer.toString((int) flow.getID()), flowSeqNumData);
+		}
+		try {
+			ExcelHandler.createValidationOutput(studyOutputPath, "SeqNumPlots", outputData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

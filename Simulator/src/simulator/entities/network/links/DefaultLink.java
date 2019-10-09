@@ -51,6 +51,7 @@ public class DefaultLink extends Link {
 		net.eventList.addEvent(new ArrivalToNode(nextTime, srcNodeID, dstNodeID, packet));
 		/** ===== Statistical Counters ===== **/
 		updateQueueLenghtCounter(net.getCurrentTime(), buffer.occupancy);
+		updateMaxQueueLengthCounter(buffer.occupancy);
 		/** ================================ **/
 	}
 }

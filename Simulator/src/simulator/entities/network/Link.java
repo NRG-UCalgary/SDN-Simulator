@@ -106,10 +106,13 @@ public abstract class Link extends Entity {
 
 	}
 
-	public void updateQueueLenghtCounter(float time, int bufferOccupancy) {
+	public void updateMaxQueueLengthCounter(int bufferOccupancy) {
 		if (bufferOccupancy > maxQeueLength) {
 			maxQeueLength = bufferOccupancy;
 		}
+	}
+
+	public void updateQueueLenghtCounter(float time, int bufferOccupancy) {
 		queueLength.put(time, (float) (bufferOccupancy));
 	}
 

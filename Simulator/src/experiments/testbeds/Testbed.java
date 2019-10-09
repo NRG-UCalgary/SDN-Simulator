@@ -14,9 +14,9 @@ public abstract class Testbed {
 	/* Flow Properties */
 	public short AccessLinkPropagationDelayDistribution;
 
-	public float alpha = 1;
-	public float beta = 2f;
-	public float gamma = 1.5f;
+	public float alpha = 1f;
+	public float beta = 1f;
+	public float gamma = 1f;
 
 	protected double AverageAccessLinkPropagationDelay;
 	protected float controlLinkBandwidth;
@@ -71,15 +71,15 @@ public abstract class Testbed {
 
 			break;
 		case Keywords.Testbeds.Types.Custom:
-			AccessLinkBandwidth = (float) Mathematics.gigaToBase(10);
-			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(10);
-			ReceiverAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
-			NetworkLinkPropagationDelay = (float) Mathematics.microToBase(2);
+			AccessLinkBandwidth = (float) Mathematics.gigaToBase(1);
+			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(1);
+			ReceiverAccessLinkPropagationDelay = (float) Mathematics.microToBase(1);
+			NetworkLinkPropagationDelay = (float) Mathematics.microToBase(1);
 
 			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Constant;
-			MinAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
-			MaxAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
-			AverageAccessLinkPropagationDelay = (float) Mathematics.microToBase(2);
+			MinAccessLinkPropagationDelay = (float) Mathematics.microToBase(1);
+			MaxAccessLinkPropagationDelay = (float) Mathematics.microToBase(1);
+			AverageAccessLinkPropagationDelay = (float) Mathematics.microToBase(1);
 			StandardDeviationAccessLinkPropagationDelay = 0;
 
 			break;

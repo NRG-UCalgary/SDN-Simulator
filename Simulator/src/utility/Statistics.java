@@ -50,7 +50,7 @@ public class Statistics {
 	public float getAvgFlowCompletionTime() {
 		float sum = 0;
 		for (Flow flow : flows.values()) {
-			sum += flow.completionTime;
+			sum = Mathematics.addFloat(sum, Mathematics.subtractFloat(flow.FINSendingTime, flow.arrivalTime));
 		}
 		return sum / (float) flows.size();
 	}

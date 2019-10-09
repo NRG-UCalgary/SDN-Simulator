@@ -1,4 +1,4 @@
-package experiments.scenarios;
+package experiments.scenarios.myScenarios;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 
+import experiments.scenarios.Scenario;
 import experiments.testbeds.Dumbbell;
 import experiments.testbeds.Dumbbell2;
 import experiments.testbeds.Testbed;
@@ -64,34 +65,6 @@ public class NumberOfFlowsAndInterArrival extends Scenario {
 		Debugger.debugOutPut();
 	}
 
-	private void generateOutput(String testName, Statistics stat) {
-		String studyOutputPath = "validation/" + testName + "/";
-		new File(studyOutputPath).mkdirs();
-		LinkedHashMap<String, NumericFactorScatterTableData> outputData = new LinkedHashMap<String, NumericFactorScatterTableData>();
-		for (Flow flow : stat.flows.values()) {
-			NumericFactorScatterTableData flowSeqNumData = new NumericFactorScatterTableData("Time (us)",
-					"Sequence Number");
-			ArrayList<Pair<Float, Float>> dataSerie = new ArrayList<Pair<Float, Float>>();
-			for (float seqNum : flow.dataSeqNumSendingTimes.keySet()) {
-				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.dataSeqNumSendingTimes.get(seqNum),
-						seqNum);
-				dataSerie.add(singleEntry);
-			}
-			flowSeqNumData.data.put("Data Segments", dataSerie);
 
-			ArrayList<Pair<Float, Float>> ackSerie = new ArrayList<Pair<Float, Float>>();
-			for (float seqNum : flow.ackSeqNumArrivalTimes.keySet()) {
-				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.ackSeqNumArrivalTimes.get(seqNum), seqNum);
-				ackSerie.add(singleEntry);
-			}
-			flowSeqNumData.data.put("ACKs", ackSerie);
-			outputData.put("Flow_" + Integer.toString((int) flow.getID()), flowSeqNumData);
-		}
-		try {
-			ExcelHandler.createValidationOutput(studyOutputPath, "SeqNumPlots", outputData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 }

@@ -97,8 +97,8 @@ public class Controllerv2 extends Controller {
 			if (validationReport) {
 				Debugger.debugToConsole("  sWnd = " + segment.sWnd);
 			}
-			// Debugger.debugToConsole(" sWnd = " + segment.sWnd);
-			// Debugger.stopFlag();
+			 //Debugger.debugToConsole(" sWnd = " + segment.sWnd);
+			 //Debugger.stopFlag();
 			if (segment.sWnd < 1) {
 				Debugger.stopFlag();
 			}

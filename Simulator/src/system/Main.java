@@ -1,14 +1,15 @@
 package system;
 
-import experiments.Validationv2;
+import experiments.*;
 import experiments.scenarios.*;
+import experiments.scenarios.myScenarios.*;
+import experiments.validations.Validationv2;
 
 public class Main {
 	public static void main(String[] args) {
 
 		Validationv2 vTest = new Validationv2();
 		Scenario numFlowsAndBeta = new NumberOfFlowsAndBeta();
-		Scenario alphaAndBeta = new AlphaAndBeta();
 		Scenario interArrivalFlowSize = new InterArrivalAndFlowSizes();
 		Scenario numFlowSize = new NumberOfFlowsAndFlowSizes();
 		Scenario numFlowInterArrival = new NumberOfFlowsAndInterArrival();
@@ -20,12 +21,12 @@ public class Main {
 		// numFlowsAndBeta.executeTest();
 		// alphaAndBeta.executeTest();
 		// numFlowsInterArrival.executeTest();
-		// interArrivalFlowSize.executeTest();
-		 numFlowSize.executeTest();
+		interArrivalFlowSize.executeTest();
+		// numFlowSize.executeTest();
 		// numFlowInterArrival.executeTest();
 		// sizeFlowNum.executeTest();
 		// incastBufferAlpha.executeTest();
-		//incastBufferGamma.executeTest();
+		// incastBufferGamma.executeTest();
 	}
 
 	public static void error(String className, String methodName, String errorMessage) {
