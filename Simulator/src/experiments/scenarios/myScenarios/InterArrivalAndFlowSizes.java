@@ -14,19 +14,20 @@ public class InterArrivalAndFlowSizes extends NumericalFactorScenario {
 	public void executeTest() {
 
 		// Fixed parameters
-		Float numberOfFlows = 20f;
+		float numberOfFlows = 10f;
+		float alpha = 1f;
+		float beta = 1f;
+		float gamma = 1f;
 
 		// Factors
 		firstFactorValues.add(0f);
-		for (float interArrival = 250; interArrival <= 5000; interArrival += 250) {
+		for (float interArrival = 100; interArrival <= 2000; interArrival += 100) {
 			firstFactorValues.add(interArrival);
 		}
 		secondFactorValues.add(100f);
+		secondFactorValues.add(500f);
 		secondFactorValues.add(1000f);
-		secondFactorValues.add(2000f);
-		secondFactorValues.add(4000f);
-		secondFactorValues.add(8000f);
-		for (float flowSize = 2000; flowSize <= 7000; flowSize += 2000) {
+		for (float flowSize = 1000; flowSize <= 2000; flowSize += 1000) {
 			//secondFactorValues.add(flowSize);
 		}
 
@@ -36,6 +37,9 @@ public class InterArrivalAndFlowSizes extends NumericalFactorScenario {
 			resetStudyStats();
 			trafficGen = new TrafficGenerator(Keywords.Traffics.Types.GeneralTraffic, 0);
 			testbed = new Dumbbell2(Keywords.Testbeds.Types.LAN);
+			testbed.alpha = alpha;
+			testbed.beta = beta;
+			testbed.gamma = gamma;
 			trafficGen.setFlowSizeProperties(Keywords.RandomVariableGenerator.Distributions.Constant, flowSize, 0);
 			trafficGen.setNumberOfFlowsProperties(Keywords.RandomVariableGenerator.Distributions.Constant,
 					numberOfFlows, numberOfFlows);

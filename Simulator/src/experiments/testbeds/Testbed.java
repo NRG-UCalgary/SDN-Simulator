@@ -45,10 +45,10 @@ public abstract class Testbed {
 				Keywords.RandomVariableGenerator.StartingSeeds.AccessLinkPropagationDelayStartingSeed);
 		switch (networkType) {
 		case Keywords.Testbeds.Types.WAN:
-			AccessLinkBandwidth = (float) Mathematics.megaToBase(10);
+			AccessLinkBandwidth = (float) Mathematics.gigaToBase(10);
 			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(10);
 			ReceiverAccessLinkPropagationDelay = (float) Mathematics.milliToBase(5);
-			NetworkLinkPropagationDelay = (float) Mathematics.milliToBase(10);
+			NetworkLinkPropagationDelay = (float) Mathematics.milliToBase(5);
 
 			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Constant;
 			MinAccessLinkPropagationDelay = (float) Mathematics.milliToBase(5);
@@ -58,15 +58,15 @@ public abstract class Testbed {
 
 			break;
 		case Keywords.Testbeds.Types.LAN:
-			AccessLinkBandwidth = (float) Mathematics.gigaToBase(10);
 			NetworkLinkBandwidth = (float) Mathematics.gigaToBase(10);
-			ReceiverAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
-			NetworkLinkPropagationDelay = (float) Mathematics.microToBase(10);
+			NetworkLinkPropagationDelay = (float) Mathematics.microToBase(5);
+			AccessLinkBandwidth = (float) Mathematics.gigaToBase(10);
+			ReceiverAccessLinkPropagationDelay = (float) Mathematics.microToBase(5);
 
 			AccessLinkPropagationDelayDistribution = Keywords.RandomVariableGenerator.Distributions.Constant;
-			MinAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
-			MaxAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
-			AverageAccessLinkPropagationDelay = (float) Mathematics.microToBase(10);
+			MinAccessLinkPropagationDelay = (float) Mathematics.microToBase(5);
+			MaxAccessLinkPropagationDelay = (float) Mathematics.microToBase(5);
+			AverageAccessLinkPropagationDelay = (float) Mathematics.microToBase(5);
 			StandardDeviationAccessLinkPropagationDelay = 0;
 
 			break;

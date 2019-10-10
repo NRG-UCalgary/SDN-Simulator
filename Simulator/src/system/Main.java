@@ -9,24 +9,19 @@ public class Main {
 	public static void main(String[] args) {
 
 		Validationv2 vTest = new Validationv2();
-		Scenario numFlowsAndBeta = new NumberOfFlowsAndBeta();
-		Scenario interArrivalFlowSize = new InterArrivalAndFlowSizes();
-		Scenario numFlowSize = new NumberOfFlowsAndFlowSizes();
-		Scenario numFlowInterArrival = new NumberOfFlowsAndInterArrival();
-		Scenario sizeFlowNum = new SizeOfFlowsAndFlowNumber();
-		Scenario incastBufferAlpha = new IncastBufferingWithAlpha();
-		Scenario incastBufferGamma = new IncastBufferingWithGamma();
-
 		// vTest.validate();
-		// numFlowsAndBeta.executeTest();
-		// alphaAndBeta.executeTest();
+
+		Scenario interArrivalFlowSize = new InterArrivalAndFlowSizes();
+		// interArrivalFlowSize.executeTest();
+
+		Scenario gammaFlowSize = new GammaAndFlowInterArrival();
+		// gammaFlowSize.executeTest();
+
+		Scenario numFlowsInterArrival = new NumberOfFlowsAndFlowInterArrival();
 		// numFlowsInterArrival.executeTest();
-		interArrivalFlowSize.executeTest();
-		// numFlowSize.executeTest();
-		// numFlowInterArrival.executeTest();
-		// sizeFlowNum.executeTest();
-		// incastBufferAlpha.executeTest();
-		// incastBufferGamma.executeTest();
+
+		Scenario incastGammaNumFlows = new IncastFlowNumbersGamma();
+		incastGammaNumFlows.executeTest();
 	}
 
 	public static void error(String className, String methodName, String errorMessage) {
