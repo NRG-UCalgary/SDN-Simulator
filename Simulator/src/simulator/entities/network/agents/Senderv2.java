@@ -149,7 +149,7 @@ public class Senderv2 extends Agent {
 				} else {
 					Debugger.error("Senderv2", "timeOut", "Cycle starts before SYNACK arrival. Time = "
 							+ net.getCurrentTime() + ", flowID = " + flow.getID());
-					Debugger.stopFlag();
+					//Debugger.stopFlag();
 				}
 				break;
 			case Keywords.Entities.Agents.TimerTypes.InitialDelayTimer:

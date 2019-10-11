@@ -20,8 +20,11 @@ public class Main {
 		Scenario numFlowsInterArrival = new NumberOfFlowsAndFlowInterArrival();
 		// numFlowsInterArrival.executeTest();
 
+		Scenario numFlowsSizes = new NumberOfFlowsAndFlowSizes();
+		numFlowsSizes.executeTest();
+
 		Scenario incastGammaNumFlows = new IncastFlowNumbersGamma();
-		incastGammaNumFlows.executeTest();
+		// incastGammaNumFlows.executeTest();
 	}
 
 	public static void error(String className, String methodName, String errorMessage) {
