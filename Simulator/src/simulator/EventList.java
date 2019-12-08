@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class EventList {
+	private ArrayList<Event> events = new ArrayList<Event>();
+
+	public EventList() {
+	}
 
 	/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 	public static Comparator<Event> timeComparator = new Comparator<Event>() {
@@ -21,14 +25,8 @@ public class EventList {
 	};
 	/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
-	public ArrayList<Event> events = new ArrayList<Event>();
-
-	public EventList() {
-	}
-
 	public void addEvent(Event newEvent) {
 		events.add(newEvent);
-		// Sorting the events based on their happening time
 		Collections.sort(events, timeComparator);
 	}
 

@@ -8,9 +8,5 @@ public abstract class Event {
 		this.eventTime = eventTime;
 	}
 
-	/* --------------------------------------------------- */
-	/* ---------- Abstract methods ----------------------- */
-	/* --------------------------------------------------- */
-
 	public abstract void execute(Network net);
 }

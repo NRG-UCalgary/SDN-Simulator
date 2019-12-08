@@ -53,7 +53,7 @@ public abstract class Scenario {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void generateCategoryFactorOutput(LinkedHashMap<String, LinkedHashMap<String, Statistics>> result) {
 		Debugger.debugToConsole("Generating the output...");
 		String studyOutputPath = "output/" + studyName + "/";
@@ -69,8 +69,6 @@ public abstract class Scenario {
 	/* ======================================================================== */
 	/* ============ Functionality outputs ===================================== */
 	/* ======================================================================== */
-
-	
 
 	public void outOneCollumTextFile(ArrayList<String> output, String address) {
 
@@ -96,7 +94,7 @@ public abstract class Scenario {
 
 	public void outSegmentArrivalToBottleneckData(String outputPath, Statistics stat) {
 		NumericFactorScatterTableData bottleneckArrivals = new NumericFactorScatterTableData("Time (ms)", "FlowID");
-		for (Pair<Float, Float> entry : stat.links.get(stat.bottleneckLinkID).segmentArrivalTimeOfFlowID) {
+		for (Pair<Float, Float> entry : stat.links.get(stat.bottleneckLink.getID()).segmentArrivalTimeOfFlowID) {
 			String key = "Flow_" + entry.getSecond().intValue();
 			if (bottleneckArrivals.data.containsKey(key)) {
 				bottleneckArrivals.data.get(key).add(entry);

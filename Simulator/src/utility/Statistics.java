@@ -1,37 +1,30 @@
 package utility;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
 import simulator.Network;
-import simulator.entities.network.Controller;
-import simulator.entities.network.Host;
-import simulator.entities.network.Link;
-import simulator.entities.network.SDNSwitch;
-import simulator.entities.traffic.Flow;
+import simulator.entities.network.*;
+import simulator.entities.traffic.*;
 import system.Main;
 
 public class Statistics {
 
-	// Temporary
-	public int bottleneckLinkID;
-
 	public Link bottleneckLink;
-	public Controller controller;
-	public HashMap<Integer, Flow> flows; // <FlowID, Flow>
-	public HashMap<Integer, Link> links; // <LinkID, Link>
-	public HashMap<Integer, SDNSwitch> switches; // <SwitchID, SDNSwitch>
+	public HashMap<Integer, Flow> flows;
+	public HashMap<Integer, Link> links;
+	public HashMap<Integer, Controller> controllers;
+	public HashMap<Integer, SDNSwitch> switches;
 
 	public Statistics(Network net, int btlLinkID) {
-		this.bottleneckLinkID = btlLinkID;
 		if (btlLinkID != net.controllers.get(10000).getBottleneckLinkID()) {
 			Debugger.debug("Controller worked with wrong bottleneck.");
 		}
 		links = new HashMap<Integer, Link>();
 		switches = new HashMap<Integer, SDNSwitch>();
 		flows = new HashMap<Integer, Flow>();
-		this.controller = net.controller;
+		controllers = new HashMap<Integer, Controller>();
+		this.controllers = net.controllers;
 		this.switches = net.switches;
 		this.links = net.links;
 		for (Host host : net.hosts.values()) {

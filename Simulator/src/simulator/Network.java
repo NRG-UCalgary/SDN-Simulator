@@ -5,14 +5,10 @@ import simulator.entities.network.*;
 
 public class Network {
 
-	/* Statistical holder */
-
 	public Controller controller;
-	/* Simulation entities */
-	private float currentTime; // in MicroSecond
+	private float currentTime;
 	public EventList eventList;
 
-	/* Topology entities */
 	public HashMap<Integer, Controller> controllers;
 	public HashMap<Integer, SDNSwitch> switches;
 	public HashMap<Integer, Host> hosts;
@@ -23,8 +19,24 @@ public class Network {
 		hosts = new HashMap<Integer, Host>();
 		switches = new HashMap<Integer, SDNSwitch>();
 		links = new HashMap<Integer, Link>();
-		currentTime = 0;
 		eventList = new EventList();
+		currentTime = 0;
+	}
+
+	public Controller getController(int id) {
+		return controllers.get(id);
+	}
+
+	public SDNSwitch getSwitch(int id) {
+		return switches.get(id);
+	}
+
+	public Host getHost(int id) {
+		return hosts.get(id);
+	}
+
+	public Link getLink(int id) {
+		return links.get(id);
 	}
 
 	public float getCurrentTime() {
