@@ -9,7 +9,7 @@
 		<version>2.2.4.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>ca.ucalgary.cpsc.nrg</groupId>
+	<groupId>nrg</groupId>
 	<artifactId>sdn-simulator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>sdn-simulator</name>
