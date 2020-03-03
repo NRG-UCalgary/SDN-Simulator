@@ -10,7 +10,6 @@ import nrg.sdnsimulator.core.entity.network.Timer;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.event.TimeoutEvent;
-import nrg.sdnsimulator.core.system.SimApp;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Mathematics;
 
@@ -115,7 +114,6 @@ public class Senderv2 extends Agent {
 		case Keywords.Segments.Types.FINACK:
 			break;
 		default:
-			SimApp.error("Senderv2", "recvSegment", "Invalid segmentType.");
 			break;
 		}
 		// }

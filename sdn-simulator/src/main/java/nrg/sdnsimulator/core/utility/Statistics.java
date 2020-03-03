@@ -9,7 +9,6 @@ import nrg.sdnsimulator.core.entity.network.Host;
 import nrg.sdnsimulator.core.entity.network.Link;
 import nrg.sdnsimulator.core.entity.network.SDNSwitch;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
-import nrg.sdnsimulator.core.system.SimApp;
 
 public class Statistics {
 
@@ -63,10 +62,6 @@ public class Statistics {
 		for (Flow flow : flows.values()) {
 			float startupDelay = (Mathematics.subtractFloat(flow.getDataSendingStartTime(),
 					flow.getArrivalTime()));
-			if (startupDelay < 0) {
-				SimApp.error("Statistics", "getAvgStartupDelay",
-						"Invalid startupDelay = " + startupDelay + ", flowID = " + flow.getID());
-			}
 			sum = Mathematics.addFloat(sum, startupDelay);
 		}
 		return Mathematics.divideFloat(sum, (float) flows.size());
@@ -128,10 +123,6 @@ public class Statistics {
 	private float calculateFlowThroughput(Flow flow) {
 		float throughput = Mathematics.divideFloat(flow.getTotalTransmissionTime(),
 				Mathematics.subtractFloat(flow.getFINSendingTime(), flow.getArrivalTime()));
-		if (throughput < 0 || throughput > 1) {
-			SimApp.error("Statistics", "calculateFlowThroughput",
-					"Ivalid Throughput for flowID = " + flow.getID() + ", value = " + throughput);
-		}
 		return throughput;
 	}
 

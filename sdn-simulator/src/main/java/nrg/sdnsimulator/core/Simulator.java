@@ -19,7 +19,6 @@ import nrg.sdnsimulator.core.entity.network.link.DefaultLink;
 import nrg.sdnsimulator.core.entity.network.sdnswitch.DefaultSDNSwitch;
 import nrg.sdnsimulator.core.entity.network.sdnswitch.SDNSwitchv1;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
-import nrg.sdnsimulator.core.system.SimApp;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Mathematics;
 import nrg.sdnsimulator.core.utility.Statistics;
@@ -273,9 +272,6 @@ public class Simulator {
 		/* Main Loop */
 		double timeCheck = 0;
 		while (net.getCurrentTime() <= end_time && net.getEventList().size() > 0) {
-			if (net.getCurrentTime() < timeCheck) {
-				SimApp.error("Simulator", "run", "Invalid time progression.");
-			}
 			/* Running the Current Event and Updating the net */
 			net.getEventList().getEvent().execute(net);
 			net.getEventList().removeEvent();
