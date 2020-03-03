@@ -11,7 +11,6 @@ import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.event.TimeoutEvent;
 import nrg.sdnsimulator.core.system.SimApp;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Mathematics;
 
@@ -69,12 +68,6 @@ public class Senderv2 extends Agent {
 			segmentsToSend.add(segment);
 			break;
 		case Keywords.Segments.Types.CTRL:
-			if (validationReport) {
-				Debugger.debugToConsole("********* Flow: " + flow.getID() + ", recvd CTRL at Time: "
-						+ net.getCurrentTime());
-				Debugger.debugToConsole("     sCycle should start at time = "
-						+ Mathematics.addFloat(net.getCurrentTime(), segment.getTimeToNextCycle()));
-			}
 			// Stop all running TimeToNextCycleTimers
 			deactivateSendingCycleTimers();
 			// Create the new TimetToNextCycleTimer
@@ -85,18 +78,16 @@ public class Senderv2 extends Agent {
 				timerOfTimerID.put(timeToNextCycleTimer.getId(), timeToNextCycleTimer);
 				net.getEventList()
 						.addEvent(new TimeoutEvent(
-								Mathematics.addFloat(net.getCurrentTime(), segment.getTimeToNextCycle()),
+								Mathematics.addFloat(net.getCurrentTime(),
+										segment.getTimeToNextCycle()),
 								srcHostID, timeToNextCycleTimer.getId()));
-				nextCCParamsOfTimerID.put(timeToNextCycleTimer.getId(), new CCParams(segment.getsWnd(),
-						segment.getsInterSegmentDelay(), segment.getsInterval(), segment.getsInitialDelay()));
+				nextCCParamsOfTimerID.put(timeToNextCycleTimer.getId(),
+						new CCParams(segment.getsWnd(), segment.getsInterSegmentDelay(),
+								segment.getsInterval(), segment.getsInitialDelay()));
 				timeToNextCycleTimerIDs.add(timeToNextCycleTimer.getId());
 			}
 			break;
 		case Keywords.Segments.Types.SYNACK:
-			if (validationReport) {
-				Debugger.debugToConsole("********* SYNACK of Flow: " + flow.getID()
-						+ ", arrived at Time: " + net.getCurrentTime());
-			}
 			/** ===== Statistical Counters ===== **/
 			flow.getAckSeqNumArrivalTimes().put((float) segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
@@ -125,7 +116,6 @@ public class Senderv2 extends Agent {
 			break;
 		default:
 			SimApp.error("Senderv2", "recvSegment", "Invalid segmentType.");
-			Debugger.stopFlag();
 			break;
 		}
 		// }
@@ -147,11 +137,6 @@ public class Senderv2 extends Agent {
 				nextCCParamsOfTimerID.remove(timerID);
 				if (hasRecvdSYNACK) {
 					startSendingCycle(net);
-				} else {
-					Debugger.error("Senderv2", "timeOut",
-							"Cycle starts before SYNACK arrival. Time = " + net.getCurrentTime()
-									+ ", flowID = " + flow.getID());
-					// Debugger.stopFlag();
 				}
 				break;
 			case Keywords.Entities.Agents.TimerTypes.InitialDelayTimer:
@@ -170,10 +155,6 @@ public class Senderv2 extends Agent {
 	}
 
 	private void startSendingCycle(Network net) {
-		if (validationReport) {
-			Debugger.debugToConsole("********* sCycle of Flow: " + flow.getID()
-					+ ", starts at Time: " + net.getCurrentTime());
-		}
 		if (ccParams.getsInitialDelay() == 0) {
 			startSendingInterval(net);
 		} else if (ccParams.getsInitialDelay() > 0) {
@@ -185,10 +166,6 @@ public class Senderv2 extends Agent {
 					.addEvent(new TimeoutEvent(
 							Mathematics.addFloat(net.getCurrentTime(), ccParams.getsInitialDelay()),
 							srcHostID, initialDelayTimer.getId()));
-		} else {
-			Debugger.error("Senderv2", "startSendingCycle",
-					"Invalid sInitialDelay (= " + ccParams.getsInitialDelay() + ")");
-			Debugger.stopFlag();
 		}
 	}
 
@@ -274,14 +251,8 @@ public class Senderv2 extends Agent {
 			}
 			return segment;
 		} else if (remainingSegments == 0) {
-			Debugger.error("Senderv2", "genDATASegment",
-					"CASE 0: Upper bound for sending window and remaining segments is wrong.");
-			Debugger.stopFlag();
 			return null;
 		} else {
-			Debugger.error("Senderv2", "genDATASegment",
-					"CASE Negative: Upper bound for sending window and remaining segments is wrong.");
-			Debugger.stopFlag();
 			return null;
 		}
 

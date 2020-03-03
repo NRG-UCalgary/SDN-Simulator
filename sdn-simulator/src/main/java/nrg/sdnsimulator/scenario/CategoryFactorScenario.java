@@ -3,7 +3,6 @@ package nrg.sdnsimulator.scenario;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Statistics;
 
 public abstract class CategoryFactorScenario extends Scenario {
@@ -23,7 +22,6 @@ public abstract class CategoryFactorScenario extends Scenario {
 
 	protected void generateOutput() {
 		generateCategoryFactorOutput(result);
-		Debugger.debugOutPut();
 	}
 
 	protected void resetStudyStats() {

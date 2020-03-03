@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Statistics;
 
 public abstract class NumericalFactorScenario extends Scenario {
@@ -24,7 +23,6 @@ public abstract class NumericalFactorScenario extends Scenario {
 
 	protected void generateOutput() {
 		generateNumericalFactorOutput(result);
-		Debugger.debugOutPut();
 	}
 
 	protected void resetStudyStats() {

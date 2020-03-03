@@ -170,9 +170,6 @@ public class Simulator {
 		net.getLinks().put(link.getID(), link);
 		net.getLinks().put(reverseLink.getID(), reverseLink);
 		linkLabels.put(linkCounter, label);
-		// Debugger.debugToConsole(
-		// " LinkLabel: " + label + ", LinkID: " + linkCounter + ", ReverseID: " +
-		// reverseLink.getID());
 		linkCounter++;
 
 		if (isMonitored) {
@@ -318,5 +315,4 @@ public class Simulator {
 		return -1;
 	}
 
-	/************************************************/
 }

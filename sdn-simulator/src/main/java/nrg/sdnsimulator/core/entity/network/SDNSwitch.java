@@ -18,7 +18,6 @@ public abstract class SDNSwitch extends Node {
 		super(ID);
 		isMonitored = true;
 		flowTable = new HashMap<Integer, Integer>();
-		// New design
 		accessLinksIDs = new HashMap<Integer, Integer>();
 		networkLinksIDs = new HashMap<Integer, Integer>();
 	}

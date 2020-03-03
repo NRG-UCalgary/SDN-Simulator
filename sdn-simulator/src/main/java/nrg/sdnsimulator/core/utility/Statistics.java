@@ -20,9 +20,6 @@ public class Statistics {
 	private HashMap<Integer, SDNSwitch> switches;
 
 	public Statistics(Network net, int btlLinkID) {
-		if (btlLinkID != net.getControllers().get(10000).getBottleneckLinkID()) {
-			Debugger.debug("Controller worked with wrong bottleneck.");
-		}
 		links = new HashMap<Integer, Link>();
 		switches = new HashMap<Integer, SDNSwitch>();
 		flows = new HashMap<Integer, Flow>();
@@ -99,13 +96,6 @@ public class Statistics {
 		if (totalUpTime > 0) {
 			utilization = Mathematics.divideFloat(bottleneckLink.getTotalTransmissionTime(),
 					totalUpTime);
-		} else {
-			Debugger.error("Statistics", "getBottleneckUtilization",
-					"Invalid link totalUpTime = " + totalUpTime);
-		}
-		if (utilization < 0 || utilization > 1) {
-			Debugger.error("Statistics", "getBottleneckUtilization",
-					"Invalid link utilization = " + utilization);
 		}
 		return utilization;
 	}
@@ -127,9 +117,6 @@ public class Statistics {
 		}
 		if (denuminator > 0) {
 			avgQueuelength = Mathematics.divideFloat(numinator, denuminator);
-		} else {
-			Debugger.error("Statistics", "getBtlAvgQueueLength",
-					"Invalid Q total time = " + denuminator);
 		}
 		return avgQueuelength;
 	}
