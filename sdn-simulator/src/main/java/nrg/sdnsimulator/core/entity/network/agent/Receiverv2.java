@@ -4,7 +4,6 @@ import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Agent;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
-import nrg.sdnsimulator.core.system.SimApp;
 import nrg.sdnsimulator.core.utility.Keywords;
 
 public class Receiverv2 extends Agent {
@@ -40,10 +39,8 @@ public class Receiverv2 extends Agent {
 			 */
 			break;
 		case Keywords.Segments.Types.CTRL:
-			SimApp.error("Reciverv2", "recvSegment", "Receiver got CTRL segment.");
 			break;
 		default:
-			SimApp.error("Reciverv2", "recvSegment", "Invalid segment type.");
 			break;
 		}
 	}

@@ -4,8 +4,6 @@ import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Agent;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
-import nrg.sdnsimulator.core.system.SimApp;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Keywords;
 
 public class ESDTCPReceiverv1 extends Agent {
@@ -43,10 +41,8 @@ public class ESDTCPReceiverv1 extends Agent {
 			/** ================================ **/
 			break;
 		case Keywords.Segments.Types.CTRL:
-			SimApp.error("SDTCPREceiver", "recvSegment", "Receiver got CTRL segment.");
 			break;
 		default:
-			Debugger.debug("SDTCPReceiverv1.recv().case\"default\"::We should not get here.");
 			break;
 		}
 	}

@@ -9,7 +9,6 @@ import nrg.sdnsimulator.core.entity.network.Host;
 import nrg.sdnsimulator.core.entity.network.Link;
 import nrg.sdnsimulator.core.entity.network.SDNSwitch;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
-import nrg.sdnsimulator.core.system.SimApp;
 
 public class Statistics {
 
@@ -20,9 +19,6 @@ public class Statistics {
 	private HashMap<Integer, SDNSwitch> switches;
 
 	public Statistics(Network net, int btlLinkID) {
-		if (btlLinkID != net.getControllers().get(10000).getBottleneckLinkID()) {
-			Debugger.debug("Controller worked with wrong bottleneck.");
-		}
 		links = new HashMap<Integer, Link>();
 		switches = new HashMap<Integer, SDNSwitch>();
 		flows = new HashMap<Integer, Flow>();
@@ -66,10 +62,6 @@ public class Statistics {
 		for (Flow flow : flows.values()) {
 			float startupDelay = (Mathematics.subtractFloat(flow.getDataSendingStartTime(),
 					flow.getArrivalTime()));
-			if (startupDelay < 0) {
-				SimApp.error("Statistics", "getAvgStartupDelay",
-						"Invalid startupDelay = " + startupDelay + ", flowID = " + flow.getID());
-			}
 			sum = Mathematics.addFloat(sum, startupDelay);
 		}
 		return Mathematics.divideFloat(sum, (float) flows.size());
@@ -99,13 +91,6 @@ public class Statistics {
 		if (totalUpTime > 0) {
 			utilization = Mathematics.divideFloat(bottleneckLink.getTotalTransmissionTime(),
 					totalUpTime);
-		} else {
-			Debugger.error("Statistics", "getBottleneckUtilization",
-					"Invalid link totalUpTime = " + totalUpTime);
-		}
-		if (utilization < 0 || utilization > 1) {
-			Debugger.error("Statistics", "getBottleneckUtilization",
-					"Invalid link utilization = " + utilization);
 		}
 		return utilization;
 	}
@@ -127,9 +112,6 @@ public class Statistics {
 		}
 		if (denuminator > 0) {
 			avgQueuelength = Mathematics.divideFloat(numinator, denuminator);
-		} else {
-			Debugger.error("Statistics", "getBtlAvgQueueLength",
-					"Invalid Q total time = " + denuminator);
 		}
 		return avgQueuelength;
 	}
@@ -141,10 +123,6 @@ public class Statistics {
 	private float calculateFlowThroughput(Flow flow) {
 		float throughput = Mathematics.divideFloat(flow.getTotalTransmissionTime(),
 				Mathematics.subtractFloat(flow.getFINSendingTime(), flow.getArrivalTime()));
-		if (throughput < 0 || throughput > 1) {
-			SimApp.error("Statistics", "calculateFlowThroughput",
-					"Ivalid Throughput for flowID = " + flow.getID() + ", value = " + throughput);
-		}
 		return throughput;
 	}
 

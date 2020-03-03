@@ -2,7 +2,6 @@ package nrg.sdnsimulator.core.entity.network;
 
 import nrg.sdnsimulator.core.entity.Entity;
 import nrg.sdnsimulator.core.entity.network.buffer.BufferToken;
-import nrg.sdnsimulator.core.system.SimApp;
 
 public abstract class Buffer extends Entity {
 
@@ -33,7 +32,6 @@ public abstract class Buffer extends Entity {
 				mostRecentSegmentDepartureTime = 0;
 			}
 		} else if (occupancy < 0) {
-			SimApp.error("Buffer", "deQueue", "Invalid buffer occupancy(" + occupancy + ").");
 		}
 	}
 
@@ -45,7 +43,6 @@ public abstract class Buffer extends Entity {
 		} else if (occupancy == capacity) {
 			return true;
 		}
-		SimApp.error("Buffer", "isFull", "Invalid buffer occupancy(" + occupancy + ").");
 		return false;
 	}
 

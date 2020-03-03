@@ -5,7 +5,6 @@ import java.util.HashMap;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Mathematics;
 
 public abstract class Host extends Node {
@@ -38,8 +37,6 @@ public abstract class Host extends Node {
 		}
 		transportAgent.segmentsToSend.clear();
 		if (transportAgent.segmentsToSend.size() > 0) {
-			Debugger.error("Host", "sendSegments",
-					"The sendingBuffer of host is not empty after sending.");
 		}
 	}
 

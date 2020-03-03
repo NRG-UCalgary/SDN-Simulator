@@ -1,7 +1,6 @@
 package nrg.sdnsimulator.core.entity.traffic;
 
 import nrg.sdnsimulator.core.entity.network.CtrlMessage;
-import nrg.sdnsimulator.core.system.SimApp;
 import nrg.sdnsimulator.core.utility.Keywords;
 
 public class Packet {
@@ -21,7 +20,6 @@ public class Packet {
 			type = Keywords.Packets.Types.SDNControl;
 			this.controlMessage = controlMessage;
 		} else {
-			SimApp.print("Error in packet type");
 		}
 	}
 

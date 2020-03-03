@@ -8,7 +8,6 @@ import nrg.sdnsimulator.core.entity.network.CtrlMessage;
 import nrg.sdnsimulator.core.entity.network.buffer.BufferToken;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Keywords;
 
 public class Controllerv1 extends Controller {
@@ -181,8 +180,6 @@ public class Controllerv1 extends Controller {
 				previousSWnd = sWnd;
 			}
 		} else if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) == 0) {
-		} else {
-			Debugger.debugToConsole("WE should not get here");
 		}
 	}
 
