@@ -4,7 +4,6 @@ import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.CtrlMessage;
 import nrg.sdnsimulator.core.entity.network.SDNSwitch;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Keywords;
 
 public class DefaultSDNSwitch extends SDNSwitch {
@@ -26,7 +25,6 @@ public class DefaultSDNSwitch extends SDNSwitch {
 		case Keywords.SDNMessages.Types.FlowRemoval:
 			break;
 		default:
-			Debugger.debugToConsole("SNDSwitchv1.recvCtrlMessage()::Invalid message type.");
 			break;
 		}
 	}

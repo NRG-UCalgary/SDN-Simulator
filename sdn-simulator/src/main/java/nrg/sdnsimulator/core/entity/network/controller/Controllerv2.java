@@ -6,8 +6,6 @@ import nrg.sdnsimulator.core.entity.network.Controller;
 import nrg.sdnsimulator.core.entity.network.Link;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
-import nrg.sdnsimulator.core.system.SimApp;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Mathematics;
 
@@ -25,7 +23,6 @@ public class Controllerv2 extends Controller {
 		this.alpha = alpha;
 		this.beta = beta;
 		this.gamma = gamma;
-		Debugger.debugToConsole("Alpha = " + alpha + ", beta = " + beta + ", gamma = " + gamma);
 	}
 
 	@Override
@@ -35,19 +32,11 @@ public class Controllerv2 extends Controller {
 		database.setAccessSwitchID(switchID);
 		switch (recvdSegment.getType()) {
 		case Keywords.Segments.Types.SYN:
-			if (validationReport) {
-				Debugger.debugToConsole("+++++++++++++++++++++++++++++++++++++++++++++++");
-				Debugger.debugToConsole("SYN of flowID = " + recvdSegment.getFlowID());
-			}
 			handleRouting(net, switchID, getAccessSwitchID(net, recvdSegment.getDstHostID()));
 			database.arrivalOfSYNForFlowID(net, recvdSegment, switchID);
 			handleCongestionControl(net, recvdSegment);
 			break;
 		case Keywords.Segments.Types.UncontrolledFIN:
-			if (validationReport) {
-				Debugger.debugToConsole("+++++++++++++++++++++++++++++++++++++++++++++++");
-				Debugger.debugToConsole("FIN of flowID = " + recvdSegment.getFlowID());
-			}
 			// Update the database
 			database.arrivalOfFINForFlowID(switchID, recvdSegment.getFlowID(),
 					recvdSegment.getSrcHostID());
@@ -64,20 +53,9 @@ public class Controllerv2 extends Controller {
 
 	private void handleCongestionControl(Network net, Segment recvdSegment) {
 		sCycleIndex++;
-		if (validationReport) {
-			Debugger.debugToConsole("----------------------------------------");
-			Debugger.debugToConsole("---------- sCycle_" + sCycleIndex + " ---------------------");
-			Debugger.debugToConsole(
-					"---------- Time: " + net.getCurrentTime() + " -------------------");
-			Debugger.debugToConsole("----------------------------------------");
-		}
 		Link controlLink = net.getLinks().get(controlLinksIDs.get(database.getAccessSwitchID()));
 		float sCycleStartDelay = calculateSCycleStartDelay(net, controlLink);
 		float sInterval = calculateSInterval();
-		if (validationReport) {
-			Debugger.debugToConsole("sCycleStartDelay = " + sCycleStartDelay);
-			Debugger.debugToConsole("sInterval = " + sInterval);
-		}
 		int interFlowIndex = 0;
 		float accessLinkDelay_0 = 0;
 		for (int hostID : database.getFlowIDOfHostIDOfAccessSwitchID()
@@ -93,55 +71,22 @@ public class Controllerv2 extends Controller {
 					Keywords.Segments.Types.CTRL,
 					Keywords.Segments.SpecialSequenceNumbers.CTRLSeqNum,
 					Keywords.Segments.Sizes.CTRLSegSize, this.ID, hostID);
-			if (validationReport) {
-				Debugger.debugToConsole("  +++++++++++++++++++");
-				Debugger.debugToConsole("  FlowID = " + flowID);
-			}
 			// -------------------------------------
 			// Calculate sWnd
-			segment.setsWnd(calculateFlowSWnd(sInterval,
-					net.getLinks().get(database.getBtlLinkIDOfFlowID().get(flowID)).getBandwidth()));
-			if (validationReport) {
-				Debugger.debugToConsole("  sWnd = " + segment.getsWnd());
-			}
-			// Debugger.debugToConsole(" sWnd = " + segment.sWnd);
-			// Debugger.stopFlag();
-			if (segment.getsWnd() < 1) {
-				Debugger.stopFlag();
-			}
+			segment.setsWnd(calculateFlowSWnd(sInterval, net.getLinks()
+					.get(database.getBtlLinkIDOfFlowID().get(flowID)).getBandwidth()));
 
-			if (segment.getsWnd() == 1) {
-				// Debugger.debugToConsole(" sWnd = " + segment.sWnd);
-				// Debugger.stopFlag();
-			}
 			// -------------------------------------
 			// Calculate sInterSegmentDelay = transmissionDelay for flowBtlBw
-			segment.setsInterSegmentDelay(net.getLinks()
-					.get(database.getBtlLinkIDOfFlowID().get(flowID))
-					.getTransmissionDelay(Keywords.Segments.Sizes.DataSegSize));
-			if (validationReport) {
-				Debugger.debugToConsole("  sInterSegmentDelay = " + segment.getsInterSegmentDelay());
-			}
-			if (segment.getsInterSegmentDelay() < 0) {
-				SimApp.error("Controllerv2", "handleCongestionControl",
-						"Invalid sInterSegmentDelay = " + segment.getsInterSegmentDelay());
-				Debugger.stopFlag();
-			}
+			segment.setsInterSegmentDelay(
+					net.getLinks().get(database.getBtlLinkIDOfFlowID().get(flowID))
+							.getTransmissionDelay(Keywords.Segments.Sizes.DataSegSize));
 			// -------------------------------------
 			// Calculate delayToNextCycle_i
 			float CTRLDelay_i = calculateCTRLDelayOfFlowID(net, controlLink, flowID,
 					interFlowIndex);
 			float delayToNextCycle_i = Mathematics.subtractFloat(sCycleStartDelay, CTRLDelay_i);
 			segment.setTimeToNextCycle(delayToNextCycle_i);
-			if (validationReport) {
-				Debugger.debugToConsole("  CTRLDelay_i = " + CTRLDelay_i);
-				Debugger.debugToConsole("  delayToNextCycle_i = " + delayToNextCycle_i);
-			}
-			if (delayToNextCycle_i <= 0) {
-				SimApp.error("Controllerv2", "handleCongestionControl",
-						"Invalid delayToNextCycle = " + delayToNextCycle_i);
-				Debugger.stopFlag();
-			}
 			// -------------------------------------
 			// Calculate sInitialDelay
 			float numi = Mathematics.multiplyFloat(interFlowIndex, sInterval);
@@ -152,21 +97,8 @@ public class Controllerv2 extends Controller {
 						Mathematics.subtractFloat(accessLinkDelay_0, accessLinkDelay_i));
 			}
 			segment.setsInitialDelay(initialDelay_i);
-			if (validationReport) {
-				Debugger.debugToConsole("  initialDelay_i = " + initialDelay_i);
-			}
-			if (initialDelay_i < 0) {
-				SimApp.error("Controllerv2", "handleCongestionControl",
-						"Invalid initialDelay = " + initialDelay_i);
-				Debugger.stopFlag();
-			}
 			// -------------------------------------
 			segment.setsInterval(sInterval);
-			if (sInterval <= 0) {
-				SimApp.error("Controllerv2", "handleCongestionControl",
-						"Invalid sInterval = " + sInterval);
-				Debugger.stopFlag();
-			}
 			interFlowIndex++;
 			sendPacketToSwitch(net, database.getAccessSwitchID(), new Packet(segment, null));
 
@@ -189,8 +121,6 @@ public class Controllerv2 extends Controller {
 					controlLink.getPropagationDelay());
 			break;
 		default:
-			SimApp.error("Controllerv2", "handleCongestionControl", "Invalid recvdSegment type.");
-			Debugger.stopFlag();
 			break;
 		}
 		sCycleStartDelay = Mathematics.addFloat(sCycleStartDelay,
@@ -198,21 +128,12 @@ public class Controllerv2 extends Controller {
 						controlLink.getTransmissionDelay(Keywords.Segments.Sizes.CTRLSegSize),
 						controlLink.getPropagationDelay()));
 		float sCycleStartTime = Mathematics.addFloat(net.getCurrentTime(), sCycleStartDelay);
-		if (validationReport) {
-			Debugger.debugToConsole("      sCycleStartDelay = " + sCycleStartDelay);
-			Debugger.debugToConsole("      sCycleStartTime = " + sCycleStartTime);
-			Debugger.debugToConsole("      mostRecentCycleStartTime = " + mostRecentCycleStartTime);
-		}
 		if (mostRecentCycleStartTime > sCycleStartTime) {
 			sCycleStartTime = mostRecentCycleStartTime;
 			sCycleStartDelay = Mathematics.subtractFloat(mostRecentCycleStartTime,
 					net.getCurrentTime());
 		} else {
 			mostRecentCycleStartTime = sCycleStartTime;
-		}
-		if (validationReport) {
-			Debugger.debugToConsole("      AFTER  sCycleStartTime = " + sCycleStartTime);
-			Debugger.debugToConsole("      AFTER  sCycleStartDelay = " + sCycleStartDelay);
 		}
 		return sCycleStartDelay;
 	}
@@ -251,9 +172,6 @@ public class Controllerv2 extends Controller {
 				maxCTRLDelay = ctrlDelay;
 			}
 			flowIndex++;
-		}
-		if (validationReport) {
-			Debugger.debugToConsole("maxCTRLDelay = " + maxCTRLDelay);
 		}
 		return maxCTRLDelay;
 	}
@@ -308,9 +226,6 @@ public class Controllerv2 extends Controller {
 		float SYNACKDelay = Mathematics.addFloat(synRtt_i, CLTotalDelay);
 		SYNACKDelay = Mathematics.multiplyFloat(beta, SYNACKDelay);
 		SYNACKDelay = Mathematics.subtractFloat(SYNACKDelay, accessLinkTotalDelaySYNSize);
-		if (validationReport) {
-			Debugger.debugToConsole("SYNACLDelay = " + SYNACKDelay);
-		}
 		return SYNACKDelay;
 	}
 

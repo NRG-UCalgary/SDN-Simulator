@@ -3,7 +3,6 @@ package nrg.sdnsimulator.topology;
 import java.util.TreeMap;
 
 import nrg.sdnsimulator.core.Simulator;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Statistics;
 import nrg.sdnsimulator.trafficgenerator.Traffic;
@@ -23,14 +22,7 @@ public class Dumbbell2 extends Testbed {
 
 		TreeMap<Integer, Float> accessLinkPropagationDelayPerFlowID = prepareAccessLinksPropagationDelay(
 				AccessLinkPropagationDelayDistribution, NumberOfHostsPerAccessSwitch);
-		Debugger.debugToConsole(
-				"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		Debugger.debugToConsole(
-				"^^^^^^^^^^^^^^^^^^^^^ New Simulation ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		Debugger.debugToConsole(
-				"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		Simulator sim = new Simulator();
-		Debugger.debugToConsole("Creating Topology...");
 		// Creating the controller
 		sim.createController(controllerLabel, Keywords.Entities.Controllers.Types.Controller_2,
 				alpha, beta, gamma);
@@ -113,24 +105,18 @@ public class Dumbbell2 extends Testbed {
 					NetworkLinkPropagationDelay, NetworkLinkBandwidth,
 					Keywords.Entities.Buffers.Size.Unlimited, false);
 		}
-		Debugger.debugToConsole("-------------------------------------------------------");
-		Debugger.debugToConsole("Creating Flows...");
 		// Creating the flows
 		for (int flowIndex : traffic.getArrivalTimePerFlowID().keySet()) {
-			Debugger.debugToConsole("	Flow_" + flowIndex + " with size: "
-					+ traffic.getFlowSizePerFlowID().get(flowIndex) + " arrives at: "
-					+ traffic.getArrivalTimePerFlowID().get(flowIndex));
 			String flowLabel = Keywords.Entities.Labels.Prefixes.FlowPrefix + flowIndex;
 			String senderHostLabel = Keywords.Entities.Labels.Prefixes.SenderHostPrefix + flowIndex;
 			String receiverHostLabel = Keywords.Entities.Labels.Prefixes.ReceiverHostPrefix
 					+ flowIndex;
 			sim.generateFlow(flowLabel, senderHostLabel, receiverHostLabel,
 					traffic.getFlowSizePerFlowID().get(flowIndex),
-					traffic.getArrivalTimePerFlowID().get(flowIndex), Keywords.Entities.Agents.Types.v2);
+					traffic.getArrivalTimePerFlowID().get(flowIndex),
+					Keywords.Entities.Agents.Types.v2);
 		}
 		// Running the simulation
-		Debugger.debugToConsole("-------------------------------------------------------");
-		Debugger.debugToConsole("Running the simulation...");
 		return sim.run(0, SimEndTime);
 	}
 

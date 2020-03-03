@@ -5,7 +5,6 @@ import nrg.sdnsimulator.core.entity.network.Link;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.event.ArrivalToNode;
 import nrg.sdnsimulator.core.event.DepartureFromNode;
-import nrg.sdnsimulator.core.utility.Debugger;
 import nrg.sdnsimulator.core.utility.Mathematics;
 
 public class DefaultLink extends Link {
@@ -19,7 +18,8 @@ public class DefaultLink extends Link {
 	public void bufferPacket(Network net, Packet packet) {
 
 		if (packet.getSegment() != null) {
-			updateSegementArrivalToLinkCounters(net.getCurrentTime(), packet.getSegment().getFlowID());
+			updateSegementArrivalToLinkCounters(net.getCurrentTime(),
+					packet.getSegment().getFlowID());
 		}
 
 		float bufferTime = buffer.enQueue(net.getCurrentTime(),
@@ -35,8 +35,9 @@ public class DefaultLink extends Link {
 				if (packet.getSegment() != null) {
 					net.getHosts().get(packet.getSegment().getSrcHostID())
 							.updateFlowTotalBufferTime(bufferTime);
-					net.getHosts().get(packet.getSegment().getSrcHostID()).updateDataSegmentsDepartures(
-							packet.getSegment().getSeqNum(), net.getCurrentTime());
+					net.getHosts().get(packet.getSegment().getSrcHostID())
+							.updateDataSegmentsDepartures(packet.getSegment().getSeqNum(),
+									net.getCurrentTime());
 					updateUtilizationCounters(net.getCurrentTime(), packet.getSegment().getFlowID(),
 							transmissionDelay);
 					updateQueueLenghtCounter(net.getCurrentTime(), buffer.getOccupancy());
@@ -45,7 +46,6 @@ public class DefaultLink extends Link {
 			}
 			/** ================================ **/
 		} else {
-			Debugger.debugToConsole("Packet drop happens");
 			// Packet Drop happens here
 		}
 	}
