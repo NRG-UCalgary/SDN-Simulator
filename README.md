@@ -1,7 +1,8 @@
 # sdn-simulator
 
-This is a discrete-event simulator for Software-Defined Networks.
-
+This is a discrete-event simulation tool for Software-Defined Networks.
+The simulator models transport and network layers of SDN.
+The tool provides the user the option of generating the result of the study in form of tables and graphs in spreadsheet file.
 ## Technologies and Frameworks
 - Java
 - Maven
