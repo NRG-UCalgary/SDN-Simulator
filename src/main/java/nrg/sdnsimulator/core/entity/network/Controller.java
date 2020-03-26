@@ -2,6 +2,8 @@ package nrg.sdnsimulator.core.entity.network;
 
 import java.util.HashMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.Simulator;
 import nrg.sdnsimulator.core.entity.network.controller.ControlDatabase;
@@ -11,6 +13,8 @@ import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public abstract class Controller extends Node {
 
 	protected HashMap<Integer, Integer> controlLinksIDs; // <NodeID(Switch), LinkID>
@@ -55,8 +59,7 @@ public abstract class Controller extends Node {
 	/* -------------------------------------------------------------------------- */
 
 	protected void handleRouting(Network net, int srcAccessSwitchID, int dstAccessSwitchID) {
-		HashMap<Integer, Integer> dataStreamPath = router.run(net, srcAccessSwitchID,
-				dstAccessSwitchID);
+		HashMap<Integer, Integer> dataStreamPath = router.run(net, srcAccessSwitchID, dstAccessSwitchID);
 		HashMap<Integer, CtrlMessage> messagesToSwitchID = new HashMap<Integer, CtrlMessage>();
 
 		// Preparing flow setup messages
@@ -64,15 +67,13 @@ public abstract class Controller extends Node {
 			// Data stream entry
 			int nextSwitchID = dataStreamPath.get(switchID);
 			if (!messagesToSwitchID.containsKey(switchID)) {
-				messagesToSwitchID.put(switchID,
-						new CtrlMessage(Keywords.SDNMessages.Types.FlowSetUp));
+				messagesToSwitchID.put(switchID, new CtrlMessage(Keywords.SDNMessages.Types.FlowSetUp));
 			}
 			messagesToSwitchID.get(switchID).addFlowSetUpEntry(recvdSegment.getFlowID(),
 					net.getSwitches().get(switchID).getNetworkLinksIDs().get(nextSwitchID));
 			// ACK stream entry
 			if (!messagesToSwitchID.containsKey(nextSwitchID)) {
-				messagesToSwitchID.put(nextSwitchID,
-						new CtrlMessage(Keywords.SDNMessages.Types.FlowSetUp));
+				messagesToSwitchID.put(nextSwitchID, new CtrlMessage(Keywords.SDNMessages.Types.FlowSetUp));
 			}
 			messagesToSwitchID.get(nextSwitchID).addFlowSetUpEntry(
 					Simulator.reverseFlowStreamID(recvdSegment.getFlowID()),
@@ -89,17 +90,16 @@ public abstract class Controller extends Node {
 		database.getPathOfFlowID().put(recvdSegment.getFlowID(), dataStreamPath);
 
 		// FIXME Update sharedEgressLink for the single access switch
-		database.setSharedEgressLinkBw(
-				net.getLinks().get(net.getSwitches().get(srcAccessSwitchID).networkLinksIDs
-						.get(dataStreamPath.get(srcAccessSwitchID))).getBandwidth());
+		database.setSharedEgressLinkBw(net.getLinks().get(
+				net.getSwitches().get(srcAccessSwitchID).networkLinksIDs.get(dataStreamPath.get(srcAccessSwitchID)))
+				.getBandwidth());
 		// Debugger.debugToConsole("=============================================================");
 	}
 
 	/* -------------------------------------------------------------------------- */
 	/* ---------- Implemented methods ------------------------------------------- */
 	/* -------------------------------------------------------------------------- */
-	protected void sendControlMessageToAccessSwitches(Network net,
-			HashMap<Integer, CtrlMessage> messages) {
+	protected void sendControlMessageToAccessSwitches(Network net, HashMap<Integer, CtrlMessage> messages) {
 		for (int switchID : database.getAccessSwitchIDsSet()) {
 			sendPacketToSwitch(net, switchID, new Packet(null, messages.get(switchID)));
 		}
@@ -125,70 +125,6 @@ public abstract class Controller extends Node {
 
 	public void setBottleneckLinkID(int id) {
 		database.bottleneckLinkID = id;
-	}
-
-	public HashMap<Integer, Integer> getControlLinksIDs() {
-		return controlLinksIDs;
-	}
-
-	public void setControlLinksIDs(HashMap<Integer, Integer> controlLinksIDs) {
-		this.controlLinksIDs = controlLinksIDs;
-	}
-
-	public Segment getRecvdSegment() {
-		return recvdSegment;
-	}
-
-	public void setRecvdSegment(Segment recvdSegment) {
-		this.recvdSegment = recvdSegment;
-	}
-
-	public Network getCurrentNetwork() {
-		return currentNetwork;
-	}
-
-	public void setCurrentNetwork(Network currentNetwork) {
-		this.currentNetwork = currentNetwork;
-	}
-
-	public float getNumberOfAdmittedFlows() {
-		return numberOfAdmittedFlows;
-	}
-
-	public void setNumberOfAdmittedFlows(float numberOfAdmittedFlows) {
-		this.numberOfAdmittedFlows = numberOfAdmittedFlows;
-	}
-
-	public float getNumberOfDistinctSYNs() {
-		return numberOfDistinctSYNs;
-	}
-
-	public void setNumberOfDistinctSYNs(float numberOfDistinctSYNs) {
-		this.numberOfDistinctSYNs = numberOfDistinctSYNs;
-	}
-
-	public float getNumberOfRejectedFlows() {
-		return numberOfRejectedFlows;
-	}
-
-	public void setNumberOfRejectedFlows(float numberOfRejectedFlows) {
-		this.numberOfRejectedFlows = numberOfRejectedFlows;
-	}
-
-	public Router getRouter() {
-		return router;
-	}
-
-	public void setRouter(Router router) {
-		this.router = router;
-	}
-
-	public ControlDatabase getDatabase() {
-		return database;
-	}
-
-	public void setDatabase(ControlDatabase database) {
-		this.database = database;
 	}
 
 }

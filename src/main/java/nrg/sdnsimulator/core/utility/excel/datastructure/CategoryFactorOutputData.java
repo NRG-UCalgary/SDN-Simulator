@@ -2,9 +2,13 @@ package nrg.sdnsimulator.core.utility.excel.datastructure;
 
 import java.util.LinkedHashMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Statistics;
 
+@Getter
+@Setter
 public class CategoryFactorOutputData {
 	private LinkedHashMap<String, LinkedHashMap<String, Float>> avgCompletionTimeData;
 	private LinkedHashMap<String, LinkedHashMap<String, Float>> avgFlowThroughputData;
@@ -33,8 +37,7 @@ public class CategoryFactorOutputData {
 		for (String seriesName : result.keySet()) {
 			initializedSeriesForAllMetrics(seriesName);
 			for (String mainFactorValue : result.get(seriesName).keySet()) {
-				insertValuesForAllMetrics(seriesName, mainFactorValue,
-						result.get(seriesName).get(mainFactorValue));
+				insertValuesForAllMetrics(seriesName, mainFactorValue, result.get(seriesName).get(mainFactorValue));
 			}
 		}
 		prepareOutputSheets();
@@ -45,8 +48,7 @@ public class CategoryFactorOutputData {
 		String sheetName = "AvgCompletionTime";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgFlowCompletionTime;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption,
-				yAxisCaption);
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgCompletionTimeData.keySet()) {
 			table.addSeriesToTable(seriesName, avgCompletionTimeData.get(seriesName));
 		}
@@ -57,8 +59,7 @@ public class CategoryFactorOutputData {
 		String sheetName = "AvgFlowThroughput";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgFlowThroughput;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption,
-				yAxisCaption);
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgFlowThroughputData.keySet()) {
 			table.addSeriesToTable(seriesName, avgFlowThroughputData.get(seriesName));
 		}
@@ -69,8 +70,7 @@ public class CategoryFactorOutputData {
 		String sheetName = "AvgStartupDelay";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgFlowStartupDelay;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption,
-				yAxisCaption);
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgStartupDelayData.keySet()) {
 			table.addSeriesToTable(seriesName, avgStartupDelayData.get(seriesName));
 		}
@@ -81,8 +81,7 @@ public class CategoryFactorOutputData {
 		String sheetName = "FairnessIndex";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.FairnessIndex;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption,
-				yAxisCaption);
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : fairnessIndexData.keySet()) {
 			table.addSeriesToTable(seriesName, fairnessIndexData.get(seriesName));
 		}
@@ -93,8 +92,7 @@ public class CategoryFactorOutputData {
 		String sheetName = "BtlUtil";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.BtlUtilization;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption,
-				yAxisCaption);
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlUtilizationData.keySet()) {
 			table.addSeriesToTable(seriesName, btlUtilizationData.get(seriesName));
 		}
@@ -105,8 +103,7 @@ public class CategoryFactorOutputData {
 		String sheetName = "BtlMaxQueueLengthData";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.MaxBtlQueueLength;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption,
-				yAxisCaption);
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlMaxQueueLengthData.keySet()) {
 			table.addSeriesToTable(seriesName, btlMaxQueueLengthData.get(seriesName));
 		}
@@ -117,8 +114,7 @@ public class CategoryFactorOutputData {
 		String sheetName = "BtlAvgQueueLengthData";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgBtlQueueLength;
-		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption,
-				yAxisCaption);
+		CategoryFactorBarTableData table = new CategoryFactorBarTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlAvgQueueLengthData.keySet()) {
 			table.addSeriesToTable(seriesName, btlAvgQueueLengthData.get(seriesName));
 		}
@@ -158,85 +154,6 @@ public class CategoryFactorOutputData {
 		addFairnessIndexData();
 		addBtlMaxQueueLengthData();
 		addBtlAvgQueueLengthData();
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, Float>> getAvgCompletionTimeData() {
-		return avgCompletionTimeData;
-	}
-
-	public void setAvgCompletionTimeData(
-			LinkedHashMap<String, LinkedHashMap<String, Float>> avgCompletionTimeData) {
-		this.avgCompletionTimeData = avgCompletionTimeData;
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, Float>> getAvgFlowThroughputData() {
-		return avgFlowThroughputData;
-	}
-
-	public void setAvgFlowThroughputData(
-			LinkedHashMap<String, LinkedHashMap<String, Float>> avgFlowThroughputData) {
-		this.avgFlowThroughputData = avgFlowThroughputData;
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, Float>> getAvgStartupDelayData() {
-		return avgStartupDelayData;
-	}
-
-	public void setAvgStartupDelayData(
-			LinkedHashMap<String, LinkedHashMap<String, Float>> avgStartupDelayData) {
-		this.avgStartupDelayData = avgStartupDelayData;
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, Float>> getFairnessIndexData() {
-		return fairnessIndexData;
-	}
-
-	public void setFairnessIndexData(
-			LinkedHashMap<String, LinkedHashMap<String, Float>> fairnessIndexData) {
-		this.fairnessIndexData = fairnessIndexData;
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, Float>> getBtlUtilizationData() {
-		return btlUtilizationData;
-	}
-
-	public void setBtlUtilizationData(
-			LinkedHashMap<String, LinkedHashMap<String, Float>> btlUtilizationData) {
-		this.btlUtilizationData = btlUtilizationData;
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, Float>> getBtlMaxQueueLengthData() {
-		return btlMaxQueueLengthData;
-	}
-
-	public void setBtlMaxQueueLengthData(
-			LinkedHashMap<String, LinkedHashMap<String, Float>> btlMaxQueueLengthData) {
-		this.btlMaxQueueLengthData = btlMaxQueueLengthData;
-	}
-
-	public LinkedHashMap<String, LinkedHashMap<String, Float>> getBtlAvgQueueLengthData() {
-		return btlAvgQueueLengthData;
-	}
-
-	public void setBtlAvgQueueLengthData(
-			LinkedHashMap<String, LinkedHashMap<String, Float>> btlAvgQueueLengthData) {
-		this.btlAvgQueueLengthData = btlAvgQueueLengthData;
-	}
-
-	public String getMainFactorName() {
-		return mainFactorName;
-	}
-
-	public void setMainFactorName(String mainFactorName) {
-		this.mainFactorName = mainFactorName;
-	}
-
-	public LinkedHashMap<String, CategoryFactorBarTableData> getOutputSheets() {
-		return outputSheets;
-	}
-
-	public void setOutputSheets(LinkedHashMap<String, CategoryFactorBarTableData> outputSheets) {
-		this.outputSheets = outputSheets;
 	}
 
 }

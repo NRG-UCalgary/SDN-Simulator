@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.utility.Statistics;
 
+@Getter
+@Setter
 public abstract class NumericalFactorScenario extends Scenario {
 
 	protected LinkedHashMap<String, TreeMap<Float, Statistics>> result;

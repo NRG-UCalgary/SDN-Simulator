@@ -1,5 +1,10 @@
 package nrg.sdnsimulator.core.entity.network.agent;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class CCParams {
 	private int sWnd;
 	private float sInterSegmentDelay;
@@ -17,38 +22,6 @@ public class CCParams {
 		this.sWnd = sWnd;
 		this.sInterSegmentDelay = sInterSegmentDelay;
 		this.sInterval = sInterval;
-		this.sInitialDelay = sInitialDelay;
-	}
-
-	public int getsWnd() {
-		return sWnd;
-	}
-
-	public void setsWnd(int sWnd) {
-		this.sWnd = sWnd;
-	}
-
-	public float getsInterSegmentDelay() {
-		return sInterSegmentDelay;
-	}
-
-	public void setsInterSegmentDelay(float sInterSegmentDelay) {
-		this.sInterSegmentDelay = sInterSegmentDelay;
-	}
-
-	public float getsInterval() {
-		return sInterval;
-	}
-
-	public void setsInterval(float sInterval) {
-		this.sInterval = sInterval;
-	}
-
-	public float getsInitialDelay() {
-		return sInitialDelay;
-	}
-
-	public void setsInitialDelay(float sInitialDelay) {
 		this.sInitialDelay = sInitialDelay;
 	}
 

@@ -5,6 +5,11 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.math3.util.Pair;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class CategoryFactorBarTableData {
 
 	private int ColumnHeaderRowIndex = 1;
@@ -52,58 +57,6 @@ public class CategoryFactorBarTableData {
 			}
 		}
 		return this.maxYValue;
-	}
-
-	public int getColumnHeaderRowIndex() {
-		return ColumnHeaderRowIndex;
-	}
-
-	public void setColumnHeaderRowIndex(int columnHeaderRowIndex) {
-		ColumnHeaderRowIndex = columnHeaderRowIndex;
-	}
-
-	public LinkedHashMap<String, ArrayList<Pair<String, Float>>> getData() {
-		return data;
-	}
-
-	public void setData(LinkedHashMap<String, ArrayList<Pair<String, Float>>> data) {
-		this.data = data;
-	}
-
-	public int getFirstDataRowIndex() {
-		return FirstDataRowIndex;
-	}
-
-	public void setFirstDataRowIndex(int firstDataRowIndex) {
-		FirstDataRowIndex = firstDataRowIndex;
-	}
-
-	public int getSeriesTitleRowIndex() {
-		return SeriesTitleRowIndex;
-	}
-
-	public void setSeriesTitleRowIndex(int seriesTitleRowIndex) {
-		SeriesTitleRowIndex = seriesTitleRowIndex;
-	}
-
-	public String getxAxisColTitle() {
-		return xAxisColTitle;
-	}
-
-	public void setxAxisColTitle(String xAxisColTitle) {
-		this.xAxisColTitle = xAxisColTitle;
-	}
-
-	public String getyAxisColTitle() {
-		return yAxisColTitle;
-	}
-
-	public void setyAxisColTitle(String yAxisColTitle) {
-		this.yAxisColTitle = yAxisColTitle;
-	}
-
-	public void setMaxYValue(Float maxYValue) {
-		this.maxYValue = maxYValue;
 	}
 
 }

@@ -1,11 +1,15 @@
 package nrg.sdnsimulator.core.entity.network.agent;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Agent;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class Receiverv2 extends Agent {
 
 	private int ACKNum;
@@ -22,14 +26,13 @@ public class Receiverv2 extends Agent {
 		case Keywords.Segments.Types.SYN:
 			ACKNum = 0;
 			segmentsToSend.add(new Segment(flow.getID(), Keywords.Segments.Types.SYNACK,
-					Keywords.Segments.SpecialSequenceNumbers.SYNSeqNum,
-					Keywords.Segments.Sizes.SYNSegSize, this.srcHostID, this.dstHostID));
+					Keywords.Segments.SpecialSequenceNumbers.SYNSeqNum, Keywords.Segments.Sizes.SYNSegSize,
+					this.srcHostID, this.dstHostID));
 			break;
 		case Keywords.Segments.Types.DATA:
 			// Debugger.methodEntrance("Receiverv2", "recvPacket", "Segment Type: DATA");
-			segmentsToSend
-					.add(new Segment(flow.getID(), Keywords.Segments.Types.ACK, segment.getSeqNum(),
-							Keywords.Segments.Sizes.ACKSegSize, this.srcHostID, this.dstHostID));
+			segmentsToSend.add(new Segment(flow.getID(), Keywords.Segments.Types.ACK, segment.getSeqNum(),
+					Keywords.Segments.Sizes.ACKSegSize, this.srcHostID, this.dstHostID));
 			break;
 		case Keywords.Segments.Types.FIN:
 			/*
@@ -58,14 +61,6 @@ public class Receiverv2 extends Agent {
 	@Override
 	public void timeout(Network net, int timerID) {
 
-	}
-
-	public int getACKNum() {
-		return ACKNum;
-	}
-
-	public void setACKNum(int aCKNum) {
-		ACKNum = aCKNum;
 	}
 
 }

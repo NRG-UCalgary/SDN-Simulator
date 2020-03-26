@@ -3,6 +3,8 @@ package nrg.sdnsimulator.core.utility;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Controller;
 import nrg.sdnsimulator.core.entity.network.Host;
@@ -10,6 +12,8 @@ import nrg.sdnsimulator.core.entity.network.Link;
 import nrg.sdnsimulator.core.entity.network.SDNSwitch;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 
+@Getter
+@Setter
 public class Statistics {
 
 	private Link bottleneckLink;
@@ -28,8 +32,7 @@ public class Statistics {
 		this.links = net.getLinks();
 		for (Host host : net.getHosts().values()) {
 			if (host.getTransportAgent().getFlow().getID() < 10000) {
-				this.flows.put(host.getTransportAgent().getFlow().getID(),
-						host.getTransportAgent().getFlow());
+				this.flows.put(host.getTransportAgent().getFlow().getID(), host.getTransportAgent().getFlow());
 			}
 		}
 		for (Link link : links.values()) {
@@ -43,8 +46,7 @@ public class Statistics {
 	public float getAvgFlowCompletionTime() {
 		float sum = 0;
 		for (Flow flow : flows.values()) {
-			sum = Mathematics.addFloat(sum,
-					Mathematics.subtractFloat(flow.getFINSendingTime(), flow.getArrivalTime()));
+			sum = Mathematics.addFloat(sum, Mathematics.subtractFloat(flow.getFINSendingTime(), flow.getArrivalTime()));
 		}
 		return sum / (float) flows.size();
 	}
@@ -60,8 +62,7 @@ public class Statistics {
 	public float getAvgStartupDelay() {
 		float sum = 0;
 		for (Flow flow : flows.values()) {
-			float startupDelay = (Mathematics.subtractFloat(flow.getDataSendingStartTime(),
-					flow.getArrivalTime()));
+			float startupDelay = (Mathematics.subtractFloat(flow.getDataSendingStartTime(), flow.getArrivalTime()));
 			sum = Mathematics.addFloat(sum, startupDelay);
 		}
 		return Mathematics.divideFloat(sum, (float) flows.size());
@@ -74,8 +75,7 @@ public class Statistics {
 		for (Flow flow : flows.values()) {
 			float flowThroughput = calculateFlowThroughput(flow);
 			numinator = Mathematics.addFloat(numinator, flowThroughput);
-			denuminator = Mathematics.addFloat(denuminator,
-					Mathematics.multiplyFloat(flowThroughput, flowThroughput));
+			denuminator = Mathematics.addFloat(denuminator, Mathematics.multiplyFloat(flowThroughput, flowThroughput));
 		}
 		numinator = Mathematics.multiplyFloat(numinator, numinator);
 		denuminator = Mathematics.multiplyFloat(flows.size(), denuminator);
@@ -85,12 +85,10 @@ public class Statistics {
 
 	public float getBottleneckUtilization() {
 		float utilization = 0;
-		float totalUpTime = Mathematics.subtractFloat(
-				bottleneckLink.getLastSegmentTransmittedTime(),
+		float totalUpTime = Mathematics.subtractFloat(bottleneckLink.getLastSegmentTransmittedTime(),
 				bottleneckLink.getFirstSegmentArrivalTime());
 		if (totalUpTime > 0) {
-			utilization = Mathematics.divideFloat(bottleneckLink.getTotalTransmissionTime(),
-					totalUpTime);
+			utilization = Mathematics.divideFloat(bottleneckLink.getTotalTransmissionTime(), totalUpTime);
 		}
 		return utilization;
 	}
@@ -100,8 +98,7 @@ public class Statistics {
 		float avgQueuelength = 0;
 		int n = queueTimeSeries.size();
 		float numinator = 0;
-		float denuminator = Mathematics.subtractFloat(queueTimeSeries.lastKey(),
-				queueTimeSeries.firstKey());
+		float denuminator = Mathematics.subtractFloat(queueTimeSeries.lastKey(), queueTimeSeries.firstKey());
 		for (int i = 0; i < n - 1; i++) {
 			float lenght = queueTimeSeries.get(queueTimeSeries.firstKey());
 			float tNow = queueTimeSeries.firstKey();
@@ -124,46 +121,6 @@ public class Statistics {
 		float throughput = Mathematics.divideFloat(flow.getTotalTransmissionTime(),
 				Mathematics.subtractFloat(flow.getFINSendingTime(), flow.getArrivalTime()));
 		return throughput;
-	}
-
-	public Link getBottleneckLink() {
-		return bottleneckLink;
-	}
-
-	public void setBottleneckLink(Link bottleneckLink) {
-		this.bottleneckLink = bottleneckLink;
-	}
-
-	public HashMap<Integer, Flow> getFlows() {
-		return flows;
-	}
-
-	public void setFlows(HashMap<Integer, Flow> flows) {
-		this.flows = flows;
-	}
-
-	public HashMap<Integer, Link> getLinks() {
-		return links;
-	}
-
-	public void setLinks(HashMap<Integer, Link> links) {
-		this.links = links;
-	}
-
-	public HashMap<Integer, Controller> getControllers() {
-		return controllers;
-	}
-
-	public void setControllers(HashMap<Integer, Controller> controllers) {
-		this.controllers = controllers;
-	}
-
-	public HashMap<Integer, SDNSwitch> getSwitches() {
-		return switches;
-	}
-
-	public void setSwitches(HashMap<Integer, SDNSwitch> switches) {
-		this.switches = switches;
 	}
 
 }

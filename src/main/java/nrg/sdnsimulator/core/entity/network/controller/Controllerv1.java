@@ -2,6 +2,8 @@ package nrg.sdnsimulator.core.entity.network.controller;
 
 import java.util.HashMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Controller;
 import nrg.sdnsimulator.core.entity.network.CtrlMessage;
@@ -10,6 +12,8 @@ import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class Controllerv1 extends Controller {
 
 	/* Congestion Control Variables */
@@ -56,9 +60,9 @@ public class Controllerv1 extends Controller {
 	private void notifyHosts(Network net) {
 		// TODO this is for one accessSwitch assumption
 		// TODO must be updated for more than access switches
-		Segment segmentToHosts = new Segment(Keywords.ControllerFLowID,
-				Keywords.Segments.Types.CTRL, Keywords.Segments.SpecialSequenceNumbers.CTRLSeqNum,
-				Keywords.Segments.Sizes.CTRLSegSize, this.getID(), Keywords.BroadcastDestination);
+		Segment segmentToHosts = new Segment(Keywords.ControllerFLowID, Keywords.Segments.Types.CTRL,
+				Keywords.Segments.SpecialSequenceNumbers.CTRLSeqNum, Keywords.Segments.Sizes.CTRLSegSize, this.getID(),
+				Keywords.BroadcastDestination);
 		segmentToHosts.setBigRTT_(this.bigRTT);
 		segmentToHosts.setsWnd_(this.sWnd);
 		segmentToHosts.setInterSegmentDelay_(this.interSegmentDelay);
@@ -69,8 +73,7 @@ public class Controllerv1 extends Controller {
 		HashMap<Integer, CtrlMessage> messages = new HashMap<Integer, CtrlMessage>();
 		// a CtrlMessage for each accessSwitches in the network
 		for (int accessSwitchID : database.getAccessSwitchIDsSet()) {
-			CtrlMessage singleMessage = new CtrlMessage(
-					Keywords.SDNMessages.Types.BufferTokenUpdate);
+			CtrlMessage singleMessage = new CtrlMessage(Keywords.SDNMessages.Types.BufferTokenUpdate);
 			HashMap<Integer, BufferToken> preparedTokens = new HashMap<Integer, BufferToken>();
 			int i = 0; // The flow ID index
 			// float accessLinkRttOfFlowZero = 0; // d_i
@@ -88,11 +91,9 @@ public class Controllerv1 extends Controller {
 				}
 				initialCycleDelay = (previousBigRTT) + interFlowDelay;
 				// initialCycleDelay = 0;//For validation
-				steadyCycleDelay = bigRTT
-						- database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
+				steadyCycleDelay = bigRTT - database.getRttForAccessSwitchIDAndHostID(accessSwitchID, hostID);
 				// steadyCycleDelay = 0;//For validation
-				ccTokenForEachBuffer.activate(true, initialCycleDelay, previousSWnd,
-						steadyCycleDelay, sWnd);
+				ccTokenForEachBuffer.activate(true, initialCycleDelay, previousSWnd, steadyCycleDelay, sWnd);
 
 				preparedTokens.put(hostID, ccTokenForEachBuffer);
 				i++;
@@ -148,8 +149,7 @@ public class Controllerv1 extends Controller {
 		// TODO this is for one access Switch only
 		// TODO must be updated accordingly later
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 1) {
-			interFlowDelayConstant = bigRTT
-					/ database.getNumberOfFlowsForAccessSwitch(currentSwitchID);
+			interFlowDelayConstant = bigRTT / database.getNumberOfFlowsForAccessSwitch(currentSwitchID);
 		} else {
 			interFlowDelayConstant = 0;
 		}
@@ -169,10 +169,9 @@ public class Controllerv1 extends Controller {
 		// note that this is only for the single bottleneck scenario
 		previousSWnd = sWnd;
 		if (database.getNumberOfFlowsForAccessSwitch(currentSwitchID) > 0) {
-			this.sWnd = (int) Math
-					.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(recvdSegment.getFlowID())
-							/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID)
-									* Keywords.Segments.Sizes.DataSegSize)));
+			this.sWnd = (int) Math.floor(alpha * (bigRTT * database.btlBwOfFlowID.get(recvdSegment.getFlowID())
+					/ (database.getNumberOfFlowsForAccessSwitch(currentSwitchID)
+							* Keywords.Segments.Sizes.DataSegSize)));
 			if (this.sWnd == 0) {
 				this.sWnd = 1;
 			}
@@ -187,70 +186,6 @@ public class Controllerv1 extends Controller {
 	public void executeTimeOut(Network net, int timerID) {
 		// Controller does not need Timer for now
 
-	}
-
-	public double getAlpha() {
-		return alpha;
-	}
-
-	public void setAlpha(double alpha) {
-		this.alpha = alpha;
-	}
-
-	public int getBigRTT() {
-		return bigRTT;
-	}
-
-	public void setBigRTT(int bigRTT) {
-		this.bigRTT = bigRTT;
-	}
-
-	public int getCurrentSwitchID() {
-		return currentSwitchID;
-	}
-
-	public void setCurrentSwitchID(int currentSwitchID) {
-		this.currentSwitchID = currentSwitchID;
-	}
-
-	public float getInterFlowDelayConstant() {
-		return interFlowDelayConstant;
-	}
-
-	public void setInterFlowDelayConstant(float interFlowDelayConstant) {
-		this.interFlowDelayConstant = interFlowDelayConstant;
-	}
-
-	public float getInterSegmentDelay() {
-		return interSegmentDelay;
-	}
-
-	public void setInterSegmentDelay(float interSegmentDelay) {
-		this.interSegmentDelay = interSegmentDelay;
-	}
-
-	public int getPreviousBigRTT() {
-		return previousBigRTT;
-	}
-
-	public void setPreviousBigRTT(int previousBigRTT) {
-		this.previousBigRTT = previousBigRTT;
-	}
-
-	public int getPreviousSWnd() {
-		return previousSWnd;
-	}
-
-	public void setPreviousSWnd(int previousSWnd) {
-		this.previousSWnd = previousSWnd;
-	}
-
-	public int getsWnd() {
-		return sWnd;
-	}
-
-	public void setsWnd(int sWnd) {
-		this.sWnd = sWnd;
 	}
 
 }

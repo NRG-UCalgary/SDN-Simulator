@@ -1,8 +1,12 @@
 package nrg.sdnsimulator.core.entity.traffic;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.entity.network.CtrlMessage;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class Packet {
 
 	private CtrlMessage controlMessage;
@@ -21,38 +25,6 @@ public class Packet {
 			this.controlMessage = controlMessage;
 		} else {
 		}
-	}
-
-	public CtrlMessage getControlMessage() {
-		return controlMessage;
-	}
-
-	public void setControlMessage(CtrlMessage controlMessage) {
-		this.controlMessage = controlMessage;
-	}
-
-	public Segment getSegment() {
-		return segment;
-	}
-
-	public void setSegment(Segment segment) {
-		this.segment = segment;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
 	}
 
 }

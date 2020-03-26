@@ -1,5 +1,10 @@
 package nrg.sdnsimulator.core.entity.network;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Timer {
 
 	private int id;
@@ -10,30 +15,6 @@ public class Timer {
 		this.id = id;
 		this.type = type;
 		isActive = true;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public short getType() {
-		return type;
-	}
-
-	public void setType(short type) {
-		this.type = type;
-	}
-
-	public boolean isActive() {
-		return isActive;
-	}
-
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
 	}
 
 }

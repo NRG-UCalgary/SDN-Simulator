@@ -1,11 +1,15 @@
 package nrg.sdnsimulator.core.entity.network.agent;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Agent;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class DefaultReceiver extends Agent {
 
 	private int ACKNum;
@@ -30,11 +34,10 @@ public class DefaultReceiver extends Agent {
 					Keywords.Segments.Sizes.ACKSegSize, srcHostID, dstHostID));
 			break;
 		case Keywords.Segments.Types.FIN:
-			segmentsToSend.add(new Segment(flow.getID(), Keywords.Segments.Types.FINACK,
-					segment.getSeqNum(), Keywords.Segments.Sizes.FINSegSize, srcHostID, dstHostID));
+			segmentsToSend.add(new Segment(flow.getID(), Keywords.Segments.Types.FINACK, segment.getSeqNum(),
+					Keywords.Segments.Sizes.FINSegSize, srcHostID, dstHostID));
 			/** ===== Statistical Counters ===== **/
-			net.getHosts().get(this.dstHostID).getTransportAgent().getFlow()
-					.setCompletionTime(net.getCurrentTime());
+			net.getHosts().get(this.dstHostID).getTransportAgent().getFlow().setCompletionTime(net.getCurrentTime());
 			/** ================================ **/
 			break;
 		default:
@@ -57,14 +60,6 @@ public class DefaultReceiver extends Agent {
 	public void timeout(Network net, int timerID) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public int getACKNum() {
-		return ACKNum;
-	}
-
-	public void setACKNum(int aCKNum) {
-		ACKNum = aCKNum;
 	}
 
 }

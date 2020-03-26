@@ -15,11 +15,15 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.utility.excel.datastructure.CategoryFactorBarTableData;
 import nrg.sdnsimulator.core.utility.excel.datastructure.CategoryFactorOutputData;
 import nrg.sdnsimulator.core.utility.excel.datastructure.NumericFactorOutputData;
 import nrg.sdnsimulator.core.utility.excel.datastructure.NumericFactorScatterTableData;
 
+@Getter
+@Setter
 public class ExcelHandler {
 
 	private static DataFormat format;
@@ -38,8 +42,7 @@ public class ExcelHandler {
 		for (String sheetName : outputData.getOutputSheets().keySet()) {
 			XSSFSheet sheet = workbook.createSheet(sheetName);
 			createCategoryScatterTableInSheet(sheet, outputData.getOutputSheets().get(sheetName));
-			ChartPlotter.plotCategoryBarChart(sheet, sheetName,
-					outputData.getOutputSheets().get(sheetName));
+			ChartPlotter.plotCategoryBarChart(sheet, sheetName, outputData.getOutputSheets().get(sheetName));
 		}
 		workbook.write(outPutStream);
 		workbook.close();
@@ -47,8 +50,7 @@ public class ExcelHandler {
 
 	}
 
-	private static XSSFSheet createCategoryScatterTableInSheet(XSSFSheet sheet,
-			CategoryFactorBarTableData table) {
+	private static XSSFSheet createCategoryScatterTableInSheet(XSSFSheet sheet, CategoryFactorBarTableData table) {
 		int SeriesTitleRowIndex = table.getSeriesTitleRowIndex();
 		int ColumnHeaderRowIndex = table.getColumnHeaderRowIndex();
 		int FirstDataRowIndex = table.getFirstDataRowIndex();
@@ -64,8 +66,7 @@ public class ExcelHandler {
 		int xColIndex = 0;
 		for (String seriesTitle : table.getData().keySet()) {
 			int yColIndex = xColIndex + 1;
-			sheet = mergeCells(sheet, SeriesTitleRowIndex, SeriesTitleRowIndex, seriesColIndex,
-					seriesColIndex + 1);
+			sheet = mergeCells(sheet, SeriesTitleRowIndex, SeriesTitleRowIndex, seriesColIndex, seriesColIndex + 1);
 			XSSFCell seriesTitleCell = seriesTitleRow.createCell(seriesColIndex);
 			CellUtil.setAlignment(seriesTitleCell, HorizontalAlignment.CENTER);
 			seriesTitleCell.setCellValue(seriesTitle);
@@ -73,9 +74,9 @@ public class ExcelHandler {
 
 			// Going for series column headers
 			XSSFCell xAxisColHeaderCell = colHeaderRow.createCell(xColIndex);
-			xAxisColHeaderCell.setCellValue(table.getxAxisColTitle());
+			xAxisColHeaderCell.setCellValue(table.getXAxisColTitle());
 			XSSFCell yAxisColHeaderCell = colHeaderRow.createCell(yColIndex);
-			yAxisColHeaderCell.setCellValue(table.getyAxisColTitle());
+			yAxisColHeaderCell.setCellValue(table.getYAxisColTitle());
 
 			// Putting actual data
 			int dataRowIndex = FirstDataRowIndex;
@@ -110,8 +111,7 @@ public class ExcelHandler {
 		for (String sheetName : outputData.getOutputSheets().keySet()) {
 			XSSFSheet sheet = workbook.createSheet(sheetName);
 			createNumericScatterTableInSheet(sheet, outputData.getOutputSheets().get(sheetName));
-			ChartPlotter.plotNumericalScatterChart(sheet, sheetName,
-					outputData.getOutputSheets().get(sheetName));
+			ChartPlotter.plotNumericalScatterChart(sheet, sheetName, outputData.getOutputSheets().get(sheetName));
 		}
 		workbook.write(outPutStream);
 		workbook.close();
@@ -119,8 +119,7 @@ public class ExcelHandler {
 
 	}
 
-	private static XSSFSheet createNumericScatterTableInSheet(XSSFSheet sheet,
-			NumericFactorScatterTableData table) {
+	private static XSSFSheet createNumericScatterTableInSheet(XSSFSheet sheet, NumericFactorScatterTableData table) {
 		int SeriesTitleRowIndex = table.getSeriesTitleRowIndex();
 		int ColumnHeaderRowIndex = table.getColumnHeaderRowIndex();
 		int FirstDataRowIndex = table.getFirstDataRowIndex();
@@ -136,8 +135,7 @@ public class ExcelHandler {
 		int xColIndex = 0;
 		for (String seriesTitle : table.getData().keySet()) {
 			int yColIndex = xColIndex + 1;
-			sheet = mergeCells(sheet, SeriesTitleRowIndex, SeriesTitleRowIndex, seriesColIndex,
-					seriesColIndex + 1);
+			sheet = mergeCells(sheet, SeriesTitleRowIndex, SeriesTitleRowIndex, seriesColIndex, seriesColIndex + 1);
 			XSSFCell seriesTitleCell = seriesTitleRow.createCell(seriesColIndex);
 			CellUtil.setAlignment(seriesTitleCell, HorizontalAlignment.CENTER);
 			seriesTitleCell.setCellValue(seriesTitle);
@@ -145,9 +143,9 @@ public class ExcelHandler {
 
 			// Going for series column headers
 			XSSFCell xAxisColHeaderCell = colHeaderRow.createCell(xColIndex);
-			xAxisColHeaderCell.setCellValue(table.getxAxisColTitle());
+			xAxisColHeaderCell.setCellValue(table.getXAxisColTitle());
 			XSSFCell yAxisColHeaderCell = colHeaderRow.createCell(yColIndex);
-			yAxisColHeaderCell.setCellValue(table.getyAxisColTitle());
+			yAxisColHeaderCell.setCellValue(table.getYAxisColTitle());
 
 			// Putting actual data
 			int dataRowIndex = FirstDataRowIndex;
@@ -191,8 +189,7 @@ public class ExcelHandler {
 		outPutStream.close();
 	}
 
-	private static XSSFSheet mergeCells(XSSFSheet sheet, int numRow, int untilRow, int numCol,
-			int untilCol) {
+	private static XSSFSheet mergeCells(XSSFSheet sheet, int numRow, int untilRow, int numCol, int untilCol) {
 		CellRangeAddress cellMerge = new CellRangeAddress(numRow, untilRow, numCol, untilCol);
 		sheet.addMergedRegion(cellMerge);
 		return sheet;
