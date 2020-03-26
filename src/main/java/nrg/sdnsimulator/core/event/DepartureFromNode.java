@@ -1,8 +1,12 @@
 package nrg.sdnsimulator.core.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 
+@Getter
+@Setter
 public class DepartureFromNode extends PacketEvent {
 
 	private int linkID;
@@ -16,14 +20,6 @@ public class DepartureFromNode extends PacketEvent {
 	public void execute(Network net) {
 		net.updateTime(eventTime);
 		net.getLinks().get(linkID).transmitPacket(net, packet);
-	}
-
-	public int getLinkID() {
-		return linkID;
-	}
-
-	public void setLinkID(int linkID) {
-		this.linkID = linkID;
 	}
 
 }

@@ -22,9 +22,13 @@ import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.utility.excel.datastructure.CategoryFactorBarTableData;
 import nrg.sdnsimulator.core.utility.excel.datastructure.NumericFactorScatterTableData;
 
+@Getter
+@Setter
 public class ChartPlotter {
 
 	private static int chartHeight = 25;
@@ -35,13 +39,11 @@ public class ChartPlotter {
 	public ChartPlotter() {
 	}
 
-	public static XSSFSheet plotCategoryBarChart(XSSFSheet sheet, String chartTitle,
-			CategoryFactorBarTableData table) {
+	public static XSSFSheet plotCategoryBarChart(XSSFSheet sheet, String chartTitle, CategoryFactorBarTableData table) {
 		XSSFDrawing drawer = sheet.createDrawingPatriarch();
 		// createAnchor(-,-,-,-,topLeftCol, topLeftRow, botRightCol, botRightRow)
-		XSSFClientAnchor anchor = drawer.createAnchor(0, 0, 0, 0,
-				(table.getLastColIndex() + TableChartGap), FirstChartRowIndex,
-				(table.getLastColIndex() + chartWidth), (FirstChartRowIndex + chartHeight));
+		XSSFClientAnchor anchor = drawer.createAnchor(0, 0, 0, 0, (table.getLastColIndex() + TableChartGap),
+				FirstChartRowIndex, (table.getLastColIndex() + chartWidth), (FirstChartRowIndex + chartHeight));
 		XDDFChart chart = drawer.createChart(anchor);
 		chart.setTitleText(chartTitle);
 		chart.setTitleOverlay(false);
@@ -49,10 +51,10 @@ public class ChartPlotter {
 		legend.setPosition(LegendPosition.TOP_RIGHT);
 
 		XDDFCategoryAxis xAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-		xAxis.setTitle(table.getxAxisColTitle());
+		xAxis.setTitle(table.getXAxisColTitle());
 		// xAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 		XDDFValueAxis yAxis = chart.createValueAxis(AxisPosition.LEFT);
-		yAxis.setTitle(table.getyAxisColTitle());
+		yAxis.setTitle(table.getYAxisColTitle());
 		yAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 		yAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 		XDDFBarChartData data = (XDDFBarChartData) chart.createData(ChartTypes.BAR, xAxis, yAxis);
@@ -63,14 +65,11 @@ public class ChartPlotter {
 		// CellRangeAddress(firstRow, lastRow, firstCol, LastCol)
 		for (String seriesTitle : table.getData().keySet()) {
 			XDDFCategoryDataSource xData = XDDFDataSourcesFactory.fromStringCellRange(sheet,
-					new CellRangeAddress(table.getFirstDataRowIndex(),
-							table.getLastRowIndexOfSeriesData(seriesTitle), xDataColIndex,
-							xDataColIndex));
-			XDDFNumericalDataSource<Double> yData = XDDFDataSourcesFactory.fromNumericCellRange(
-					sheet,
-					new CellRangeAddress(table.getFirstDataRowIndex(),
-							table.getLastRowIndexOfSeriesData(seriesTitle), yDataColIndex,
-							yDataColIndex));
+					new CellRangeAddress(table.getFirstDataRowIndex(), table.getLastRowIndexOfSeriesData(seriesTitle),
+							xDataColIndex, xDataColIndex));
+			XDDFNumericalDataSource<Double> yData = XDDFDataSourcesFactory.fromNumericCellRange(sheet,
+					new CellRangeAddress(table.getFirstDataRowIndex(), table.getLastRowIndexOfSeriesData(seriesTitle),
+							yDataColIndex, yDataColIndex));
 			XDDFBarChartData.Series series = (XDDFBarChartData.Series) data.addSeries(xData, yData);
 			series.setTitle(seriesTitle, null);
 			xDataColIndex += 2;
@@ -84,9 +83,8 @@ public class ChartPlotter {
 			NumericFactorScatterTableData table) {
 		XSSFDrawing drawer = sheet.createDrawingPatriarch();
 		// createAnchor(-,-,-,-,topLeftCol, topLeftRow, botRightCol, botRightRow)
-		XSSFClientAnchor anchor = drawer.createAnchor(0, 0, 0, 0,
-				(table.getLastColIndex() + TableChartGap), FirstChartRowIndex,
-				(table.getLastColIndex() + chartWidth), (FirstChartRowIndex + chartHeight));
+		XSSFClientAnchor anchor = drawer.createAnchor(0, 0, 0, 0, (table.getLastColIndex() + TableChartGap),
+				FirstChartRowIndex, (table.getLastColIndex() + chartWidth), (FirstChartRowIndex + chartHeight));
 		XDDFChart chart = drawer.createChart(anchor);
 		// chart.setTitleText(chartTitle);
 		chart.setTitleOverlay(false);
@@ -94,31 +92,25 @@ public class ChartPlotter {
 		legend.setPosition(LegendPosition.TOP_RIGHT);
 
 		XDDFValueAxis xAxis = chart.createValueAxis(AxisPosition.BOTTOM);
-		xAxis.setTitle(table.getxAxisColTitle());
+		xAxis.setTitle(table.getXAxisColTitle());
 		xAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 		XDDFValueAxis yAxis = chart.createValueAxis(AxisPosition.LEFT);
-		yAxis.setTitle(table.getyAxisColTitle());
+		yAxis.setTitle(table.getYAxisColTitle());
 		yAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-		XDDFScatterChartData data = (XDDFScatterChartData) chart.createData(ChartTypes.SCATTER,
-				xAxis, yAxis);
+		XDDFScatterChartData data = (XDDFScatterChartData) chart.createData(ChartTypes.SCATTER, xAxis, yAxis);
 		data.setStyle(ScatterStyle.MARKER);
 
 		int xDataColIndex = 0;
 		int yDataColIndex = xDataColIndex + 1;
 		// CellRangeAddress(firstRow, lastRow, firstCol, LastCol)
 		for (String seriesTitle : table.getData().keySet()) {
-			XDDFNumericalDataSource<Double> xData = XDDFDataSourcesFactory.fromNumericCellRange(
-					sheet,
-					new CellRangeAddress(table.getFirstDataRowIndex(),
-							table.getLastRowIndexOfSeriesData(seriesTitle), xDataColIndex,
-							xDataColIndex));
-			XDDFNumericalDataSource<Double> yData = XDDFDataSourcesFactory.fromNumericCellRange(
-					sheet,
-					new CellRangeAddress(table.getFirstDataRowIndex(),
-							table.getLastRowIndexOfSeriesData(seriesTitle), yDataColIndex,
-							yDataColIndex));
-			XDDFScatterChartData.Series series = (XDDFScatterChartData.Series) data.addSeries(xData,
-					yData);
+			XDDFNumericalDataSource<Double> xData = XDDFDataSourcesFactory.fromNumericCellRange(sheet,
+					new CellRangeAddress(table.getFirstDataRowIndex(), table.getLastRowIndexOfSeriesData(seriesTitle),
+							xDataColIndex, xDataColIndex));
+			XDDFNumericalDataSource<Double> yData = XDDFDataSourcesFactory.fromNumericCellRange(sheet,
+					new CellRangeAddress(table.getFirstDataRowIndex(), table.getLastRowIndexOfSeriesData(seriesTitle),
+							yDataColIndex, yDataColIndex));
+			XDDFScatterChartData.Series series = (XDDFScatterChartData.Series) data.addSeries(xData, yData);
 			series.setTitle(seriesTitle, null);
 			series.setSmooth(false);
 			setMarkerStyle(series, seriesTitle);

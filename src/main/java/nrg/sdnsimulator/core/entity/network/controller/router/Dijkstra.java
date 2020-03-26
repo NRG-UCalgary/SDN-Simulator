@@ -5,10 +5,14 @@ package nrg.sdnsimulator.core.entity.network.controller.router;
 
 import java.util.HashMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.SDNSwitch;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class Dijkstra extends Router {
 
 	private HashMap<Integer, Float> distance; // <SwitchID, PropagationDelay>
@@ -60,7 +64,7 @@ public class Dijkstra extends Router {
 			for (int n : nodes.get(minNodeID).getNetworkLinksIDs().keySet()) { // For each neighbor n of minNode
 				float alt = distance.get(minNodeID)
 						+ net.getLinks().get(nodes.get(minNodeID).getNetworkLinksIDs().get(n))
-						.getTotalDelay(Keywords.Segments.Sizes.DataSegSize);
+								.getTotalDelay(Keywords.Segments.Sizes.DataSegSize);
 
 				if (alt < distance.get(n)) {
 					distance.put(n, alt);

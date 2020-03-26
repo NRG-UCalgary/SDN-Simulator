@@ -2,9 +2,13 @@ package nrg.sdnsimulator.core.entity.network;
 
 import java.util.HashMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.entity.network.buffer.BufferToken;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class CtrlMessage {
 
 	// BufferUpdate information
@@ -23,36 +27,5 @@ public class CtrlMessage {
 		flowTableEntries.put(FlowID, egressLinkID);
 	}
 
-	public HashMap<Integer, BufferToken> getCcTokenOfHostID() {
-		return ccTokenOfHostID;
-	}
-
-	public void setCcTokenOfHostID(HashMap<Integer, BufferToken> ccTokenOfHostID) {
-		this.ccTokenOfHostID = ccTokenOfHostID;
-	}
-
-	public HashMap<Integer, Integer> getFlowTableEntries() {
-		return flowTableEntries;
-	}
-
-	public void setFlowTableEntries(HashMap<Integer, Integer> flowTableEntries) {
-		this.flowTableEntries = flowTableEntries;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
 
 }

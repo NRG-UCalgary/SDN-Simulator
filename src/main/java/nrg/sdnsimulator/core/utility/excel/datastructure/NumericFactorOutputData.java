@@ -3,9 +3,13 @@ package nrg.sdnsimulator.core.utility.excel.datastructure;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Statistics;
 
+@Getter
+@Setter
 public class NumericFactorOutputData {
 	private LinkedHashMap<String, TreeMap<Float, Float>> avgCompletionTimeData;
 	private LinkedHashMap<String, TreeMap<Float, Float>> avgFlowThroughputData;
@@ -17,8 +21,7 @@ public class NumericFactorOutputData {
 	private String mainFactorName;
 	private LinkedHashMap<String, NumericFactorScatterTableData> outputSheets;
 
-	public NumericFactorOutputData(String mainFactorName,
-			LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
+	public NumericFactorOutputData(String mainFactorName, LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
 		this.mainFactorName = mainFactorName;
 		outputSheets = new LinkedHashMap<String, NumericFactorScatterTableData>();
 
@@ -33,8 +36,7 @@ public class NumericFactorOutputData {
 		for (String seriesName : result.keySet()) {
 			initializedSeriesForAllMetrics(seriesName);
 			for (Float mainFactorValue : result.get(seriesName).keySet()) {
-				insertValuesForAllMetrics(seriesName, mainFactorValue,
-						result.get(seriesName).get(mainFactorValue));
+				insertValuesForAllMetrics(seriesName, mainFactorValue, result.get(seriesName).get(mainFactorValue));
 			}
 		}
 		prepareOutputSheets();
@@ -45,8 +47,7 @@ public class NumericFactorOutputData {
 		String sheetName = "AvgCompletionTime";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgFlowCompletionTime;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption,
-				yAxisCaption);
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgCompletionTimeData.keySet()) {
 			table.addSeriesToTable(seriesName, avgCompletionTimeData.get(seriesName));
 		}
@@ -57,8 +58,7 @@ public class NumericFactorOutputData {
 		String sheetName = "AvgFlowThroughput";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgFlowThroughput;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption,
-				yAxisCaption);
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgFlowThroughputData.keySet()) {
 			table.addSeriesToTable(seriesName, avgFlowThroughputData.get(seriesName));
 		}
@@ -69,8 +69,7 @@ public class NumericFactorOutputData {
 		String sheetName = "AvgStartupDelay";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgFlowStartupDelay;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption,
-				yAxisCaption);
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : avgStartupDelayData.keySet()) {
 			table.addSeriesToTable(seriesName, avgStartupDelayData.get(seriesName));
 		}
@@ -81,8 +80,7 @@ public class NumericFactorOutputData {
 		String sheetName = "FairnessIndex";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.FairnessIndex;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption,
-				yAxisCaption);
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : fairnessIndexData.keySet()) {
 			table.addSeriesToTable(seriesName, fairnessIndexData.get(seriesName));
 		}
@@ -93,8 +91,7 @@ public class NumericFactorOutputData {
 		String sheetName = "BtlUtil";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.BtlUtilization;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption,
-				yAxisCaption);
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlUtilizationData.keySet()) {
 			table.addSeriesToTable(seriesName, btlUtilizationData.get(seriesName));
 		}
@@ -105,8 +102,7 @@ public class NumericFactorOutputData {
 		String sheetName = "MaxBtlBufferOccupancy";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.MaxBtlQueueLength;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption,
-				yAxisCaption);
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlMaxQueueLengthData.keySet()) {
 			table.addSeriesToTable(seriesName, btlMaxQueueLengthData.get(seriesName));
 		}
@@ -117,8 +113,7 @@ public class NumericFactorOutputData {
 		String sheetName = "AvgBtlBufferOccupancy";
 		String xAxisCaption = mainFactorName;
 		String yAxisCaption = Keywords.Metrics.Names.AvgBtlQueueLength;
-		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption,
-				yAxisCaption);
+		NumericFactorScatterTableData table = new NumericFactorScatterTableData(xAxisCaption, yAxisCaption);
 		for (String seriesName : btlAvgQueueLengthData.keySet()) {
 			table.addSeriesToTable(seriesName, btlAvgQueueLengthData.get(seriesName));
 		}
@@ -158,85 +153,6 @@ public class NumericFactorOutputData {
 		addBtlUtilizationData();
 		addBtlMaxQueueLengthData();
 		addBtlAvgQueueLengthData();
-	}
-
-	public LinkedHashMap<String, TreeMap<Float, Float>> getAvgCompletionTimeData() {
-		return avgCompletionTimeData;
-	}
-
-	public void setAvgCompletionTimeData(
-			LinkedHashMap<String, TreeMap<Float, Float>> avgCompletionTimeData) {
-		this.avgCompletionTimeData = avgCompletionTimeData;
-	}
-
-	public LinkedHashMap<String, TreeMap<Float, Float>> getAvgFlowThroughputData() {
-		return avgFlowThroughputData;
-	}
-
-	public void setAvgFlowThroughputData(
-			LinkedHashMap<String, TreeMap<Float, Float>> avgFlowThroughputData) {
-		this.avgFlowThroughputData = avgFlowThroughputData;
-	}
-
-	public LinkedHashMap<String, TreeMap<Float, Float>> getAvgStartupDelayData() {
-		return avgStartupDelayData;
-	}
-
-	public void setAvgStartupDelayData(
-			LinkedHashMap<String, TreeMap<Float, Float>> avgStartupDelayData) {
-		this.avgStartupDelayData = avgStartupDelayData;
-	}
-
-	public LinkedHashMap<String, TreeMap<Float, Float>> getBtlUtilizationData() {
-		return btlUtilizationData;
-	}
-
-	public void setBtlUtilizationData(
-			LinkedHashMap<String, TreeMap<Float, Float>> btlUtilizationData) {
-		this.btlUtilizationData = btlUtilizationData;
-	}
-
-	public LinkedHashMap<String, TreeMap<Float, Float>> getFairnessIndexData() {
-		return fairnessIndexData;
-	}
-
-	public void setFairnessIndexData(
-			LinkedHashMap<String, TreeMap<Float, Float>> fairnessIndexData) {
-		this.fairnessIndexData = fairnessIndexData;
-	}
-
-	public LinkedHashMap<String, TreeMap<Float, Float>> getBtlMaxQueueLengthData() {
-		return btlMaxQueueLengthData;
-	}
-
-	public void setBtlMaxQueueLengthData(
-			LinkedHashMap<String, TreeMap<Float, Float>> btlMaxQueueLengthData) {
-		this.btlMaxQueueLengthData = btlMaxQueueLengthData;
-	}
-
-	public LinkedHashMap<String, TreeMap<Float, Float>> getBtlAvgQueueLengthData() {
-		return btlAvgQueueLengthData;
-	}
-
-	public void setBtlAvgQueueLengthData(
-			LinkedHashMap<String, TreeMap<Float, Float>> btlAvgQueueLengthData) {
-		this.btlAvgQueueLengthData = btlAvgQueueLengthData;
-	}
-
-	public String getMainFactorName() {
-		return mainFactorName;
-	}
-
-	public void setMainFactorName(String mainFactorName) {
-		this.mainFactorName = mainFactorName;
-	}
-
-	public LinkedHashMap<String, NumericFactorScatterTableData> getOutputSheets() {
-		return outputSheets;
-	}
-
-	public void setOutputSheets(LinkedHashMap<String, NumericFactorScatterTableData> outputSheets) {
-		this.outputSheets = outputSheets;
 	}
 
 }

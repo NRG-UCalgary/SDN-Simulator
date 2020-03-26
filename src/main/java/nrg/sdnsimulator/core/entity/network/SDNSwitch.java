@@ -2,10 +2,14 @@ package nrg.sdnsimulator.core.entity.network;
 
 import java.util.HashMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public abstract class SDNSwitch extends Node {
 
 	protected boolean isMonitored;
@@ -76,46 +80,6 @@ public abstract class SDNSwitch extends Node {
 		} else {
 			return false;
 		}
-	}
-
-	public boolean isMonitored() {
-		return isMonitored;
-	}
-
-	public void setMonitored(boolean isMonitored) {
-		this.isMonitored = isMonitored;
-	}
-
-	public HashMap<Integer, Integer> getFlowTable() {
-		return flowTable;
-	}
-
-	public void setFlowTable(HashMap<Integer, Integer> flowTable) {
-		this.flowTable = flowTable;
-	}
-
-	public int getControlLinkID() {
-		return controlLinkID;
-	}
-
-	public void setControlLinkID(int controlLinkID) {
-		this.controlLinkID = controlLinkID;
-	}
-
-	public HashMap<Integer, Integer> getAccessLinksIDs() {
-		return accessLinksIDs;
-	}
-
-	public void setAccessLinksIDs(HashMap<Integer, Integer> accessLinksIDs) {
-		this.accessLinksIDs = accessLinksIDs;
-	}
-
-	public HashMap<Integer, Integer> getNetworkLinksIDs() {
-		return networkLinksIDs;
-	}
-
-	public void setNetworkLinksIDs(HashMap<Integer, Integer> networkLinksIDs) {
-		this.networkLinksIDs = networkLinksIDs;
 	}
 
 }
