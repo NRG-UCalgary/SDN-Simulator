@@ -3,6 +3,11 @@ package nrg.sdnsimulator.core.utility.datastructure;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class OneToOneMap {
 
 	private Map<Integer, String> keyToValue;
@@ -32,22 +37,6 @@ public class OneToOneMap {
 	public void put(int key, String value) {
 		this.keyToValue.put(key, value);
 		this.valueToKey.put(value, key);
-	}
-
-	public Map<Integer, String> getKeyToValue() {
-		return keyToValue;
-	}
-
-	public void setKeyToValue(Map<Integer, String> keyToValue) {
-		this.keyToValue = keyToValue;
-	}
-
-	public Map<String, Integer> getValueToKey() {
-		return valueToKey;
-	}
-
-	public void setValueToKey(Map<String, Integer> valueToKey) {
-		this.valueToKey = valueToKey;
 	}
 
 }

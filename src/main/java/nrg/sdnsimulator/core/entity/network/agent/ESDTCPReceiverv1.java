@@ -1,11 +1,15 @@
 package nrg.sdnsimulator.core.entity.network.agent;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Agent;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class ESDTCPReceiverv1 extends Agent {
 
 	// indicates the sequence number of the latest received ACK
@@ -32,12 +36,10 @@ public class ESDTCPReceiverv1 extends Agent {
 					Keywords.Segments.Sizes.ACKSegSize, this.srcHostID, this.dstHostID));
 			break;
 		case Keywords.Segments.Types.FIN:
-			segmentsToSend.add(
-					new Segment(flow.getID(), Keywords.Segments.Types.FINACK, segment.getSeqNum(),
-							Keywords.Segments.Sizes.FINSegSize, this.srcHostID, this.dstHostID));
+			segmentsToSend.add(new Segment(flow.getID(), Keywords.Segments.Types.FINACK, segment.getSeqNum(),
+					Keywords.Segments.Sizes.FINSegSize, this.srcHostID, this.dstHostID));
 			/** ===== Statistical Counters ===== **/
-			net.getHosts().get(this.dstHostID).getTransportAgent().getFlow()
-					.setCompletionTime(net.getCurrentTime());
+			net.getHosts().get(this.dstHostID).getTransportAgent().getFlow().setCompletionTime(net.getCurrentTime());
 			/** ================================ **/
 			break;
 		case Keywords.Segments.Types.CTRL:
@@ -62,14 +64,6 @@ public class ESDTCPReceiverv1 extends Agent {
 	@Override
 	public void timeout(Network net, int timerID) {
 
-	}
-
-	public int getACKNum() {
-		return ACKNum;
-	}
-
-	public void setACKNum(int aCKNum) {
-		ACKNum = aCKNum;
 	}
 
 }

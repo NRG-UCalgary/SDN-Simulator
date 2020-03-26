@@ -2,6 +2,11 @@ package nrg.sdnsimulator.core.utility;
 
 import java.util.Random;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class RandomVariableGenerator extends Random {
 	private static final long serialVersionUID = 1L;
 	private final int MAXINT = Integer.MAX_VALUE;

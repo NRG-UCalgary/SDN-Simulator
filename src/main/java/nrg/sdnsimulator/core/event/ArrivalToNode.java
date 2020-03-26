@@ -1,10 +1,14 @@
 package nrg.sdnsimulator.core.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.Simulator;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class ArrivalToNode extends PacketEvent {
 
 	private int nodeID;
@@ -34,23 +38,5 @@ public class ArrivalToNode extends PacketEvent {
 			break;
 		}
 	}
-
-	public int getNodeID() {
-		return nodeID;
-	}
-
-	public void setNodeID(int nodeID) {
-		this.nodeID = nodeID;
-	}
-
-	public int getSrcNodeID() {
-		return srcNodeID;
-	}
-
-	public void setSrcNodeID(int srcNodeID) {
-		this.srcNodeID = srcNodeID;
-	}
-	
-	
 
 }

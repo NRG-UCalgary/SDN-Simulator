@@ -2,6 +2,8 @@ package nrg.sdnsimulator.core.entity.network.agent;
 
 import java.util.ArrayList;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Agent;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
@@ -9,6 +11,8 @@ import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Mathematics;
 
+@Getter
+@Setter
 public class DefaultSender extends Agent {
 
 	// indicates the sequence number of the latest received ACK
@@ -96,8 +100,8 @@ public class DefaultSender extends Agent {
 
 	private Segment genSYN() {
 		Segment seg = new Segment(flow.getID(), Keywords.Segments.Types.SYN,
-				Keywords.Segments.SpecialSequenceNumbers.SYNSeqNum,
-				Keywords.Segments.Sizes.SYNSegSize, srcHostID, dstHostID);
+				Keywords.Segments.SpecialSequenceNumbers.SYNSeqNum, Keywords.Segments.Sizes.SYNSegSize, srcHostID,
+				dstHostID);
 		return seg;
 	}
 
@@ -129,54 +133,6 @@ public class DefaultSender extends Agent {
 	@Override
 	public void timeout(Network net, int timerID) {
 
-	}
-
-	public int getACKedSeqNum() {
-		return ACKedSeqNum;
-	}
-
-	public void setACKedSeqNum(int aCKedSeqNum) {
-		ACKedSeqNum = aCKedSeqNum;
-	}
-
-	public int getInFlight() {
-		return inFlight;
-	}
-
-	public void setInFlight(int inFlight) {
-		this.inFlight = inFlight;
-	}
-
-	public int getRemainingSegments() {
-		return remainingSegments;
-	}
-
-	public void setRemainingSegments(int remainingSegments) {
-		this.remainingSegments = remainingSegments;
-	}
-
-	public int getSeqNum() {
-		return seqNum;
-	}
-
-	public void setSeqNum(int seqNum) {
-		this.seqNum = seqNum;
-	}
-
-	public int getsWnd_() {
-		return sWnd_;
-	}
-
-	public void setsWnd_(int sWnd_) {
-		this.sWnd_ = sWnd_;
-	}
-
-	public int getToSend() {
-		return toSend;
-	}
-
-	public void setToSend(int toSend) {
-		this.toSend = toSend;
 	}
 
 }

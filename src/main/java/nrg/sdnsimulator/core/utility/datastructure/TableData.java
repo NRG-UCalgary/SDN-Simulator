@@ -3,6 +3,11 @@ package nrg.sdnsimulator.core.utility.datastructure;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class TableData {
 
 	private TreeMap<Integer, ArrayList<Double>> data; // <Index, List<data>>
@@ -59,39 +64,5 @@ public class TableData {
 		result = prime * result + lastRowIndex;
 		return result;
 	}
-
-	public TreeMap<Integer, ArrayList<Double>> getData() {
-		return data;
-	}
-
-	public void setData(TreeMap<Integer, ArrayList<Double>> data) {
-		this.data = data;
-	}
-
-	public TreeMap<Integer, String> getHeaders() {
-		return headers;
-	}
-
-	public void setHeaders(TreeMap<Integer, String> headers) {
-		this.headers = headers;
-	}
-
-	public int getLastColIndex() {
-		return lastColIndex;
-	}
-
-	public void setLastColIndex(int lastColIndex) {
-		this.lastColIndex = lastColIndex;
-	}
-
-	public int getLastRowIndex() {
-		return lastRowIndex;
-	}
-
-	public void setLastRowIndex(int lastRowIndex) {
-		this.lastRowIndex = lastRowIndex;
-	}
-	
-	
 
 }

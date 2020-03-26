@@ -2,6 +2,11 @@ package nrg.sdnsimulator.core.utility.datastructure;
 
 import java.util.TreeMap;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class SeqNumData {
 
 	private TreeMap<Integer, Double> ackNumbers;
@@ -46,30 +51,6 @@ public class SeqNumData {
 		result = prime * result + ((flowName == null) ? 0 : flowName.hashCode());
 		result = prime * result + ((seqNumbers == null) ? 0 : seqNumbers.hashCode());
 		return result;
-	}
-
-	public TreeMap<Integer, Double> getAckNumbers() {
-		return ackNumbers;
-	}
-
-	public void setAckNumbers(TreeMap<Integer, Double> ackNumbers) {
-		this.ackNumbers = ackNumbers;
-	}
-
-	public String getFlowName() {
-		return flowName;
-	}
-
-	public void setFlowName(String flowName) {
-		this.flowName = flowName;
-	}
-
-	public TreeMap<Integer, Double> getSeqNumbers() {
-		return seqNumbers;
-	}
-
-	public void setSeqNumbers(TreeMap<Integer, Double> seqNumbers) {
-		this.seqNumbers = seqNumbers;
 	}
 
 }

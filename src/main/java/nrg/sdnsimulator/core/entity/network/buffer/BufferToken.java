@@ -1,5 +1,10 @@
 package nrg.sdnsimulator.core.entity.network.buffer;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class BufferToken {
 
 	private int ACKCounter;
@@ -17,8 +22,8 @@ public class BufferToken {
 		this.isActive = false;
 	}
 
-	public void activate(boolean isFirstCycle, float initialDelay, int initialACKsToGo,
-			float steadyDelay, int steadyACKsToGo) {
+	public void activate(boolean isFirstCycle, float initialDelay, int initialACKsToGo, float steadyDelay,
+			int steadyACKsToGo) {
 		this.isActive = true;
 		this.isFirstCycle = isFirstCycle;
 		this.initialCycleDelay = initialDelay;
@@ -38,13 +43,11 @@ public class BufferToken {
 		BufferToken other = (BufferToken) obj;
 		if (ACKCounter != other.ACKCounter)
 			return false;
-		if (Float.floatToIntBits(arrivalToBufferTime) != Float
-				.floatToIntBits(other.arrivalToBufferTime))
+		if (Float.floatToIntBits(arrivalToBufferTime) != Float.floatToIntBits(other.arrivalToBufferTime))
 			return false;
 		if (initialACKsToGo != other.initialACKsToGo)
 			return false;
-		if (Float.floatToIntBits(initialCycleDelay) != Float
-				.floatToIntBits(other.initialCycleDelay))
+		if (Float.floatToIntBits(initialCycleDelay) != Float.floatToIntBits(other.initialCycleDelay))
 			return false;
 		if (isActive != other.isActive)
 			return false;
@@ -125,30 +128,6 @@ public class BufferToken {
 
 	public boolean isFirstCycle() {
 		return isFirstCycle;
-	}
-
-	public void setFirstCycle(boolean isFirstCycle) {
-		this.isFirstCycle = isFirstCycle;
-	}
-
-	public int getSteadyACKsToGo() {
-		return steadyACKsToGo;
-	}
-
-	public void setSteadyACKsToGo(int steadyACKsToGo) {
-		this.steadyACKsToGo = steadyACKsToGo;
-	}
-
-	public float getSteadyCycleDelay() {
-		return steadyCycleDelay;
-	}
-
-	public void setSteadyCycleDelay(float steadyCycleDelay) {
-		this.steadyCycleDelay = steadyCycleDelay;
-	}
-
-	public float getArrivalToBufferTime() {
-		return arrivalToBufferTime;
 	}
 
 }

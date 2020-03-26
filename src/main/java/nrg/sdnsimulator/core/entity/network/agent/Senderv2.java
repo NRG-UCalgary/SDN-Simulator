@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Agent;
 import nrg.sdnsimulator.core.entity.network.Timer;
@@ -13,6 +15,8 @@ import nrg.sdnsimulator.core.event.TimeoutEvent;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Mathematics;
 
+@Getter
+@Setter
 public class Senderv2 extends Agent {
 
 	private boolean validationReport = false;
@@ -77,12 +81,10 @@ public class Senderv2 extends Agent {
 				timerOfTimerID.put(timeToNextCycleTimer.getId(), timeToNextCycleTimer);
 				net.getEventList()
 						.addEvent(new TimeoutEvent(
-								Mathematics.addFloat(net.getCurrentTime(),
-										segment.getTimeToNextCycle()),
-								srcHostID, timeToNextCycleTimer.getId()));
-				nextCCParamsOfTimerID.put(timeToNextCycleTimer.getId(),
-						new CCParams(segment.getsWnd(), segment.getsInterSegmentDelay(),
-								segment.getsInterval(), segment.getsInitialDelay()));
+								Mathematics.addFloat(net.getCurrentTime(), segment.getTimeToNextCycle()), srcHostID,
+								timeToNextCycleTimer.getId()));
+				nextCCParamsOfTimerID.put(timeToNextCycleTimer.getId(), new CCParams(segment.getsWnd(),
+						segment.getsInterSegmentDelay(), segment.getsInterval(), segment.getsInitialDelay()));
 				timeToNextCycleTimerIDs.add(timeToNextCycleTimer.getId());
 			}
 			break;
@@ -96,8 +98,7 @@ public class Senderv2 extends Agent {
 			/** ===== Statistical Counters ===== **/
 			flow.getAckSeqNumArrivalTimes().put((float) segment.getSeqNum(), net.getCurrentTime());
 			/** ================================ **/
-			if (remainingSegments == 0 && negativeACKWaitingList.isEmpty()
-					&& segment.getSeqNum() == lastSentSeqNum) {
+			if (remainingSegments == 0 && negativeACKWaitingList.isEmpty() && segment.getSeqNum() == lastSentSeqNum) {
 				segmentsToSend.add(genFIN());
 				for (int timerID : timerOfTimerID.keySet()) {
 					timerOfTimerID.get(timerID).setActive(false);
@@ -153,16 +154,14 @@ public class Senderv2 extends Agent {
 	}
 
 	private void startSendingCycle(Network net) {
-		if (ccParams.getsInitialDelay() == 0) {
+		if (ccParams.getSInitialDelay() == 0) {
 			startSendingInterval(net);
-		} else if (ccParams.getsInitialDelay() > 0) {
+		} else if (ccParams.getSInitialDelay() > 0) {
 			timerIndex++;
-			Timer initialDelayTimer = new Timer(timerIndex,
-					Keywords.Entities.Agents.TimerTypes.InitialDelayTimer);
+			Timer initialDelayTimer = new Timer(timerIndex, Keywords.Entities.Agents.TimerTypes.InitialDelayTimer);
 			timerOfTimerID.put(initialDelayTimer.getId(), initialDelayTimer);
 			net.getEventList()
-					.addEvent(new TimeoutEvent(
-							Mathematics.addFloat(net.getCurrentTime(), ccParams.getsInitialDelay()),
+					.addEvent(new TimeoutEvent(Mathematics.addFloat(net.getCurrentTime(), ccParams.getSInitialDelay()),
 							srcHostID, initialDelayTimer.getId()));
 		}
 	}
@@ -173,15 +172,14 @@ public class Senderv2 extends Agent {
 			hasStartedSending = true;
 		}
 		if (!hasSentFIN) {
-			for (int seqNumCount = 0; seqNumCount < ccParams.getsWnd(); seqNumCount++) {
+			for (int seqNumCount = 0; seqNumCount < ccParams.getSWnd(); seqNumCount++) {
 				if (!negativeACKWaitingList.isEmpty()) {
 					int sequenceNumber = negativeACKWaitingList.firstKey();
 					negativeACKWaitingList.remove(sequenceNumber);
 					seqNumbersToSend.put(sequenceNumber, true);
 				}
 			}
-			int upperLimit = (int) Mathematics.minDouble((double) ccParams.getsWnd(),
-					(double) remainingSegments);
+			int upperLimit = (int) Mathematics.minDouble((double) ccParams.getSWnd(), (double) remainingSegments);
 			mostRecentSequenceNum = lastSentSeqNum;
 			for (int seqNumCount = 0; seqNumCount < upperLimit; seqNumCount++) {
 				mostRecentSequenceNum++;
@@ -191,12 +189,10 @@ public class Senderv2 extends Agent {
 				sendSingleSegment(net);
 			}
 			timerIndex++;
-			Timer sIntervalTimer = new Timer(timerIndex,
-					Keywords.Entities.Agents.TimerTypes.IntervalTimer);
+			Timer sIntervalTimer = new Timer(timerIndex, Keywords.Entities.Agents.TimerTypes.IntervalTimer);
 			timerOfTimerID.put(sIntervalTimer.getId(), sIntervalTimer);
 			net.getEventList()
-					.addEvent(new TimeoutEvent(
-							Mathematics.addFloat(net.getCurrentTime(), ccParams.getsInterval()),
+					.addEvent(new TimeoutEvent(Mathematics.addFloat(net.getCurrentTime(), ccParams.getSInterval()),
 							srcHostID, sIntervalTimer.getId()));
 		}
 	}
@@ -205,8 +201,7 @@ public class Senderv2 extends Agent {
 		if (!seqNumbersToSend.isEmpty()) {
 			int sequenceNumber = seqNumbersToSend.firstKey();
 			lastSentSeqNum = sequenceNumber; // TODO note for the retransmissions
-			segmentsToSend
-					.add(genDATASegment(sequenceNumber, seqNumbersToSend.get(sequenceNumber)));
+			segmentsToSend.add(genDATASegment(sequenceNumber, seqNumbersToSend.get(sequenceNumber)));
 			seqNumbersToSend.remove(sequenceNumber);
 			if (!seqNumbersToSend.isEmpty()) {
 				timerIndex++;
@@ -215,17 +210,16 @@ public class Senderv2 extends Agent {
 				timerOfTimerID.put(interSegmentDelayTimer.getId(), interSegmentDelayTimer);
 				net.getEventList()
 						.addEvent(new TimeoutEvent(
-								Mathematics.addFloat(net.getCurrentTime(),
-										ccParams.getsInterSegmentDelay()),
-								srcHostID, interSegmentDelayTimer.getId()));
+								Mathematics.addFloat(net.getCurrentTime(), ccParams.getSInterSegmentDelay()), srcHostID,
+								interSegmentDelayTimer.getId()));
 			}
 		}
 	}
 
 	private Segment genSYN() {
 		Segment segment = new Segment(flow.getID(), Keywords.Segments.Types.SYN,
-				Keywords.Segments.SpecialSequenceNumbers.SYNSeqNum,
-				Keywords.Segments.Sizes.SYNSegSize, srcHostID, dstHostID);
+				Keywords.Segments.SpecialSequenceNumbers.SYNSeqNum, Keywords.Segments.Sizes.SYNSegSize, srcHostID,
+				dstHostID);
 		lastSentSeqNum = 0;
 		mostRecentSequenceNum = 0;
 		return segment;
@@ -234,16 +228,16 @@ public class Senderv2 extends Agent {
 	private Segment genFIN() {
 		lastSentSeqNum++;
 		mostRecentSequenceNum++;
-		Segment segment = new Segment(flow.getID(), Keywords.Segments.Types.UncontrolledFIN,
-				lastSentSeqNum, Keywords.Segments.Sizes.FINSegSize, srcHostID, dstHostID);
+		Segment segment = new Segment(flow.getID(), Keywords.Segments.Types.UncontrolledFIN, lastSentSeqNum,
+				Keywords.Segments.Sizes.FINSegSize, srcHostID, dstHostID);
 		hasSentFIN = true;
 		return segment;
 	}
 
 	private Segment genDATASegment(int seqNumber, boolean isRetransmission) {
 		if (remainingSegments > 0) {
-			Segment segment = new Segment(this.flow.getID(), Keywords.Segments.Types.DATA,
-					seqNumber, Keywords.Segments.Sizes.DataSegSize, srcHostID, dstHostID);
+			Segment segment = new Segment(this.flow.getID(), Keywords.Segments.Types.DATA, seqNumber,
+					Keywords.Segments.Sizes.DataSegSize, srcHostID, dstHostID);
 			if (!isRetransmission) {
 				remainingSegments--;
 			}
@@ -275,118 +269,6 @@ public class Senderv2 extends Agent {
 
 	private void deactivateTimer(int timerID) {
 		timerOfTimerID.get(timerID).setActive(false);
-	}
-
-	public boolean isValidationReport() {
-		return validationReport;
-	}
-
-	public void setValidationReport(boolean validationReport) {
-		this.validationReport = validationReport;
-	}
-
-	public boolean isHasRecvdSYNACK() {
-		return hasRecvdSYNACK;
-	}
-
-	public void setHasRecvdSYNACK(boolean hasRecvdSYNACK) {
-		this.hasRecvdSYNACK = hasRecvdSYNACK;
-	}
-
-	public boolean isHasStartedSending() {
-		return hasStartedSending;
-	}
-
-	public void setHasStartedSending(boolean hasStartedSending) {
-		this.hasStartedSending = hasStartedSending;
-	}
-
-	public boolean isHasSentFIN() {
-		return hasSentFIN;
-	}
-
-	public void setHasSentFIN(boolean hasSentFIN) {
-		this.hasSentFIN = hasSentFIN;
-	}
-
-	public HashMap<Integer, Timer> getTimerOfTimerID() {
-		return timerOfTimerID;
-	}
-
-	public void setTimerOfTimerID(HashMap<Integer, Timer> timerOfTimerID) {
-		this.timerOfTimerID = timerOfTimerID;
-	}
-
-	public ArrayList<Integer> getTimeToNextCycleTimerIDs() {
-		return timeToNextCycleTimerIDs;
-	}
-
-	public void setTimeToNextCycleTimerIDs(ArrayList<Integer> timeToNextCycleTimerIDs) {
-		this.timeToNextCycleTimerIDs = timeToNextCycleTimerIDs;
-	}
-
-	public int getTimerIndex() {
-		return timerIndex;
-	}
-
-	public void setTimerIndex(int timerIndex) {
-		this.timerIndex = timerIndex;
-	}
-
-	public HashMap<Integer, CCParams> getNextCCParamsOfTimerID() {
-		return nextCCParamsOfTimerID;
-	}
-
-	public void setNextCCParamsOfTimerID(HashMap<Integer, CCParams> nextCCParamsOfTimerID) {
-		this.nextCCParamsOfTimerID = nextCCParamsOfTimerID;
-	}
-
-	public CCParams getCcParams() {
-		return ccParams;
-	}
-
-	public void setCcParams(CCParams ccParams) {
-		this.ccParams = ccParams;
-	}
-
-	public int getRemainingSegments() {
-		return remainingSegments;
-	}
-
-	public void setRemainingSegments(int remainingSegments) {
-		this.remainingSegments = remainingSegments;
-	}
-
-	public int getMostRecentSequenceNum() {
-		return mostRecentSequenceNum;
-	}
-
-	public void setMostRecentSequenceNum(int mostRecentSequenceNum) {
-		this.mostRecentSequenceNum = mostRecentSequenceNum;
-	}
-
-	public int getLastSentSeqNum() {
-		return lastSentSeqNum;
-	}
-
-	public void setLastSentSeqNum(int lastSentSeqNum) {
-		this.lastSentSeqNum = lastSentSeqNum;
-	}
-
-	public TreeMap<Integer, Boolean> getNegativeACKWaitingList() {
-		return negativeACKWaitingList;
-	}
-
-	public void setNegativeACKWaitingList(TreeMap<Integer, Boolean> negativeACKWaitingList) {
-		this.negativeACKWaitingList = negativeACKWaitingList;
-	}
-
-	public TreeMap<Integer, Boolean> getSeqNumbersToSend() {
-		return seqNumbersToSend;
-	}
-
-	public void setSeqNumbersToSend(TreeMap<Integer, Boolean> seqNumbersToSend) {
-		this.seqNumbersToSend = seqNumbersToSend;
 	}
 
 }

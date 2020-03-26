@@ -2,12 +2,16 @@ package nrg.sdnsimulator.topology;
 
 import java.util.TreeMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.utility.Keywords;
 import nrg.sdnsimulator.core.utility.Mathematics;
 import nrg.sdnsimulator.core.utility.RandomVariableGenerator;
 import nrg.sdnsimulator.core.utility.Statistics;
 import nrg.sdnsimulator.trafficgenerator.Traffic;
 
+@Getter
+@Setter
 public abstract class Testbed {
 	// Link Bandwidth
 	protected float AccessLinkBandwidth;
@@ -92,14 +96,12 @@ public abstract class Testbed {
 
 	public abstract Statistics executeSimulation(Traffic traffic);
 
-	protected TreeMap<Integer, Float> prepareAccessLinksPropagationDelay(int distribution,
-			int totalNumberOfFlows) {
+	protected TreeMap<Integer, Float> prepareAccessLinksPropagationDelay(int distribution, int totalNumberOfFlows) {
 		TreeMap<Integer, Float> accessLinkPropagationDelayPerFlowID = new TreeMap<Integer, Float>();
 		rttRVG.resetRng();
 		for (int flowIndex = 0; flowIndex < totalNumberOfFlows; flowIndex++) {
-			accessLinkPropagationDelayPerFlowID.put(flowIndex,
-					(float) rttRVG.getNextValue(distribution, MinAccessLinkPropagationDelay,
-							StandardDeviationAccessLinkPropagationDelay));
+			accessLinkPropagationDelayPerFlowID.put(flowIndex, (float) rttRVG.getNextValue(distribution,
+					MinAccessLinkPropagationDelay, StandardDeviationAccessLinkPropagationDelay));
 		}
 		return accessLinkPropagationDelayPerFlowID;
 	}

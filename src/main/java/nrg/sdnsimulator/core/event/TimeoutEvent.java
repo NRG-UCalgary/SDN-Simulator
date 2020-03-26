@@ -1,10 +1,14 @@
 package nrg.sdnsimulator.core.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Event;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.Simulator;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class TimeoutEvent extends Event {
 	private int nodeID;
 	private int timerID;
@@ -33,22 +37,6 @@ public class TimeoutEvent extends Event {
 		default:
 			break;
 		}
-	}
-
-	public int getNodeID() {
-		return nodeID;
-	}
-
-	public void setNodeID(int nodeID) {
-		this.nodeID = nodeID;
-	}
-
-	public int getTimerID() {
-		return timerID;
-	}
-
-	public void setTimerID(int timerID) {
-		this.timerID = timerID;
 	}
 
 }

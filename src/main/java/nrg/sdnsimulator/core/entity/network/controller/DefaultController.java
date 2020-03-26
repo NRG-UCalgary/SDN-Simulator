@@ -1,11 +1,15 @@
 package nrg.sdnsimulator.core.entity.network.controller;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.Network;
 import nrg.sdnsimulator.core.entity.network.Controller;
 import nrg.sdnsimulator.core.entity.traffic.Packet;
 import nrg.sdnsimulator.core.entity.traffic.Segment;
 import nrg.sdnsimulator.core.utility.Keywords;
 
+@Getter
+@Setter
 public class DefaultController extends Controller {
 	public DefaultController(int ID, short routingAlgorithm) {
 		super(ID, routingAlgorithm);

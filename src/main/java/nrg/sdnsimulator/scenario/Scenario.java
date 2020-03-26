@@ -11,6 +11,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.entity.traffic.Flow;
 import nrg.sdnsimulator.core.utility.Statistics;
 import nrg.sdnsimulator.core.utility.excel.ExcelHandler;
@@ -20,12 +22,14 @@ import nrg.sdnsimulator.core.utility.excel.datastructure.NumericFactorScatterTab
 import nrg.sdnsimulator.topology.Testbed;
 import nrg.sdnsimulator.trafficgenerator.TrafficGenerator;
 
+@Getter
+@Setter
 public abstract class Scenario {
 	protected boolean functionalityOutput = false;
-	private String mainFactorName;
-	private String studyName;
 	protected TrafficGenerator trafficGen;
 	protected Testbed testbed;
+	private String mainFactorName;
+	private String studyName;
 
 	public Scenario(String studyName, String mainFactorName) {
 		this.studyName = studyName;
@@ -34,8 +38,7 @@ public abstract class Scenario {
 
 	public abstract void executeTest();
 
-	public void generateNumericalFactorOutput(
-			LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
+	public void generateNumericalFactorOutput(LinkedHashMap<String, TreeMap<Float, Statistics>> result) {
 		String studyOutputPath = "output/" + studyName + "/";
 		new File(studyOutputPath).mkdirs();
 		NumericFactorOutputData outputData = new NumericFactorOutputData(mainFactorName, result);
@@ -46,8 +49,7 @@ public abstract class Scenario {
 		}
 	}
 
-	public void generateCategoryFactorOutput(
-			LinkedHashMap<String, LinkedHashMap<String, Statistics>> result) {
+	public void generateCategoryFactorOutput(LinkedHashMap<String, LinkedHashMap<String, Statistics>> result) {
 		String studyOutputPath = "output/" + studyName + "/";
 		new File(studyOutputPath).mkdirs();
 		CategoryFactorOutputData outputData = new CategoryFactorOutputData(mainFactorName, result);
@@ -82,10 +84,9 @@ public abstract class Scenario {
 	}
 
 	public void outSegmentArrivalToBottleneckData(String outputPath, Statistics stat) {
-		NumericFactorScatterTableData bottleneckArrivals = new NumericFactorScatterTableData(
-				"Time (ms)", "FlowID");
-		for (Pair<Float, Float> entry : stat.getLinks()
-				.get(stat.getBottleneckLink().getID()).getSegmentArrivalTimeOfFlowID()) {
+		NumericFactorScatterTableData bottleneckArrivals = new NumericFactorScatterTableData("Time (ms)", "FlowID");
+		for (Pair<Float, Float> entry : stat.getLinks().get(stat.getBottleneckLink().getID())
+				.getSegmentArrivalTimeOfFlowID()) {
 			String key = "Flow_" + entry.getSecond().intValue();
 			if (bottleneckArrivals.getData().containsKey(key)) {
 				bottleneckArrivals.getData().get(key).add(entry);
@@ -101,20 +102,19 @@ public abstract class Scenario {
 	public void outSequenceNumberData(String outputPath, Statistics stat) {
 		TreeMap<Integer, NumericFactorScatterTableData> SeqNumDataForAllFlowIDs = new TreeMap<Integer, NumericFactorScatterTableData>();
 		for (Flow flow : stat.getFlows().values()) {
-			NumericFactorScatterTableData flowSeqNumData = new NumericFactorScatterTableData(
-					"Time (us)", "SeqNum");
+			NumericFactorScatterTableData flowSeqNumData = new NumericFactorScatterTableData("Time (us)", "SeqNum");
 			ArrayList<Pair<Float, Float>> dataSerie = new ArrayList<Pair<Float, Float>>();
 			for (float seqNum : flow.getDataSeqNumSendingTimes().keySet()) {
-				Pair<Float, Float> singleEntry = new Pair<Float, Float>(
-						flow.getDataSeqNumSendingTimes().get(seqNum), seqNum);
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.getDataSeqNumSendingTimes().get(seqNum),
+						seqNum);
 				dataSerie.add(singleEntry);
 			}
 			flowSeqNumData.getData().put("Data Segments", dataSerie);
 
 			ArrayList<Pair<Float, Float>> ackSerie = new ArrayList<Pair<Float, Float>>();
 			for (float seqNum : flow.getAckSeqNumArrivalTimes().keySet()) {
-				Pair<Float, Float> singleEntry = new Pair<Float, Float>(
-						flow.getAckSeqNumArrivalTimes().get(seqNum), seqNum);
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.getAckSeqNumArrivalTimes().get(seqNum),
+						seqNum);
 				ackSerie.add(singleEntry);
 			}
 			flowSeqNumData.getData().put("ACKs", ackSerie);
@@ -128,20 +128,20 @@ public abstract class Scenario {
 		new File(studyOutputPath).mkdirs();
 		LinkedHashMap<String, NumericFactorScatterTableData> outputData = new LinkedHashMap<String, NumericFactorScatterTableData>();
 		for (Flow flow : stat.getFlows().values()) {
-			NumericFactorScatterTableData flowSeqNumData = new NumericFactorScatterTableData(
-					"Time (us)", "Sequence Number");
+			NumericFactorScatterTableData flowSeqNumData = new NumericFactorScatterTableData("Time (us)",
+					"Sequence Number");
 			ArrayList<Pair<Float, Float>> dataSerie = new ArrayList<Pair<Float, Float>>();
 			for (float seqNum : flow.getDataSeqNumSendingTimes().keySet()) {
-				Pair<Float, Float> singleEntry = new Pair<Float, Float>(
-						flow.getDataSeqNumSendingTimes().get(seqNum), seqNum);
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.getDataSeqNumSendingTimes().get(seqNum),
+						seqNum);
 				dataSerie.add(singleEntry);
 			}
 			flowSeqNumData.getData().put("Data Segments", dataSerie);
 
 			ArrayList<Pair<Float, Float>> ackSerie = new ArrayList<Pair<Float, Float>>();
 			for (float seqNum : flow.getAckSeqNumArrivalTimes().keySet()) {
-				Pair<Float, Float> singleEntry = new Pair<Float, Float>(
-						flow.getAckSeqNumArrivalTimes().get(seqNum), seqNum);
+				Pair<Float, Float> singleEntry = new Pair<Float, Float>(flow.getAckSeqNumArrivalTimes().get(seqNum),
+						seqNum);
 				ackSerie.add(singleEntry);
 			}
 			flowSeqNumData.getData().put("ACKs", ackSerie);

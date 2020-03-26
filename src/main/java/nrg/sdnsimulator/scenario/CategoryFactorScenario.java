@@ -3,8 +3,12 @@ package nrg.sdnsimulator.scenario;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import lombok.Getter;
+import lombok.Setter;
 import nrg.sdnsimulator.core.utility.Statistics;
 
+@Getter
+@Setter
 public abstract class CategoryFactorScenario extends Scenario {
 
 	protected LinkedHashMap<String, LinkedHashMap<String, Statistics>> result;
