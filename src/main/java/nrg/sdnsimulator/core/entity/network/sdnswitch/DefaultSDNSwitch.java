@@ -12,9 +12,6 @@ public class DefaultSDNSwitch extends SDNSwitch {
 		super(ID);
 	}
 
-	/* --------------------------------------------------- */
-	/* ---------- Inherited methods (from SDNSwitch) ----- */
-	/* --------------------------------------------------- */
 	protected void recvCtrlMessage(Network net, CtrlMessage message) {
 		switch (message.getType()) {
 		case Keywords.SDNMessages.Types.FlowSetUp:
